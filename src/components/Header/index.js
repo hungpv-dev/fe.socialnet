@@ -14,6 +14,7 @@ function Header() {
         <span> --- </span>
         <Link to="/login">Đăng xuất</Link>
       </nav>
+      <script src="http://localhost:8097"></script>
     </header>
   );
 }

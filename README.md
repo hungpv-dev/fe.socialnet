@@ -2,23 +2,19 @@
 Chứa toàn bộ source code dự án
 
 ## components
-Chứa component
-
-## config
-Chứa file cấu hình
+Chứa component nhỏ như header, footer, message....
 
 ## layout
-Chứa layout
+Chứa layout của website có admin, client
 
 ## pages
-Chứa các pages 
+Chứa các pages như là home, profile,... -> mỗi page được tạo thành từ nhiều component nhỏ 
 
 ## routes
 Chứa router website
+- pubicRoute: router không cần đăng nhập cũng vô được
+- privateRoute: router cần đăng nhập mới vô được
 
-## services
-Chứa api 
-
-## utils
-Chứa phương thức dùng chung cho cả website
-
+mỗi component hoặc page có 1 file main.scss đi kèm để css cho component đó
+component/GlobalStyle/main chứa css áp dụng cho toàn bộ website
+component/GlobalStyle/mixin chứa biến css sử dụng lại nhiều lần
