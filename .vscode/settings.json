@@ -1,0 +1,5 @@
+{
+    "multiDiffEditor.experimental.enabled": true,
+    "editor.find.addExtraSpaceOnTop": true,
+    "workbench.remoteIndicator.showExtensionRecommendations": true
+}
