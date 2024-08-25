@@ -4,17 +4,24 @@ import ThongkeCT from "../pages/Admin/ThongkeCT";
 
 const adminRouters = [
   {
-    path: "/admin/quanli",
+    path: "/quanli",
     component: QuanLy,
   },
   {
-    path: "/admin/thongke",
+    path: "/thongke",
     component: Thongke,
   },
   {
-    path: "/admin/thongkect",
+    path: "/thongkect",
     component: ThongkeCT,
   },
 ];
 
-export default adminRouters;
+
+
+const adminRoutersPrefix =  adminRouters.map(route => ({
+  ...route,
+  path: `/admin${route.path}`
+}));
+
+export default adminRoutersPrefix;

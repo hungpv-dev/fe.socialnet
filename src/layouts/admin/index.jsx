@@ -1,15 +1,18 @@
 import classNames from "classnames/bind";
 
 import styles from "./main.scss";
+import SlideBar from "../../components/Admin/SlideBar";
 
 const cx = classNames.bind(styles);
 
 function LayoutAdmin({ children }) {
   return (
-    <section className={cx("main")}>
-      <h1>Đây là layout admin</h1>
-      {children}
-    </section>
+    <div className="container">
+      <div className="row">
+        <SlideBar></SlideBar>
+        {children}
+      </div>
+    </div>
   );
 }
 

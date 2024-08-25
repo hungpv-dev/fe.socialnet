@@ -5,7 +5,7 @@ import User from '../User';
 import React, { useState, useEffect, useRef } from 'react';
 const cx = classNames.bind(styles);
 
-function SlideBar({users}) {
+function SlideBar({ users }) {
   const [modalVisible, setModalVisible] = useState(false);
   const modalPopup = useRef(null);
   const buttonToggle = useRef(null);
@@ -50,14 +50,14 @@ function SlideBar({users}) {
             onClick={toggleModal}
             className='icon d-flex justify-content-center align-items-center'
           >
-            <i className="bi bi-three-dots fs-3"></i>
+            <i className="bi bi-three-dots fs-3 d-flex justify-content-center align-items-center"></i>
           </button>
           {modalVisible && (
             <div className='popup-modal border p-2' ref={modalPopup}>
               <ul className='list-unstyled mb-0'>
                 <li className='d-flex align-items-center fs-8'>
                   <div className='modal-icon fw-bold m-1 me-3 fs-5'>
-                  <i className="bi bi-circle-square"></i>
+                    <i className="bi bi-circle-square"></i>
                   </div>
                   <div className='modal-text'>
                     <p className='m-0 fw-bold'>Trạng thái hoạt động</p>
@@ -65,7 +65,7 @@ function SlideBar({users}) {
                 </li>
                 <li className='d-flex align-items-center fs-8'>
                   <div className='modal-icon fw-bold m-1 me-3 fs-5'>
-                  <i className="bi bi-people-fill"></i>
+                    <i className="bi bi-people-fill"></i>
                   </div>
                   <div className='modal-text'>
                     <p className='m-0 fw-bold'>Tạo nhóm chat</p>

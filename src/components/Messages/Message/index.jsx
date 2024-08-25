@@ -41,11 +41,11 @@ function Message({ user, me,rep,send,onReply }) {
           </ul>
         </div>
       </div>
-      <div className='user-sends'>
+      <div className={cx('user-sends')}>
         {
           send && send.map((user) =>
             (
-              <div className='user-send'>
+              <div className={cx('user-send')}>
                 <img src={user.avatar} alt="" />
               </div>
             )

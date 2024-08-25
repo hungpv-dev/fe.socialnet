@@ -69,7 +69,7 @@ function User({ user }) {
           modalVisible ? "d-flex" : "d-none"
         } justify-content-center align-items-center`}
       >
-        <i className="bi bi-three-dots fs-3"></i>
+        <i className="bi bi-three-dots fs-3 d-flex justify-content-center align-items-center"></i>
       </button>
       {modalVisible && (
         <div
