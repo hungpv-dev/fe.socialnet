@@ -1,0 +1,22 @@
+/* Custom styles */
+.sidebar {
+    height: 100vh;
+  }
+  
+  .sidebar .nav-link.active {
+    background-color: #e9ecef;
+  }
+  
+  .table thead th {
+    background-color: #f8f9fa;
+  }
+  
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .dropdown-menu {
+    min-width: 10rem;
+  }
+  

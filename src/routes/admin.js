@@ -1,9 +1,20 @@
-import Home from "../pages/Client/Home";
+import QuanLy from "../pages/Admin/Quanly";
+import Thongke from "../pages/Admin/Thongke";
+import ThongkeCT from "../pages/Admin/ThongkeCT";
 
 const adminRouters = [
-    {
-        path: "/admin", component: Home
-    }
-]
+  {
+    path: "/admin/quanli",
+    component: QuanLy,
+  },
+  {
+    path: "/admin/thongke",
+    component: Thongke,
+  },
+  {
+    path: "/admin/thongkect",
+    component: ThongkeCT,
+  },
+];
 
-export default adminRouters
+export default adminRouters;
