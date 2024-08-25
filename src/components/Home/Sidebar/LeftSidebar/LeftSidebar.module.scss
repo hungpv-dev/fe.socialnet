@@ -1,0 +1,35 @@
+.left-sidebar {
+    font-size: 1.1rem;
+    width: var(--layout-left);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    left: 0;
+    overflow-y: hidden;
+    margin-top: 60px;
+    padding-left: 10px;
+    padding-top: 20px;
+    transition: overflow-y 0.3s ease;
+    hr{
+        border: 1px solid black;
+        margin: 5px 0;
+    }
+}
+
+.left-sidebar:hover {
+    overflow-y: auto;
+}
+
+.left-sidebar::-webkit-scrollbar {
+    width: 8px;
+    background: transparent;
+}
+
+.left-sidebar::-webkit-scrollbar-thumb {
+    background-color: darkgray;
+    border-radius: 6px;
+}
+
+.left-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
