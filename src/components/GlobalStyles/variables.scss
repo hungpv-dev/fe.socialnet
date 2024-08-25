@@ -1,9 +1,14 @@
 :root{
     --text-color: #333;
     --main-color: #0065E0;
-    --bg-color: #E5E5E5;
-    --bg-color-bold: #ADADAD;
     --bg-color-light: #EDE6E6;
+    --bg-color: #e8e8e8; //Màu nền website
+    --bg-color-bold: #cbcbcb;
+
+    // Colum layout
+    --layout-left: 350px;
+    --layout-middle: 580px;
+    --layout-right: 350px;
 
     --media-inner-border: rgba(0,0,0,0.1);
 }
