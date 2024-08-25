@@ -1,16 +1,76 @@
-.slidebar{
-    color: var(--text-color);
-    border: 1px solid var(--text-color);
-
-    .icon{
-        background-color: var(--bg-color);
-        height: 35px;
-        width: 35px;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: all 0.2s linear;
-        &:hover{
-            background-color: var(--bg-color-bold);
-        }
+@import "../../GlobalStyles/mixin.scss";
+.slidebar {
+  color: var(--text-color);
+  border-top: 1px solid var(--text-color);
+  position: relative;
+  box-shadow: 0 0 1px 1px rgba(0,0,0,0.1);
+  overflow-y: scroll; 
+  height: 100vh;
+  
+  header{
+    position: relative;
+    .icon {
+      background-color: var(--bg-color);
+      height: 2.5rem;
+      width: 2.5rem;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s linear;
+      &:hover {
+        background-color: var(--bg-color-light);
+      }
+      &:active{
+        background-color: var(--bg-color-bold);
+      }
     }
+    .popup-modal{
+      @include modalPopup;
+      top: 3.3rem;
+      right: 0rem;
+    }
+  }
+
+  .nav-top{
+    position: sticky;
+    background-color: white;
+    z-index: 1000;
+    padding: 12px;
+    top: 0;
+    box-shadow: 0 1px 0px 0px rgba(0,0,0,0.1);
+    padding-bottom: 20px;
+  }
+  
+  
+
+  .search {
+    display: flex;
+    border-radius: 20px;
+    margin-top: 15px;
+    font-size: 1rem;
+    padding: 7px 15px;
+    width: 100%;
+    background-color: var(--bg-color-light);
+    .input-search {
+      background-color: transparent;
+      border: none;
+      outline: none;
+      flex: 1;
+      -webkit-search-clear-button {
+        cursor: pointer;
+      }
+    }
+  }
+}
+.slidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.slidebar::-webkit-scrollbar-thumb {
+  background-color: var(--bg-color);
+  border-radius: 20px;  
+}
+
+.slidebar::-webkit-scrollbar-track {
+  background: transparent; 
 }

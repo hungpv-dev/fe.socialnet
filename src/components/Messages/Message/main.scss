@@ -1,0 +1,101 @@
+@import '../../GlobalStyles/mixin.scss';
+.user-message{
+    padding: 0 10px;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    justify-content: flex-start;
+    .message{
+        display: inline;
+        font-size: 1rem;
+        padding: 5px 20px;
+        border-radius: 20px;
+        background: var(--bg-color);
+    }
+    .avatar{
+        width: 2.5rem;
+        height: 2.5rem;
+        margin: 0 10px;
+        img{
+            border-radius: 50%;
+            @include image;
+        }
+    }
+    .reply{
+        position: absolute;
+        font-size: 1rem;
+        z-index: -1;
+        box-shadow: 0 0 5px 3px rgba(0, 0,0 ,0.1);
+        top: -2rem;
+        left: 4.5rem;
+        padding: 5px 20px;
+        padding-bottom: 18px ;
+        border-radius: 10px;
+        background-color: #f9f7f7;
+    }
+    .message-settings{
+        display: none;
+        margin-left: 1rem;
+        button{
+            width: 2rem;
+            height: 2rem;
+            border-radius: 59%;
+            border: none;
+            background-color: transparent;
+            color: black;
+            font-size: 1.3rem;
+            &:hover{
+                background-color: var(--bg-color-light);
+            }
+        }
+    }
+    &.reply-success{
+        margin-top: 70px;
+    }
+    &.flex-row-reverse {
+        justify-content: end !important;
+        .message{
+            color: #fff;
+            background-color: var(--main-color);
+        }
+        .message-settings{
+            margin-right: 1rem;
+            ul{
+                flex-direction: row-reverse;
+            }
+        }
+        .reply{
+            position: absolute;
+            font-size: 1rem;
+            z-index: -1;
+            box-shadow: 0 0 5px 3px rgba(0, 0,0 ,0.1);
+            top: -2rem;
+            left: auto;
+            right: 1rem;
+            padding: 5px 20px;
+            padding-bottom: 18px ;
+            border-radius: 10px;
+            background-color: #f9f7f7;
+        }
+    }
+    &:hover{
+        .message-settings{
+            display: flex;
+        }
+    }
+}
+.user-sends{
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 1.2rem;
+    border-radius: 50%;
+    .user-send{
+        img{
+            width: 1.2rem;
+            height: 1.2rem;
+            border: 1px solid #cdcdcd;
+            border-radius: 50%;
+        }
+    }
+}

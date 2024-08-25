@@ -1,0 +1,135 @@
+.right-sidebar {
+    --font-color: rgb(137, 137, 137);
+
+    width: var(--layout-right);
+    font-size: 1rem;
+    color: var(--font-color);
+    font-weight: 600;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    right: 0;
+    overflow-y: hidden;
+    margin-top: 60px;
+    padding-right: 10px;
+    padding-top: 20px;
+    transition: overflow-y 0.3s ease;
+    hr {
+        border: 1px solid black;
+        margin: 5px 0;
+    }
+    .request-friend {
+        text-decoration: none;
+        width: 100%;
+        .header-section {
+            .btn_friend {
+                align-items: center;
+                float: right; /* Căn chỉnh nút sang bên phải */
+                text-decoration: none; /* Không gạch chân */
+                width: 100px; /* Đặt chiều rộng */
+                height: 100%; /* Đặt chiều cao */
+                display: inline-flex; /* Sử dụng flexbox để căn giữa nội dung */
+                justify-content: center; /* Căn giữa theo chiều ngang */
+                align-items: center; /* Căn giữa theo chiều dọc */
+                border: 1px solid transparent; /* Thêm biên để tạo khoảng cách */
+                border-radius: 5px; /* Thêm bo góc */
+                background-color: var(--bg-color-light); /* Màu nền mặc định */
+                transition: background-color 0.3s; /* Hiệu ứng chuyển đổi cho màu nền */
+
+                &:hover {
+                    background-color: var(--bg-color-bold); /* Màu nền khi hover */
+                }
+            }
+        }
+        .link {
+            text-decoration: none;
+            .body-section {
+                margin-top: 5px;
+                padding: 10px;
+                width: 100%;
+                height: 110px;
+                // background-color: aliceblue;
+                border-radius: 10px;
+                display: flex;
+                gap: 5px;
+                &:hover {
+                    background-color: var(--bg-color-bold);
+                }
+                :first-child {
+                    width: 60px;
+
+                    img {
+                        width: 50px;
+                        height: 50px;
+                        border-radius: 50%;
+                    }
+                }
+
+                :last-child {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    .top {
+                        height: 50px;
+                        width: 100%;
+                        color: var(--font-color);
+                        font-size: 0.8rem;
+                        section {
+                            width: 100%;
+                            height: 20px;
+                        }
+                        :first-child {
+                            :first-child {
+                                color: black;
+                                font-size: 1.1rem;
+                                float: left;
+                                width: auto;
+                            }
+                            :last-child {
+                                float: right;
+                            }
+                        }
+                    }
+                    .bottom {
+                        // display: flex;
+                        // justify-content: space-between;
+                        // align-items: center;
+                        width: 100%;
+                        gap: 10px;
+
+                        .btn {
+                            // width: calc(50% - 5px);
+                            text-align: center;
+                            padding: 10px;
+                            background-color: var(--bg-color-light);
+                            transition: background-color 0.3s ease;
+                            
+                            &:hover {
+                                background-color: var(--bg-color-bold);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.right-sidebar:hover {
+    overflow-y: auto;
+}
+
+.right-sidebar::-webkit-scrollbar {
+    width: 8px;
+    background: transparent;
+}
+
+.right-sidebar::-webkit-scrollbar-thumb {
+    background-color: darkgray;
+    border-radius: 6px;
+}
+
+.right-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}

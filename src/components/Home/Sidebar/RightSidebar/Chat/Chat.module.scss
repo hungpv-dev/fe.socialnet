@@ -1,0 +1,42 @@
+.chat{
+    height: 55px;
+    width: 100%;
+    padding: 0 5px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    .avatar{
+        width: 40px;
+        height: 40px;
+        position: relative;
+        img{
+            border-radius: 50%;
+        }
+        .status{
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            position: absolute;
+            background-color: var(--bg-color);
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            :first-child{
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background-color: greenyellow;
+            }
+        }
+    }
+    .name{
+        font-size: 1rem;
+        color: black;
+    }
+    &:hover{
+        background-color: var(--bg-color-bold);
+    }
+}

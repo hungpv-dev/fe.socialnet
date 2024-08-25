@@ -1,0 +1,100 @@
+@import "../../GlobalStyles/mixin.scss";
+
+.user {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  position: relative;
+  text-decoration: none;
+  border-radius: 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: var(--bg-color-light);
+    .popup {
+      display: flex !important;
+    }
+  }
+
+  .popup {
+    background-color: #fff;
+    height: 2.1rem;
+    border: none;
+    width: 2.1rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s linear;
+    box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
+    &:hover {
+      background-color: var(--bg-color);
+    }
+    &:active {
+      background-color: var(--bg-color-bold);
+    }
+    position: absolute;
+    right: 1.1rem;
+  }
+  .content {
+    flex: 1;
+    background-color: transparent;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    text-decoration: none;
+    padding-left: 10px;
+    p {
+      color: var(--bg-color-bold);
+    }
+  }
+  .user-avatar {
+    position: relative;
+    height: 4rem;
+    width: 4rem;
+    padding: 5px;
+    .avatar {
+      border: 1px solid #cdcdcd;
+      border-radius: 50%;
+      @include image;
+    }
+    .status {
+      position: absolute;
+      width: 0.9rem;
+      height: 0.9rem;
+      top: 2.7rem;
+      left: 2.7rem;
+      border: 1px solid white;
+      background-color: rgb(63, 202, 63);
+      border-radius: 50%;
+    }
+  }
+
+  .popup-modal {
+    @include modalPopup;
+
+    &.popup-up{
+      top: auto;
+      bottom: 4.1rem;
+      transform-origin: calc(100% - 20px) bottom;
+      &::after{
+        top: auto;
+        border-color: white transparent transparent transparent;
+        bottom: -18px;
+      }
+    }
+    
+    // &.popup-down{
+    //   background-color: red;
+    // }
+  }
+
+}
+
+.user:has(.popup:hover) {
+  background-color: transparent;
+}
+
+@media (max-width: 766px) {
+  .user {
+    .popup {
+      display: flex !important;
+    }
+  }
+}
