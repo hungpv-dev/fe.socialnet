@@ -1,0 +1,94 @@
+{
+    "message_users": [
+        {
+            "id": 1,
+            "status": true,
+            "name": "Phạm Văn Hùng",
+            "email": "azhung08102004@gmail.com",
+            "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7vB-49_BT-dirwttYZaeE_VByjlQ3raVJZg&s",
+            "last_message": "Cũng được á m",
+            "last_time": "5 Giờ"
+        },
+        {
+            "id": 2,
+            "status": true,
+            "name": "Nguyễn Thị Mai",
+            "email": "mai.nguyen@example.com",
+            "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_kMIhJS-eSGZp0wzCaaBk2uKXgN-W1qMbXchhz_0TgWB_QaBCMxekJI6KULaz9iKk3ds&usqp=CAU",
+            "last_message": "Để mai em xem lại nhé",
+            "last_time": "2 Giờ"
+        },
+        {
+            "id": 3,
+            "name": "Lê Văn An",
+            "email": "an.le@example.com",
+            "status": false,
+            "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIGM4_Tx-5TWEipwHnsj2yIPdpQzVDfS8SuQ&s",
+            "last_message": "Okie bạn",
+            "last_time": "3 Giờ"
+        },
+        {
+            "id": 4,
+            "status": true,
+            "name": "Trần Thị Hương",
+            "email": "huong.tran@example.com",
+            "avatar": "https://nguoinoitieng.tv/images/nnt/100/0/besg.jpg",
+            "last_message": "Hẹn gặp lại",
+            "last_time": "1 Giờ"
+        },
+        {
+            "id": 5,
+            "name": "Võ Văn Bảo",
+            "status": true,
+            "email": "bao.vo@example.com",
+            "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqqIEgeDyflFz9f5nWYjrdpPbJcyrIKlZLSAyw3NtlyNQR68oCaVulrKG1zzy6DPTkOWg&usqp=CAU",
+            "last_message": "Mình sẽ xem lại",
+            "last_time": "4 Giờ"
+        },
+        {
+            "id": 6,
+            "status": true,
+            "name": "Đỗ Thị Lan",
+            "email": "lan.do@example.com",
+            "avatar": "https://giadinh.mediacdn.vn/296230595582509056/2022/12/21/003-phuong-oanh-70-1671633863082573737728.jpeg",
+            "last_message": "Không thành vấn đề",
+            "last_time": "6 Giờ"
+        },
+        {
+            "id": 7,
+            "name": "Phạm Thanh Tùng",
+            "status": false,
+            "email": "tung.pham@example.com",
+            "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGkMT2X8bTsIDxprSnAtMvB1sVg_Wpfm-V2wKZZUMFnwZiBkPW-tAg9JgtNeCmHsARdtQ&usqp=CAU",
+            "last_message": "Cảm ơn bạn nhiều",
+            "last_time": "7 Giờ"
+        },
+        {
+            "id": 8,
+            "status": true,
+            "name": "Ngô Bảo Châu",
+            "email": "chau.ngo@example.com",
+            "avatar": "https://photo.znews.vn/w660/Uploaded/kbd_pilk/2022_09_22/tieu_long_nu1.jpg",
+            "last_message": "Mình hiểu rồi",
+            "last_time": "8 Giờ"
+        },
+        {
+            "id": 9,
+            "name": "Lý Minh Phương",
+            "status": false,
+            "email": "phuong.ly@example.com",
+            "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTu-Tc15pivUb8hreCqg08Pz_ZKyK-b3WJVig&s",
+            "last_message": "Chúc bạn ngày tốt lành",
+            "last_time": "9 Giờ"
+        },
+        {
+            "id": 10,
+            "name": "Vũ Thị Thu",
+            "status": false,
+            "email": "thu.vu@example.com",
+            "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFTppte1BFrv8k5j_cExgk7RPoUUgBjZPKDDxHO8JNoBsYx2M9G2-2AxRGGyp7tULL1dg&usqp=CAU",
+            "last_message": "Mình sẽ phản hồi sớm",
+            "last_time": "10 Giờ"
+        }
+    ]
+}
