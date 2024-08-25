@@ -1,0 +1,185 @@
+.app {
+    display: flex;
+    height: 100vh;
+  
+    .sidebar {
+      width: 240px;
+      background-color: #f0f2f5;
+      padding: 20px;
+      border-right: 1px solid #ccc;
+  
+      .search-bar {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 10px;
+        background-color: #fff;
+        border-radius: 5px;
+  
+        input {
+          border: none;
+          outline: none;
+          flex: 1;
+        }
+  
+        i {
+          color: #888;
+        }
+      }
+  
+      ul {
+        list-style: none;
+        padding: 0;
+  
+        li {
+          display: flex;
+          align-items: center;
+          padding: 10px;
+          font-size: 16px;
+          color: #333;
+          margin-bottom: 10px;
+          border-radius: 5px;
+          cursor: pointer;
+  
+          i {
+            margin-right: 10px;
+            font-size: 20px;
+            color: #555;
+          }
+  
+          &.active {
+            background-color: #e1e1e1;
+            color: #000;
+  
+            i {
+              color: #000;
+            }
+          }
+  
+          &:hover {
+            background-color: #ddd;
+          }
+        }
+      }
+    }
+  
+    .content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+  
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 20px;
+        background-color: #f0f0f0;
+        border-bottom: 1px solid #ccc;
+  
+        .navbar-icons {
+          display: flex;
+  
+          i {
+            font-size: 20px;
+            margin-right: 20px;
+            cursor: pointer;
+          }
+        }
+  
+        .user-profile {
+          display: flex;
+  
+          i {
+            font-size: 20px;
+            margin-left: 20px;
+            cursor: pointer;
+          }
+        }
+      }
+  
+      .main-content {
+        padding: 20px;
+  
+        h3 {
+          font-size: 20px;
+          margin-bottom: 20px;
+          color: #333;
+        }
+  
+        .select-all {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+  
+          span {
+            font-size: 16px;
+          }
+  
+          input {
+            width: 20px;
+            height: 20px;
+          }
+        }
+  
+        .device-list {
+          .device-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+  
+            .device-info {
+              display: flex;
+              flex-direction: column;
+  
+              span:first-child {
+                font-weight: 500;
+              }
+  
+              span:last-child {
+                font-size: 14px;
+                color: #777;
+              }
+            }
+  
+            input {
+              width: 20px;
+              height: 20px;
+            }
+          }
+        }
+  
+        .password-input {
+          margin-top: 20px;
+          input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f7f7f7;
+            font-size: 16px;
+          }
+        }
+  
+        .logout-button {
+          width: 100%;
+          padding: 15px;
+          margin-top: 20px;
+          background-color: #007bff;
+          border: none;
+          border-radius: 5px;
+          color: #fff;
+          font-size: 16px;
+          cursor: pointer;
+  
+          &:hover {
+            background-color: #0056b3;
+          }
+        }
+      }
+    }
+  }
