@@ -1,10 +1,9 @@
-import {React,Fragment} from "react";
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { React, Fragment } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { pulicRouter, privateRouters, adminRouters } from "./routes";
 import { LayoutAdmin, LayoutClient } from "./layouts";
 
 const App = () => {
-
   const checkLogin = true;
   const checkAdmin = true;
 
@@ -12,13 +11,9 @@ const App = () => {
     <>
       <Routes>
         {pulicRouter.map((route, index) => {
-
           const Page = route.component;
 
-          return (
-            <Route key={index} path={route.path} element={<Page />} />
-          );
-          
+          return <Route key={index} path={route.path} element={<Page />} />;
         })}
         {privateRouters.map((route, index) => {
           if (!checkLogin) {
@@ -39,7 +34,15 @@ const App = () => {
 
             const Page = route.component;
             return (
-              <Route key={index} path={route.path} element={<Layout><Page /></Layout>} />
+              <Route
+                key={index}
+                path={route.path}
+                element={
+                  <Layout>
+                    <Page />
+                  </Layout>
+                }
+              />
             );
           }
         })}
@@ -62,13 +65,21 @@ const App = () => {
 
             const Page = route.component;
             return (
-              <Route key={index} path={route.path} element={<Layout><Page /></Layout>} />
+              <Route
+                key={index}
+                path={route.path}
+                element={
+                  <Layout>
+                    <Page />
+                  </Layout>
+                }
+              />
             );
           }
         })}
       </Routes>
     </>
-  )
+  );
 };
 
 export default App;
