@@ -1,0 +1,30 @@
+@use "sass:map";
+@import "theme";
+html,
+body{
+    margin: 0;
+}
+*{
+    font-family: Roboto;
+    padding: 0;
+    margin: 0;
+}
+.container{
+    background: map.get($theme-color , "main");
+}
+.body{
+    background: map.get($theme-color , "main2");
+    height: auto;
+}
+.row{
+    display: flex;
+    flex-wrap:wrap ;
+  
+}
+.col-2{
+    max-width: 20%;
+ 
+    height: 700px;
+    border-radius: 2%;
+    background-color: map.get($theme-color,"main1");
+}

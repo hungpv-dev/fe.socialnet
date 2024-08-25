@@ -1,25 +1,74 @@
-import logo from './logo.svg';
-import './App.css';
+import {React,Fragment} from "react";
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { pulicRouter, privateRouters, adminRouters } from "./routes";
+import { LayoutAdmin, LayoutClient } from "./layouts";
 
-function App() {
+const App = () => {
+
+  const checkLogin = true;
+  const checkAdmin = true;
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+    <>
+      <Routes>
+        {pulicRouter.map((route, index) => {
+
+          const Page = route.component;
+
+          return (
+            <Route key={index} path={route.path} element={<Page />} />
+          );
+          
+        })}
+        {privateRouters.map((route, index) => {
+          if (!checkLogin) {
+            return (
+              <Route
+                key={index}
+                path={route.path}
+                element={<Navigate to="/login" replace />}
+              />
+            );
+          } else {
+            let Layout = LayoutClient;
+            if (route.Layout) {
+              Layout = route.Layout;
+            } else if (route.Layout === null) {
+              Layout = Fragment;
+            }
+
+            const Page = route.component;
+            return (
+              <Route key={index} path={route.path} element={<Layout><Page /></Layout>} />
+            );
+          }
+        })}
+        {adminRouters.map((route, index) => {
+          if (!checkAdmin) {
+            return (
+              <Route
+                key={index}
+                path={route.path}
+                element={<Navigate to="/" replace />}
+              />
+            );
+          } else {
+            let Layout = LayoutAdmin;
+            if (route.Layout) {
+              Layout = route.Layout;
+            } else if (route.Layout === null) {
+              Layout = Fragment;
+            }
+
+            const Page = route.component;
+            return (
+              <Route key={index} path={route.path} element={<Layout><Page /></Layout>} />
+            );
+          }
+        })}
+      </Routes>
+    </>
+  )
+};
 
 export default App;

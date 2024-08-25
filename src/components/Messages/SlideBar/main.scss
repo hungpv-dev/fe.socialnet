@@ -1,0 +1,16 @@
+.slidebar{
+    color: var(--text-color);
+    border: 1px solid var(--text-color);
+
+    .icon{
+        background-color: var(--bg-color);
+        height: 35px;
+        width: 35px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s linear;
+        &:hover{
+            background-color: var(--bg-color-bold);
+        }
+    }
+}
