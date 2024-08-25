@@ -5,9 +5,8 @@ import { useParams } from 'react-router-dom';
 
 const cx = className.bind(styles);
 
-type Props = {}
 
-const Messages = (props: Props) => {
+const Messages = () => {
   const { id } = useParams();
   if(!id){
     return (

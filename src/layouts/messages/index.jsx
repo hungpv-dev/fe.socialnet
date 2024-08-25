@@ -3,10 +3,8 @@ import { useParams } from 'react-router-dom';
 import styles from "./main.scss";
 import SlideBar from "../../components/Messages/SlideBar";
 import axios from "axios";
+
 const cx = classNames.bind(styles);
-
-
-console.log(process.env.REACT_APP_API_URL);
 
 async function fetchUsers(){
     let response = axios.get('http://localhost:2004/message_users');
@@ -15,7 +13,6 @@ async function fetchUsers(){
 }; 
 
 const users = await fetchUsers();
-
 function LayoutMessages({children}) {
     const { id } = useParams();
     return (
