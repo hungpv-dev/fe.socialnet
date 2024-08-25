@@ -31,9 +31,9 @@ const App = () => {
             );
           } else {
             let Layout = LayoutClient;
-            if (route.Layout) {
-              Layout = route.Layout;
-            } else if (route.Layout === null) {
+            if (route.layout) {
+              Layout = route.layout;
+            } else if (route.layout === null) {
               Layout = Fragment;
             }
 
@@ -54,9 +54,9 @@ const App = () => {
             );
           } else {
             let Layout = LayoutAdmin;
-            if (route.Layout) {
-              Layout = route.Layout;
-            } else if (route.Layout === null) {
+            if (route.layout) {
+              Layout = route.layout;
+            } else if (route.layout === null) {
               Layout = Fragment;
             }
 

@@ -1,19 +1,23 @@
 import className from "classnames/bind";
 import styles from "./main.scss";
-import SlideBar from "../../../components/Messages/SlideBar";
 import Content from "../../../components/Messages/Content";
+import { useParams } from 'react-router-dom';
 
 const cx = className.bind(styles);
 
 type Props = {}
 
 const Messages = (props: Props) => {
-
+  const { id } = useParams();
+  if(!id){
+    return (
+      <div id="content">
+        <h1 className="alert alert-success">Bắt đầu cuộc hội thoại ngay bây giơ</h1>
+      </div>
+    )
+  }
   return (
-    <div id="messages" className={cx("#messages")}>
-      <SlideBar />
-      <Content />
-    </div>
+    <Content />
   )
 }
 

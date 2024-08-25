@@ -1,3 +1,4 @@
+import LayoutMessages from "../layouts/messages";
 import Home from "../pages/Client/Home";
 import Login from "../pages/Client/Login";
 import Messages from "../pages/Client/Messages";
@@ -17,7 +18,10 @@ const privateRouters = [
         path: "/", component: Home
     },
     {
-        path: "/messages", component: Messages
+        path: "/messages", component: Messages, layout: LayoutMessages
+    },
+    {
+        path: "/messages/:id", component: Messages, layout: LayoutMessages
     },
 ];
 
