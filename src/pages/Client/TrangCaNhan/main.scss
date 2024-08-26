@@ -1,0 +1,175 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .min-h-screen {
+    min-height: 100vh;
+  }
+  
+  .bg-white {
+    background-color: #ffffff;
+  }
+  
+  .container {
+    width: 1440px;
+    height: 2760px;
+    position: relative;
+  }
+  
+  .header {
+    /* Styles cho header */
+  }
+  
+  .cover-photo {
+    width: 990px;
+    height: 388px;
+    position: absolute;
+    left: 238px;
+    top: 63px;
+    background-color: #b4adad;
+    border-radius: 10px;
+  }
+  
+  .cover-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  
+  .add-photo-btn, .add-story-btn, .edit-profile-btn {
+    height: 64px;
+    position: absolute;
+    background-color: #d9d9d9;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .add-photo-btn {
+    width: 184px;
+    left: 943px;
+    top: 345px;
+  }
+  
+  .add-story-btn {
+    width: 181px;
+    background-color: #0065e0;
+    left: 692px;
+    top: 505px;
+  }
+  
+  .edit-profile-btn {
+    width: 324px;
+    left: 893px;
+    top: 505px;
+  }
+  
+  .profile-pic-container {
+    width: 265px;
+    height: 266px;
+    position: absolute;
+    left: 257px;
+    top: 345px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .profile-pic {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  
+  .icon-container {
+    width: 76px;
+    height: 75px;
+    position: absolute;
+    left: 411px;
+    top: 559px;
+    background-color: #f0eeee;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .username {
+    width: 121px;
+    height: 53px;
+    position: absolute;
+    left: 521px;
+    top: 552px;
+    font-size: 2.5rem;
+    font-weight: bold;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .line-separator {
+    width: 920.11px;
+    height: 0;
+    position: absolute;
+    left: 256.76px;
+    top: 671px;
+    border: 1px solid rgba(0, 0, 0, 0.6);
+  }
+  
+  .menu-item {
+    position: absolute;
+    font-size: 2rem;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .menu-item.active {
+    color: #000aff;
+  }
+  
+  .menu-item.inactive {
+    color: rgba(0, 0, 0, 0.6);
+  }
+  
+  .menu-item.bai-viet {
+    width: 134px;
+    height: 80px;
+    left: 274px;
+    top: 698px;
+  }
+  
+  .menu-item.gioi-thieu {
+    width: 169px;
+    height: 80px;
+    left: 437px;
+    top: 698px;
+  }
+  
+  .menu-item.ban-be {
+    width: 169px;
+    height: 80px;
+    left: 636px;
+    top: 698px;
+  }
+  
+  .menu-item.anh {
+    width: 169px;
+    height: 80px;
+    left: 790px;
+    top: 698px;
+  }
+  
+  .menu-item.video {
+    width: 169px;
+    height: 80px;
+    left: 891px;
+    top: 698px;
+  }
+  
+  /* Tiếp tục với các class khác... */
+  

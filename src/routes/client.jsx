@@ -20,6 +20,7 @@ import Settings from "../pages/Client/Settings";
 import Privacy from "../pages/Client/Settings/Privacy";
 import Password from "../pages/Client/Settings/Password";
 import NewPass from "../pages/Client/Settings/NewPass";
+import Canhan from "../pages/Client/TrangCaNhan";
 
 // Router không cần đăng nhập vẫn vô được
 const pulicRouter = [
@@ -35,6 +36,7 @@ const pulicRouter = [
     {
         path: "/repassword", component: Repassword
     },
+    
 ]
 
 
@@ -65,6 +67,10 @@ const privateRouters = [
     },
     {
         path: "/setting/newpass", component: NewPass, layout: LayoutSettings
+    },
+    // trang ca nhan
+    {
+        path: "/canhan", component: Canhan, layout: LayoutSettings
     },
 ];
 
