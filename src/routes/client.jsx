@@ -70,7 +70,7 @@ const privateRouters = [
     },
     // trang ca nhan
     {
-        path: "/canhan", component: Canhan, layout: LayoutSettings
+        path: "/profile", component: Canhan
     },
 ];
 

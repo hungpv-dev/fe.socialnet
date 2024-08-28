@@ -89,6 +89,13 @@ function Content() {
         <Message key={6} user={user} onReply={handleReply} me={true} />
         <Message key={7} user={user} onReply={handleReply} me={false} />
         <Message key={8} user={user} onReply={handleReply} me={false} />
+        <Message key={2} user={user} onReply={handleReply} me={true} />
+        <Message key={3} user={user} onReply={handleReply} me={true} />
+        <Message key={4} user={user} onReply={handleReply} rep={{ message: 'Đã bảo là không được rồi' }} me={false} />
+        <Message key={5} user={user} onReply={handleReply} me={false} />
+        <Message key={6} user={user} onReply={handleReply} me={true} />
+        <Message key={7} user={user} onReply={handleReply} me={false} />
+        <Message key={8} user={user} onReply={handleReply} me={false} />
         <Message key={9} user={user} me={true} rep={{ message: 'Lại là joinny đây' }} />
         <Message key={10} user={user} onReply={handleReply} me={true} />
         <Message key={11} user={user} onReply={handleReply} me={false} />
