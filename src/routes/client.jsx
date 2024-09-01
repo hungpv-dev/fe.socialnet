@@ -21,7 +21,8 @@ import Privacy from "../pages/Client/Settings/Privacy";
 import Password from "../pages/Client/Settings/Password";
 import NewPass from "../pages/Client/Settings/NewPass";
 import Canhan from "../pages/Client/TrangCaNhan";
-
+import Search from "../pages/Client/Search";
+import Notification from "../pages/Client/Notification";
 // Router không cần đăng nhập vẫn vô được
 const pulicRouter = [
     {
@@ -72,6 +73,12 @@ const privateRouters = [
     {
         path: "/profile", component: Canhan
     },
+    {
+        path: "/search", component: Search
+    },
+    {
+      path: "/thongbao", component: Notification
+  },
 ];
 
 export {pulicRouter, privateRouters};
