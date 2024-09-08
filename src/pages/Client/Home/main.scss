@@ -4,4 +4,7 @@
     display: flex;
     gap: 120px;
     background-color: var(--bg-color);
+    .quick-chat{
+        position: absolute;
+    }
 }

@@ -4,6 +4,7 @@ import styles from "./main.scss";
 import LeftSidebar from "../../../components/Home/Sidebar/LeftSidebar";
 import Content from "../../../components/Home/Content";
 import RightSidebar from "../../../components/Home/Sidebar/RightSidebar";
+import MiniChat from "../../../components/Home/MiniChat";
 
 const cx = className.bind(styles);
 
@@ -17,6 +18,9 @@ const Home = (props: Props) => {
         <LeftSidebar />
         <Content />
         <RightSidebar />
+        {/* <div className={cx('quick-chat')}>
+          <MiniChat />
+        </div> */}
     </div>
   )
 }
