@@ -1,22 +1,25 @@
-
+import styles from "./main.scss";
 import './main.scss';
 
-function NewPass() {
+function SignOutDevices() {
   return (
-    <div className="main-content">
+    <div className="main-content-sign">
       <h3>Đăng Xuất khỏi các thiết bị</h3>
-      <div className="select-all">
+      {/* <div className="select-all">
         <span>Chọn Tất Cả</span>
         <input type="checkbox" />
-      </div>
-      <div className="device-list">
+      </div> */}
+      <div className="col-12 device-list">
         {['IPhone 15', 'Máy tính window', 'IPhone', 'IPhone', 'IPhone', 'IPhone', 'IPhone'].map((device, index) => (
-          <div key={index} className="device-item">
-            <div className="device-info">
-              <span>{device}</span>
-              <span>13 tháng 6 lúc 11:08</span>
+          <div key={index} >
+            <span>{device}</span>
+            <div className="device-item">
+              <div className="device-info">
+                {/* <span>{device}</span> */}
+                <span>13 tháng 6 lúc 11:08</span>
+              </div>
+              <input type="checkbox" />
             </div>
-            <input type="checkbox" />
           </div>
         ))}
       </div>
@@ -25,7 +28,8 @@ function NewPass() {
       </div>
       <button className="logout-button">Đăng Xuất</button>
     </div>
+
   );
 }
 
-export default NewPass;
+export default SignOutDevices;

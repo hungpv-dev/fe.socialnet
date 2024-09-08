@@ -18,9 +18,15 @@ import Messages from "../pages/Client/Messages";
 
 import Settings from "../pages/Client/Settings";
 import Privacy from "../pages/Client/Settings/Privacy";
-import Password from "../pages/Client/Settings/Password";
-import NewPass from "../pages/Client/Settings/NewPass";
+import Password from "../pages/Client/Settings/PasswordAndSecurity";
+import NewPass from "../pages/Client/Settings/SignOutDevices";
 import Canhan from "../pages/Client/TrangCaNhan";
+import SignOutDevices from "../pages/Client/Settings/SignOutDevices";
+import ChangePassword from "../pages/Client/Settings/ChangePassword";
+import FactorAuthen from "../pages/Client/Settings/FactorAuthen";
+import ActivityLog from "../pages/Client/Settings/ActivityLog";
+import BlockManagement from "../pages/Client/Settings/Block";
+import PasswordAndSecurity from "../pages/Client/Settings/PasswordAndSecurity";
 
 // Router không cần đăng nhập vẫn vô được
 const pulicRouter = [
@@ -59,14 +65,26 @@ const privateRouters = [
     {
         path: "/setting", component: Settings, layout: LayoutSettings
     },
+    // {
+    //     path: "/setting/pirvacy", component: Privacy, layout: LayoutSettings  // quyền riêng tư
+    // },
     {
-        path: "/setting/privacy", component: Privacy, layout: LayoutSettings
+        path: "/setting/password_and_security", component: PasswordAndSecurity, layout: LayoutSettings  // trang mk và bảo mật
     },
     {
-        path: "/setting/password", component: Password, layout: LayoutSettings
+        path: "/setting/Sign_out_devices", component: SignOutDevices, layout: LayoutSettings  // trang đăng xuất thiết bị 
     },
     {
-        path: "/setting/newpass", component: NewPass, layout: LayoutSettings
+        path: "/setting/change_password", component: ChangePassword, layout: LayoutSettings  // đổi mật khẩu
+    },
+    {
+        path: "/setting/factor_authen", component: FactorAuthen, layout: LayoutSettings   // xác thực yếu tố
+    },
+    {
+        path: "/setting/activity_log", component: ActivityLog, layout: LayoutSettings   // nhật ký hoạt động
+    },
+    {
+        path: "/setting/block", component: BlockManagement, layout: LayoutSettings   // chặn
     },
     // trang ca nhan
     {
