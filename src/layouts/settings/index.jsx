@@ -5,7 +5,7 @@ const cx = classNames.bind(styles);
 
 function LayoutSettings({ children }) {
     return (
-        <div className="app">
+        <div className={cx('app')}>
             <SlideBar></SlideBar>
             {children}
         </div>

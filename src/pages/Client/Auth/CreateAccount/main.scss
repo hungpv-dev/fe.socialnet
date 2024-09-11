@@ -1,0 +1,1426 @@
+
+// .login-page {
+//   align-items: center;
+//   height: 100vh;
+//   background-color: #f0f2f5;
+
+//   .recent-logins {
+//     width: 40%;
+//     padding-right: 20px;
+//     h1.facebook-title {
+//       color: #1877f2;
+//     }
+
+//     .recent-logins-title {
+//       font-size: 1.5rem;
+//       color: #1c1e21;
+//     }
+
+//       .login-card {
+//         position: relative;
+//         width: 160px;
+//         height: 160px;
+//         background-color: white;
+//         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+//         margin-right: 20px;
+//         overflow: hidden;
+
+//         img {
+//           width: 160px;
+//           height: 80%;
+//         }
+//         .responseUser{
+//           display: none;
+//           overflow: hidden;
+//         }
+//         .remove-btn {
+//           position: absolute;
+//           top: 10px;
+//           right: 10px;
+//           background: none;
+//           border: none;
+//           font-size: 1.2rem;
+//           cursor: pointer;
+//         }
+//       }
+
+//       .add-account {
+//         flex-direction: column;
+//         align-items: center;
+//         background-color: #f5f6f7;
+//         cursor: pointer;
+
+//         .add-icon {
+//           font-size: 2.5rem;
+//           color: #1877f2;
+//         }
+//       }
+//   }
+
+//   .login-form {
+//     width: 30%;
+//     padding: 20px;
+//     background-color: white;
+//     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+
+//       .form-control {
+//         padding: 12px;
+//       }
+
+//       .btn-login {
+//         padding: 12px;
+//         background-color: #1877f2;
+//         border: none;
+//         color: white;
+//         cursor: pointer;;
+
+//         &:hover {
+//           background-color: #1659c7;
+//         }
+//       }
+
+//       .forgot-password {
+//         color: #1877f2;
+
+//         &:hover {
+//           text-decoration: underline;
+//         }
+//       }
+
+//       .btn-create-account {
+//         width: 60%;
+//         padding: 12px;
+//         background-color: #42b72a;
+//         border: none;
+//         color: white;
+//         cursor: pointer;
+
+//         &:hover {
+//           background-color: #36a420;
+//         }
+//       }
+
+//     .create-page {
+//       font-size: 0.9rem;
+//       color: #606770;
+
+//       a {
+//         color: #1877f2;
+//         &:hover {
+//           text-decoration: underline;
+//         }
+//       }
+//     }
+//   }
+// }
+
+// .btn-create-account {
+//   width: 50%;
+//   background-color: #42b72a;
+//   border: none;
+//   color: white;
+//   cursor: pointer;
+
+//   &:hover {
+//     background-color: #36a420;
+//   }
+// }
+
+
+
+// .register{
+// .containerF {
+//   height: 100vh;
+//   align-items: center;
+//   background-color: #f0f2f5;
+
+  
+//   .card {
+//     width: 400px;
+//     border: none;
+
+    
+
+//     .card-text {
+//       color: #606770;
+//     }
+
+//     .btn {
+//       width: 100px;
+//       font-weight: bold;
+//     }
+
+//     .btn-secondary {
+//       background-color: #e4e6eb;
+//       border: none;
+//       color: black;
+//     }
+
+//     .btn-primary {
+//       background-color: #1877f2;
+//       border: none;
+//     }
+//   }
+// }
+// }
+
+// responsive 
+
+// desktop
+@media screen and (min-width: 1080px) and (max-width: 1920px) {
+    .login-page {
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f2f5;
+    
+      .recent-logins {
+        width: 40%;
+        padding-right: 20px;
+        h1.facebook-title {
+          color: #1877f2;
+        }
+    
+        .recent-logins-title {
+          font-size: 1.5rem;
+          color: #1c1e21;
+        }
+    
+          .login-card {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+            overflow: hidden;
+    
+            img {
+              width: 160px;
+              height: 80%;
+            }
+            
+            .remove-btn {
+              position: absolute;
+              top: 10px;
+              right: 10px;
+              background: none;
+              border: none;
+              font-size: 1.2rem;
+              cursor: pointer;
+            }
+          }
+    
+          .add-account {
+            flex-direction: column;
+            align-items: center;
+            background-color: #f5f6f7;
+            cursor: pointer;
+    
+            .add-icon {
+              font-size: 2.5rem;
+              color: #1877f2;
+            }
+          }
+      }
+    
+      .login-form {
+        width: 30%;
+        padding: 20px;
+        background-color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    
+          .form-control {
+            padding: 12px;
+          }
+  
+          .responseUser{
+            display: none;
+            // overflow: hidden;
+          }
+  
+    
+          .btn-login {
+            padding: 12px;
+            background-color: #1877f2;
+            border: none;
+            color: white;
+            cursor: pointer;;
+    
+            &:hover {
+              background-color: #1659c7;
+            }
+          }
+    
+          .forgot-password {
+            color: #1877f2;
+    
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+    
+          .btn-create-account {
+            width: 60%;
+            padding: 12px;
+            background-color: #42b72a;
+            border: none;
+            color: white;
+            cursor: pointer;
+    
+            &:hover {
+              background-color: #36a420;
+            }
+          }
+    
+        .create-page {
+          font-size: 0.9rem;
+          color: #606770;
+    
+          a {
+            color: #1877f2;
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  
+    .btn-create-account {
+      width: 50%;
+      background-color: #42b72a;
+      border: none;
+      color: white;
+      cursor: pointer;
+  
+      &:hover {
+        background-color: #36a420;
+      }
+    }
+  
+  
+  
+  .register{
+    .containerF {
+      height: 100vh;
+      align-items: center;
+      background-color: #f0f2f5;
+    
+      
+      .card {
+        width: 400px;
+        border: none;
+    
+        
+    
+        .card-text {
+          color: #606770;
+        }
+    
+        .btn {
+          width: 100px;
+          font-weight: bold;
+        }
+    
+        .btn-secondary {
+          background-color: #e4e6eb;
+          border: none;
+          color: black;
+        }
+    
+        .btn-primary {
+          background-color: #1877f2;
+          border: none;
+        }
+      }
+    }
+  }
+  
+  }
+  
+  // ipad pro
+  @media screen and (min-width: 1024px) and  (max-width: 1366px)  {
+    .login-page {
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f2f5;
+    
+      .recent-logins {
+        width: 40%;
+        padding-right: 20px;
+        h1.facebook-title {
+          color: #1877f2;
+        }
+    
+        .recent-logins-title {
+          font-size: 1.5rem;
+          color: #1c1e21;
+        }
+    
+          .login-card {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+            overflow: hidden;
+    
+            img {
+              width: 160px;
+              height: 80%;
+            }
+            
+            .remove-btn {
+              position: absolute;
+              top: 10px;
+              right: 10px;
+              background: none;
+              border: none;
+              font-size: 1.2rem;
+              cursor: pointer;
+            }
+          }
+    
+          .add-account {
+            flex-direction: column;
+            align-items: center;
+            background-color: #f5f6f7;
+            cursor: pointer;
+    
+            .add-icon {
+              font-size: 2.5rem;
+              color: #1877f2;
+            }
+          }
+      }
+    
+      .login-form {
+        width: 30%;
+        padding: 20px;
+        background-color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    
+          .form-control {
+            padding: 12px;
+          }
+  
+          .responseUser{
+            display: none;
+            // overflow: hidden;
+          }
+  
+    
+          .btn-login {
+            padding: 12px;
+            background-color: #1877f2;
+            border: none;
+            color: white;
+            cursor: pointer;;
+    
+            &:hover {
+              background-color: #1659c7;
+            }
+          }
+    
+          .forgot-password {
+            color: #1877f2;
+    
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+    
+          .btn-create-account {
+            width: 60%;
+            padding: 12px;
+            background-color: #42b72a;
+            border: none;
+            color: white;
+            cursor: pointer;
+    
+            &:hover {
+              background-color: #36a420;
+            }
+          }
+    
+        .create-page {
+          font-size: 0.9rem;
+          color: #606770;
+    
+          a {
+            color: #1877f2;
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  
+    .btn-create-account {
+      width: 50%;
+      background-color: #42b72a;
+      border: none;
+      color: white;
+      cursor: pointer;
+  
+      &:hover {
+        background-color: #36a420;
+      }
+    }
+  
+  
+  
+  .register{
+    .containerF {
+      height: 100vh;
+      align-items: center;
+      background-color: #f0f2f5;
+    
+      
+      .card {
+        width: 400px;
+        border: none;
+    
+        
+    
+        .card-text {
+          color: #606770;
+        }
+    
+        .btn {
+          width: 100px;
+          font-weight: bold;
+        }
+    
+        .btn-secondary {
+          background-color: #e4e6eb;
+          border: none;
+          color: black;
+        }
+    
+        .btn-primary {
+          background-color: #1877f2;
+          border: none;
+        }
+      }
+    }
+  }
+  
+  }  
+  
+  // tablet 
+  @media screen and (min-width: 767px) and  (max-width: 1023px) {
+    .login-page {
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f2f5;
+    
+      .recent-logins {
+        width: 40%;
+        padding-right: 20px;
+        h1.facebook-title {
+          color: #1877f2;
+        }
+    
+        .recent-logins-title {
+          font-size: 1.5rem;
+          color: #1c1e21;
+        }
+    
+          .login-card {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+            overflow: hidden;
+    
+            img {
+              width: 160px;
+              height: 80%;
+            }
+            
+            .remove-btn {
+              position: absolute;
+              top: 10px;
+              right: 10px;
+              background: none;
+              border: none;
+              font-size: 1.2rem;
+              cursor: pointer;
+            }
+          }
+    
+          .add-account {
+            flex-direction: column;
+            align-items: center;
+            background-color: #f5f6f7;
+            cursor: pointer;
+    
+            .add-icon {
+              font-size: 2.5rem;
+              color: #1877f2;
+            }
+          }
+      }
+    
+      .login-form {
+        width: 30%;
+        padding: 20px;
+        background-color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    
+          .form-control {
+            padding: 12px;
+          }
+  
+          .responseUser{
+            display: none;
+            // overflow: hidden;
+          }
+  
+    
+          .btn-login {
+            padding: 12px;
+            background-color: #1877f2;
+            border: none;
+            color: white;
+            cursor: pointer;;
+    
+            &:hover {
+              background-color: #1659c7;
+            }
+          }
+    
+          .forgot-password {
+            color: #1877f2;
+    
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+    
+          .btn-create-account {
+            width: 60%;
+            padding: 12px;
+            background-color: #42b72a;
+            border: none;
+            color: white;
+            cursor: pointer;
+    
+            &:hover {
+              background-color: #36a420;
+            }
+          }
+    
+        .create-page {
+          font-size: 0.9rem;
+          color: #606770;
+    
+          a {
+            color: #1877f2;
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  
+    .btn-create-account {
+      width: 50%;
+      background-color: #42b72a;
+      border: none;
+      color: white;
+      cursor: pointer;
+  
+      &:hover {
+        background-color: #36a420;
+      }
+    }
+  
+  
+  
+  .register{
+    .containerF {
+      height: 100vh;
+      align-items: center;
+      background-color: #f0f2f5;
+    
+      
+      .card {
+        width: 400px;
+        border: none;
+    
+        
+    
+        .card-text {
+          color: #606770;
+        }
+    
+        .btn {
+          width: 100px;
+          font-weight: bold;
+        }
+    
+        .btn-secondary {
+          background-color: #e4e6eb;
+          border: none;
+          color: black;
+        }
+    
+        .btn-primary {
+          background-color: #1877f2;
+          border: none;
+        }
+      }
+    }
+  }
+  
+  }
+  
+  
+  //smart phone
+  @media screen and (min-width: 472px) and (max-width: 766px) {
+      
+    .login-page {
+      // align-items: center;
+      // height: 100vh;
+      // width: 100vw;
+      // background-color: #f0f2f5;
+    
+      .recent-logins {
+        // width: 40%;
+        // padding-right: 20px;
+        height: 100vh;
+         width: 100vw;
+        display: none;
+        h1.facebook-title {
+          color: #1877f2;
+        }
+    
+        .recent-logins-title {
+          font-size: 1.5rem;
+          color: #1c1e21;
+        }
+    
+          .login-card {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+            overflow: hidden;
+    
+            .remove-btn {
+              position: absolute;
+              top: 10px;
+              right: 10px;
+              background: none;
+              border: none;
+              font-size: 1.2rem;
+              cursor: pointer;
+            }
+          }
+    
+          .add-account {
+            flex-direction: column;
+            align-items: center;
+            background-color: #f5f6f7;
+            cursor: pointer;
+    
+            .add-icon {
+              font-size: 2.5rem;
+              color: #1877f2;
+            }
+          }
+      }
+    
+      .login-form {
+        width: 100vw;
+        height: 100vh;
+        // padding: 20px;
+        background-color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    
+            .form-control {
+              padding: 12px;
+              
+              
+            }
+            .forminp{
+              width: 80%;
+              margin-left: 40px;
+            }
+            
+            .responseUser img {
+              border-radius: 180px;
+              margin: 40px;
+            }
+            .btnSub{
+               width: 80%;
+              //  margin-left: 40px;
+            }
+          .btn-login {
+            padding: 12px;
+           
+            margin-left: 40px;
+            background-color: #1877f2;
+            border: none;
+            color: white;
+            cursor: pointer;;
+    
+            &:hover {
+              background-color: #1659c7;
+            }
+          }
+    
+          .forgot-password {
+            color: #1877f2;
+    
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+    
+          .btn-create-account {
+            width: 60%;
+            padding: 12px;
+            background-color: #42b72a;
+            border: none;
+            color: white;
+            cursor: pointer;
+    
+            &:hover {
+              background-color: #36a420;
+            }
+          }
+    
+        .create-page {
+          font-size: 0.9rem;
+          color: #606770;
+    
+          a {
+            color: #1877f2;
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  
+    .btn-create-account {
+      width: 50%;
+      background-color: #42b72a;
+      border: none;
+      color: white;
+      cursor: pointer;
+  
+      &:hover {
+        background-color: #36a420;
+      }
+    }
+  
+  .register{
+    .containerF {
+      height: 100vh;
+      align-items: center;
+      background-color: #f0f2f5;
+    
+      
+      .card {
+        width: 400px;
+        border: none;
+    
+        
+    
+        .card-text {
+          color: #606770;
+        }
+    
+        .btn {
+          width: 100px;
+          font-weight: bold;
+        }
+    
+        .btn-secondary {
+          background-color: #e4e6eb;
+          border: none;
+          color: black;
+        }
+    
+        .btn-primary {
+          background-color: #1877f2;
+          border: none;
+        }
+      }
+    }
+  }
+  }
+  
+  @media screen and (min-width: 377px) and (max-width: 471px) {
+      .modal-content{
+        width: 100vw;
+        height: 100vh;
+      }
+      // .form-check-label{
+      //   // width: 50px;
+      // }
+      // .form-select{
+      //   width: 90px;
+      // }
+      .login-page {
+        // align-items: center;
+        // height: 100vh;
+        // width: 100vw;
+        // background-color: #f0f2f5;
+      
+        .recent-logins {
+          // width: 40%;
+          // padding-right: 20px;
+          height: 100vh;
+           width: 100vw;
+          display: none;
+          h1.facebook-title {
+            color: #1877f2;
+          }
+      
+          .recent-logins-title {
+            font-size: 1.5rem;
+            color: #1c1e21;
+          }
+      
+            .login-card {
+              position: relative;
+              width: 160px;
+              height: 160px;
+              background-color: white;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              margin-right: 20px;
+              overflow: hidden;
+      
+              .remove-btn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: none;
+                border: none;
+                font-size: 1.2rem;
+                cursor: pointer;
+              }
+            }
+      
+            .add-account {
+              flex-direction: column;
+              align-items: center;
+              background-color: #f5f6f7;
+              cursor: pointer;
+      
+              .add-icon {
+                font-size: 2.5rem;
+                color: #1877f2;
+              }
+            }
+        }
+      
+        .login-form {
+          width: 100vw;
+          height: 100vh;
+          // padding: 20px;
+          background-color: white;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      
+              .form-control {
+                padding: 12px;
+                
+                
+              }
+              .forminp{
+                width: 80%;
+                margin-left: 40px;
+              }
+              .responseUser{
+                display: flex;
+                justify-content: center;
+              }
+              .responseUser img {
+                border-radius: 180px;
+                margin: 40px;
+                width: 80px;
+                height: 80px;
+              }
+              .btnSub{
+                 width: 80%;
+                //  margin-left: 40px;
+              }
+            .btn-login {
+              padding: 12px;
+             
+              margin-left: 40px;
+              background-color: #1877f2;
+              border: none;
+              color: white;
+              cursor: pointer;;
+      
+              &:hover {
+                background-color: #1659c7;
+              }
+            }
+      
+            .forgot-password {
+              color: #1877f2;
+      
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+      
+            .btn-create-account {
+              width: 60%;
+              padding: 12px;
+              background-color: #42b72a;
+              border: none;
+              color: white;
+              cursor: pointer;
+      
+              &:hover {
+                background-color: #36a420;
+              }
+            }
+      
+          .create-page {
+            font-size: 0.9rem;
+            color: #606770;
+      
+            a {
+              color: #1877f2;
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+      }
+    
+      .btn-create-account {
+        width: 50%;
+        background-color: #42b72a;
+        border: none;
+        color: white;
+        cursor: pointer;
+    
+        &:hover {
+          background-color: #36a420;
+        }
+      }
+    
+    .register{
+      .containerF {
+        height: 100vh;
+        align-items: center;
+        background-color: #f0f2f5;
+      
+        
+        .card {
+          width: 400px;
+          border: none;
+      
+          
+      
+          .card-text {
+            color: #606770;
+          }
+      
+          .btn {
+            width: 100px;
+            font-weight: bold;
+          }
+      
+          .btn-secondary {
+            background-color: #e4e6eb;
+            border: none;
+            color: black;
+          }
+      
+          .btn-primary {
+            background-color: #1877f2;
+            border: none;
+          }
+        }
+      }
+    }
+  }
+  
+  @media screen and (max-width: 376px) {
+      
+    .login-page {
+      // align-items: center;
+      // height: 100vh;
+      // width: 100vw;
+      // background-color: #f0f2f5;
+    
+      .recent-logins {
+        // width: 40%;
+        // padding-right: 20px;
+        height: 100vh;
+         width: 100vw;
+        display: none;
+        h1.facebook-title {
+          color: #1877f2;
+        }
+    
+        .recent-logins-title {
+          font-size: 1.5rem;
+          color: #1c1e21;
+        }
+    
+          .login-card {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+            overflow: hidden;
+    
+            .remove-btn {
+              position: absolute;
+              top: 10px;
+              right: 10px;
+              background: none;
+              border: none;
+              font-size: 1.2rem;
+              cursor: pointer;
+            }
+          }
+    
+          .add-account {
+            flex-direction: column;
+            align-items: center;
+            background-color: #f5f6f7;
+            cursor: pointer;
+    
+            .add-icon {
+              font-size: 2.5rem;
+              color: #1877f2;
+            }
+          }
+      }
+    
+      .login-form {
+        width: 100vw;
+        height: 100vh;
+        // padding: 20px;
+        background-color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    
+            .form-control {
+              padding: 12px;
+              
+              
+            }
+            .forminp{
+              width: 80%;
+              margin-left: 40px;
+            }
+            
+            .responseUser img {
+              border-radius: 180px;
+              margin: 40px;
+            }
+            .btnSub{
+               width: 80%;
+              //  margin-left: 40px;
+            }
+          .btn-login {
+            padding: 12px;
+           
+            margin-left: 40px;
+            background-color: #1877f2;
+            border: none;
+            color: white;
+            cursor: pointer;;
+    
+            &:hover {
+              background-color: #1659c7;
+            }
+          }
+    
+          .forgot-password {
+            color: #1877f2;
+    
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+    
+          .btn-create-account {
+            width: 60%;
+            padding: 12px;
+            background-color: #42b72a;
+            border: none;
+            color: white;
+            cursor: pointer;
+    
+            &:hover {
+              background-color: #36a420;
+            }
+          }
+    
+        .create-page {
+          font-size: 0.9rem;
+          color: #606770;
+    
+          a {
+            color: #1877f2;
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  
+    .btn-create-account {
+      width: 50%;
+      background-color: #42b72a;
+      border: none;
+      color: white;
+      cursor: pointer;
+  
+      &:hover {
+        background-color: #36a420;
+      }
+    }
+  
+  .register{
+    .containerF {
+      height: 100vh;
+      align-items: center;
+      background-color: #f0f2f5;
+    
+      
+      .card {
+        width: 400px;
+        border: none;
+    
+        
+    
+        .card-text {
+          color: #606770;
+        }
+    
+        .btn {
+          width: 100px;
+          font-weight: bold;
+        }
+    
+        .btn-secondary {
+          background-color: #e4e6eb;
+          border: none;
+          color: black;
+        }
+    
+        .btn-primary {
+          background-color: #1877f2;
+          border: none;
+        }
+      }
+    }
+  }
+  }
+  
+  @media screen and (min-width: 344px) and (max-width: 882px) {
+    .form-check-label{
+      text-align: start;
+    }
+  
+    .login-page {
+      // align-items: center;
+      // height: 100vh;
+      // width: 100vw;
+      // background-color: #f0f2f5;
+    
+      .recent-logins {
+        // width: 40%;
+        // padding-right: 20px;
+        height: 100vh;
+         width: 100vw;
+        display: none;
+        h1.facebook-title {
+          color: #1877f2;
+        }
+    
+        .recent-logins-title {
+          font-size: 1.5rem;
+          color: #1c1e21;
+        }
+    
+          .login-card {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+            overflow: hidden;
+    
+            .remove-btn {
+              position: absolute;
+              top: 10px;
+              right: 10px;
+              background: none;
+              border: none;
+              font-size: 1.2rem;
+              cursor: pointer;
+            }
+          }
+    
+          .add-account {
+            flex-direction: column;
+            align-items: center;
+            background-color: #f5f6f7;
+            cursor: pointer;
+    
+            .add-icon {
+              font-size: 2.5rem;
+              color: #1877f2;
+            }
+          }
+      }
+    
+      .login-form {
+        width: 100vw;
+        height: 100vh;
+        // padding: 20px;
+        background-color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    
+            .form-control {
+              padding: 12px;
+              
+              
+            }
+            .forminp{
+              width: 80%;
+              margin-left: 40px;
+            }
+            .responseUser{
+              display: flex;
+              justify-content: center;
+            }
+            .responseUser img {
+              border-radius: 180px;
+              margin: 40px;
+              width: 80px;
+              height: 80px;
+            }
+            .btnSub{
+               width: 80%;
+              //  margin-left: 40px;
+            }
+          .btn-login {
+            padding: 12px;
+           
+            margin-left: 40px;
+            background-color: #1877f2;
+            border: none;
+            color: white;
+            cursor: pointer;;
+    
+            &:hover {
+              background-color: #1659c7;
+            }
+          }
+    
+          .forgot-password {
+            color: #1877f2;
+    
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+    
+          .btn-create-account {
+            width: 60%;
+            padding: 12px;
+            background-color: #42b72a;
+            border: none;
+            color: white;
+            cursor: pointer;
+    
+            &:hover {
+              background-color: #36a420;
+            }
+          }
+    
+        .create-page {
+          font-size: 0.9rem;
+          color: #606770;
+    
+          a {
+            color: #1877f2;
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  
+    .btn-create-account {
+      width: 50%;
+      background-color: #42b72a;
+      border: none;
+      color: white;
+      cursor: pointer;
+  
+      &:hover {
+        background-color: #36a420;
+      }
+    }
+  
+  .register{
+    .containerF {
+      height: 100vh;
+      align-items: center;
+      background-color: #f0f2f5;
+    
+      
+      .card {
+        width: 400px;
+        border: none;
+    
+        
+    
+        .card-text {
+          color: #606770;
+        }
+    
+        .btn {
+          width: 100px;
+          font-weight: bold;
+        }
+    
+        .btn-secondary {
+          background-color: #e4e6eb;
+          border: none;
+          color: black;
+        }
+    
+        .btn-primary {
+          background-color: #1877f2;
+          border: none;
+        }
+      }
+    }
+  }
+  }
+  
+  
+  
