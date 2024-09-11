@@ -1,5 +1,7 @@
 import classNames from 'classnames/bind';
 import { Link } from 'react-router-dom';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
+import SendIcon from '@mui/icons-material/Send';
 import styles from "./main.scss";
 import React, { useEffect, useState } from 'react';
 import Message from '../Message';
@@ -12,6 +14,29 @@ const cx = classNames.bind(styles);
 function Content() {
   const { id } = useParams();
   const [user, setUser] = useState(null);
+  const [selectImages, setSelectImages] = useState([]);
+  const [viewSelectImages, setViewSelectImages] = useState([]);
+  const [messages, setMessages] = useState([
+    { id: 1, me: false },
+    { id: 2, me: true },
+    { id: 3, me: true },
+    { id: 4, me: false, rep: { message: 'Đã bảo là không được rồi' } },
+    { id: 5, me: false },
+    { id: 6, me: true },
+    { id: 7, me: false },
+    { id: 8, me: false },
+    { id: 9, me: true, rep: { message: 'Lại là joinny đây' } },
+    { id: 10, me: true },
+    { id: 11, me: false },
+    { id: 12, me: false },
+    {
+      id: 13, me: true, send: [
+        { avatar: 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745' },
+        { avatar: 'https://reputationprotectiononline.com/wp-content/uploads/2022/04/78-786207_user-avatar-png-user-avatar-icon-png-transparent.png' },
+        { avatar: 'https://i.pinimg.com/474x/0a/a8/58/0aa8581c2cb0aa948d63ce3ddad90c81.jpg' }
+      ]
+    },
+  ]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -31,6 +56,18 @@ function Content() {
     setInputText(event.target.value);
   };
 
+  const handleImageChange = (event) => {
+    const files = Array.from(event.target.files);
+    const imageURLs = files.map(file => URL.createObjectURL(file));
+    setViewSelectImages(prevImages => [...prevImages, ...imageURLs]);
+    setSelectImages(prevFiles => [...prevFiles, ...files]);
+  };
+
+  const handleRemoveImage = (index) => {
+    setViewSelectImages(prevImages => prevImages.filter((_, i) => i !== index));
+    setSelectImages(prevFiles => prevFiles.filter((_, i) => i !== index));
+  };
+
   const [replyContent, setReplyContent] = useState(null);
   function handleReply(message) {
     setReplyContent(message);
@@ -38,6 +75,13 @@ function Content() {
 
   if (!user) {
     return '';
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log(inputText);
+    console.log(selectImages);
+    console.log(viewSelectImages);
   }
 
   return (
@@ -81,32 +125,16 @@ function Content() {
         </div>
       </header>
       <div id='messages-content'>
-        <Message key={1} user={user} onReply={handleReply} me={false} />
-        <Message key={2} user={user} onReply={handleReply} me={true} />
-        <Message key={3} user={user} onReply={handleReply} me={true} />
-        <Message key={4} user={user} onReply={handleReply} rep={{ message: 'Đã bảo là không được rồi' }} me={false} />
-        <Message key={5} user={user} onReply={handleReply} me={false} />
-        <Message key={6} user={user} onReply={handleReply} me={true} />
-        <Message key={7} user={user} onReply={handleReply} me={false} />
-        <Message key={8} user={user} onReply={handleReply} me={false} />
-        <Message key={2} user={user} onReply={handleReply} me={true} />
-        <Message key={3} user={user} onReply={handleReply} me={true} />
-        <Message key={4} user={user} onReply={handleReply} rep={{ message: 'Đã bảo là không được rồi' }} me={false} />
-        <Message key={5} user={user} onReply={handleReply} me={false} />
-        <Message key={6} user={user} onReply={handleReply} me={true} />
-        <Message key={7} user={user} onReply={handleReply} me={false} />
-        <Message key={8} user={user} onReply={handleReply} me={false} />
-        <Message key={9} user={user} me={true} rep={{ message: 'Lại là joinny đây' }} />
-        <Message key={10} user={user} onReply={handleReply} me={true} />
-        <Message key={11} user={user} onReply={handleReply} me={false} />
-        <Message key={12} user={user} onReply={handleReply} me={false} />
-        <Message key={13} user={user} onReply={handleReply} send={
-          [
-            { avatar: 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745' },
-            { avatar: 'https://reputationprotectiononline.com/wp-content/uploads/2022/04/78-786207_user-avatar-png-user-avatar-icon-png-transparent.png' },
-            { avatar: 'https://i.pinimg.com/474x/0a/a8/58/0aa8581c2cb0aa948d63ce3ddad90c81.jpg' }
-          ]
-        } me={true} />
+        {messages.map((message, key) => (
+          <Message
+            key={key}
+            user={user}
+            onReply={handleReply}
+            me={message.me}
+            rep={message.rep}
+            send={message.send}
+          />
+        ))}
       </div>
       <footer className='send-messages'>
         <div className="send-message-content">
@@ -114,30 +142,54 @@ function Content() {
             <div className='reply-to-message'>
               <div>
                 <p className='m-0'>Đang trả lời {user.name}</p>
-                <p className='m-0'><i class="bi bi-repeat"></i> {replyContent}</p>
+                <p className='m-0'><i className="bi bi-repeat"></i> {replyContent}</p>
               </div>
               <div className='icon-close'>
                 <button onClick={() => handleReply(null)}>
-                  <i class="bi bi-x-lg"></i>
+                  <i className="bi bi-x-lg"></i>
                 </button>
               </div>
             </div>
           )}
-          <div className="content-child-message">
+          <form onSubmit={handleSubmit} className="content-child-message">
             <div className='send-icons'>
-              <input type="file" multiple hidden id='file-message' />
+              <input type="file" multiple hidden id='file-message' onChange={handleImageChange} />
               <label htmlFor='file-message'><i className="bi bi-images fs-7"></i></label>
             </div>
-            <div className='send-message'>
-              <input type="text" value={inputText} onInput={handleInputChange} placeholder='Aa...' />
-              <div>
-                <i className="bi bi-emoji-smile-fill"></i>
+            <div className='content-chile-mesage px-2'>
+              <div className='selected-images pb-1'>
+                {viewSelectImages.map((imageURL, index) => (
+                  <div className='image-item mt-2' key={index}>
+                    <img src={imageURL} alt={`Selected image ${index + 1}`} />
+                    <button
+                      className='btn-close-image'
+                      type="button"
+                      onClick={() => handleRemoveImage(index)}
+                    >
+                      <i className="bi bi-x-circle"></i>
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div className='send-message'>
+                <input type="text" value={inputText} onInput={handleInputChange} placeholder='Aa...' />
+                <div>
+                  <i className="bi-emoji-smile-fill"></i>
+                </div>
               </div>
             </div>
             <button className='send-button'>
-              <i className={inputText ? "bi bi-send-fill" : "bi bi-emoji-kiss-fill"}></i>
+              {!Boolean(inputText || selectImages.length) ?
+                <button>
+                  <ThumbUpAltIcon sx={{ fontSize: 25 }} />
+                </button>
+                :
+                <button>
+                  <SendIcon sx={{ fontSize: 25 }} />
+                </button>
+              }
             </button>
-          </div>
+          </form>
         </div>
       </footer>
     </div>
