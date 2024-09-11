@@ -32,7 +32,7 @@ const Search = () => {
                     <img src="https://static.thenounproject.com/png/1800023-200.png" />
                   </div>
                   <div class="p-2 mt-2">
-                    <a href="#">Bài viết</a>
+                    <a href="#">Tất cả</a>
                   </div>
                 </div>
                 {/* ---------- */}
@@ -41,7 +41,7 @@ const Search = () => {
                     <img src="https://static.thenounproject.com/png/3874122-200.png" />
                   </div>
                   <div class="p-2 mt-2">
-                    <a href="#">Tất cả</a>
+                    <a href="#">Bài viết</a>
                   </div>
                 </div>
                 {/* -------------- */}
@@ -62,7 +62,7 @@ const Search = () => {
               <div className="at">
                 
                 <div className="row ">
-                  <div className="col-md-8">
+                  <div className="col-8">
                     <div class="d-flex mb-3">
                       <div class="p-2"><img src="https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau.jpeg" alt="" srcset="" /></div>
                       <div class="p-2 mt-3"> <a href="#"><b>Dao Duy Tung</b></a> <br />
@@ -71,13 +71,13 @@ const Search = () => {
                    
                     </div>
                   </div>
-                  <div className="col-md-4">
+                  <div className="col-4">
                   <button class="thm-bn-b1 mt-5">Thêm bạn bè</button>
                   </div>
                 </div>
   
                 <div className="row ">
-                  <div className="col-md-8">
+                  <div className="col-8">
                     <div class="d-flex mb-3">
                       <div class="p-2"><img src="https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau.jpeg" alt="" srcset="" /></div>
                       <div class="p-2 mt-3"> <a href="#"><b>Dao Duy Tung</b></a> <br />
@@ -86,14 +86,14 @@ const Search = () => {
                    
                     </div>
                   </div>
-                  <div className="col-md-4">
+                  <div className="col-4">
                   <button class="thm-bn-b1 mt-5">Thêm bạn bè</button>
                   </div>
                 </div>
   
                 {/* -------------- */}
                 <div className="row ">
-                  <div className="col-md-8">
+                  <div className="col-8">
                     <div class="d-flex mb-3">
                       <div class="p-2"><img src="https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau.jpeg" alt="" srcset="" /></div>
                       <div class="p-2 mt-3"> <a href="#"><b>Dao Duy Tung</b></a> <br />
@@ -102,13 +102,13 @@ const Search = () => {
                    
                     </div>
                   </div>
-                  <div className="col-md-4">
+                  <div className="col-4">
                   <button class="thm-bn-b1 mt-5 ">Thêm bạn bè</button>
                   </div>
                 </div>
                   {/* -------------- */}
                   <div className="row ">
-                  <div className="col-md-8">
+                  <div className="col-8">
                     <div class="d-flex mb-3">
                       <div class="p-2"><img src="https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau.jpeg" alt="" srcset="" /></div>
                       <div class="p-2 mt-3"> <a href="#"><b>Dao Duy Tung</b></a> <br />
@@ -117,13 +117,13 @@ const Search = () => {
                    
                     </div>
                   </div>
-                  <div className="col-md-4">
+                  <div className="col-4">
                   <button class="thm-bn-b1 mt-5">Thêm bạn bè</button>
                   </div>
                 </div>
                 {/* ------------- */}
                 <div className="row">
-                  <div className="col-md-8">
+                  <div className="col-8">
                     <div class="d-flex mb-3">
                       <div class="p-2"><img src="https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau.jpeg" alt="" srcset="" /></div>
                       <div class="p-2 mt-3"> <a href="#"><b>Dao Duy Tung</b></a> <br />
@@ -132,7 +132,7 @@ const Search = () => {
                    
                     </div>
                   </div>
-                  <div className="col-md-4">
+                  <div className="col-4">
                   <button class="thm-bn-b1 mt-5">Thêm bạn bè</button>
                   </div>
                 </div>
@@ -162,16 +162,16 @@ Phòng giá 3tr5 chia 3 mỗi người hơn triệu 1 xíu . Điện 3,5k/số, 
                     </div>
                   </div>
                   <div className="row">
-                    <div className="col-md-1"></div>
-                    <div className="col-md-10 mt-3"><hr /></div>
-                    <div className="col-md-1"></div>
+                    <div className="col-md-2"></div>
+                    <div className="col-md-8 mt-3"><hr /></div>
+                    <div className="col-md-2"></div>
                   </div>
 
                   {/* <div className="row">
                   <div class="container text-center"> */}
   <div class="row mt-2 ms-4">
   {/* <div className="col-md-1"></div> */}
-    <div class="col-md-6 ">
+    <div class="col-6 ">
       
      <div class="d-flex mb-3">
   <div class="ll ms-4 "> <img  src="https://i.pinimg.com/736x/39/44/6c/39446caa52f53369b92bc97253d2b2f1.jpg" alt="" srcset=""  /></div>
@@ -180,31 +180,31 @@ Phòng giá 3tr5 chia 3 mỗi người hơn triệu 1 xíu . Điện 3,5k/số, 
 </div>
     
     </div>
-    <div class="col-md-6 mt-2">
+    <div class="col-6 mt-2">
       <a href="#" class="ii ">30 binh luan</a>
     </div>
    
   </div>
   <div className="row">
-                    <div className="col-md-1"></div>
-                    <div className="col-md-10 "><hr /></div>
-                    <div className="col-md-1"></div>
+                    <div className="col-md-2"></div>
+                    <div className="col-md-8 "><hr /></div>
+                    <div className="col-md-2"></div>
                   </div>
 
                   <div className="row mt-2">
-                  <div className="col-md-2"></div>
-                  <div className="col-md-4">
+                  <div className="col-2"></div>
+                  <div className="col-4">
                   <i class="bi bi-heart me-1"></i>
                   <span class="cc"> <a href="#">Thích</a></span>
                   </div>
                  
                  
                  
-                    <div className="col-md-4">
+                    <div className="col-4">
                     <i class="bi bi-chat"></i>
                   <span class="cc"> <a href="#">Comment</a></span>
                   </div>
-                  <div className="col-md-2"></div>
+                  <div className="col-2"></div>
 
                   </div>
                 </div>

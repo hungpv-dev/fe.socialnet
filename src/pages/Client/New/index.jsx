@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 
 const cx = className.bind(styles);
 
-const Notification = () => {
+const New = () => {
   const { id } = useParams();
   if (!id) {
     return (
@@ -28,13 +28,13 @@ const Notification = () => {
                       <div class="d-flex flex-row ">
                         <div class="p-2">
                           <div className="tt">
-                            <a href="#">Tất cả</a>
+                            <a href="/thongbao">Tất cả</a>
                           </div>
                         </div>
 
                         <div class="p-2">
                           <div class="cha ms-1">
-                            <a  href="/new">Chưa đọc</a>
+                            <a  href="#">Chưa đọc</a>
                           </div>
                         </div>
                       </div>
@@ -65,6 +65,9 @@ const Notification = () => {
                           </div>
                           <div class="gi2 mt-2">6 giờ</div>
                         </div>
+                        <div class="thu p-2 ms-5">
+                      <img src="https://www.emojiall.com/images/240/mozilla/1f535.png" alt="" srcset="" />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -92,6 +95,9 @@ const Notification = () => {
                             </span>
                           </div>
                           <div class="gi2 mt-2">6 giờ</div>
+                        </div>
+                        <div class="thu p-2 ms-5">
+                      <img src="https://www.emojiall.com/images/240/mozilla/1f535.png" alt="" srcset="" />
                         </div>
                       </div>
                     </div>
@@ -121,6 +127,9 @@ const Notification = () => {
                           </div>
                           <div class="gi2 mt-2">6 giờ</div>
                         </div>
+                        <div class="thu p-2 ms-5">
+                      <img src="https://www.emojiall.com/images/240/mozilla/1f535.png" alt="" srcset="" />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -148,6 +157,9 @@ const Notification = () => {
                             </span>
                           </div>
                           <div class="gi2 mt-2">6 giờ</div>
+                        </div>
+                        <div class="thu p-2 ms-5">
+                      <img src="https://www.emojiall.com/images/240/mozilla/1f535.png" alt="" srcset="" />
                         </div>
                       </div>
                     </div>
@@ -181,6 +193,9 @@ const Notification = () => {
                           </div>
                           <div class="gi2 mt-2">6 giờ</div>
                         </div>
+                        <div class="thu p-2 ms-5">
+                      <img src="https://www.emojiall.com/images/240/mozilla/1f535.png" alt="" srcset="" />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -209,6 +224,9 @@ const Notification = () => {
                           </div>
                           <div class="gi2 mt-2">6 giờ</div>
                         </div>
+                        <div class="thu p-2 ms-5">
+                      <img src="https://www.emojiall.com/images/240/mozilla/1f535.png" alt="" srcset="" />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -236,6 +254,9 @@ const Notification = () => {
                           </div>
                           <div class="gi2 mt-2">6 giờ</div>
                         </div>
+                        <div class="thu p-2 ms-5">
+                      <img src="https://www.emojiall.com/images/240/mozilla/1f535.png" alt="" srcset="" />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -244,14 +265,13 @@ const Notification = () => {
                 
                
 <div className="row ">
-  
   <div className="col-md-1"></div>
   <div className="col-md-10">
- 
+  {/* <div class="show-all-button-wrapper"> */}
                     <button class="show-all-button">
                      Xem tất cả
                     </button>
-                
+                  {/* </div> */}
   </div>
   <div className="col-md-1"></div>
  
@@ -270,4 +290,4 @@ const Notification = () => {
   return <Content />;
 };
 
-export default Notification;
+export default New;

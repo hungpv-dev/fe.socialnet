@@ -23,6 +23,7 @@ import NewPass from "../pages/Client/Settings/NewPass";
 import Canhan from "../pages/Client/TrangCaNhan";
 import Search from "../pages/Client/Search";
 import Notification from "../pages/Client/Notification";
+import New from "../pages/Client/New";
 // Router không cần đăng nhập vẫn vô được
 const pulicRouter = [
     {
@@ -79,6 +80,9 @@ const privateRouters = [
     {
       path: "/thongbao", component: Notification
   },
+  {
+    path: "/new", component: New
+},
 ];
 
 export {pulicRouter, privateRouters};
