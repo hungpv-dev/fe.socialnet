@@ -17,10 +17,8 @@ import Messages from "../pages/Client/Messages";
 // cài đặt
 
 import Settings from "../pages/Client/Settings";
-import Privacy from "../pages/Client/Settings/Privacy";
-import Password from "../pages/Client/Settings/PasswordAndSecurity";
-import NewPass from "../pages/Client/Settings/SignOutDevices";
 import Canhan from "../pages/Client/TrangCaNhan";
+
 import SignOutDevices from "../pages/Client/Settings/SignOutDevices";
 import ChangePassword from "../pages/Client/Settings/ChangePassword";
 import FactorAuthen from "../pages/Client/Settings/FactorAuthen";
@@ -28,6 +26,10 @@ import ActivityLog from "../pages/Client/Settings/ActivityLog";
 import BlockManagement from "../pages/Client/Settings/Block";
 import PasswordAndSecurity from "../pages/Client/Settings/PasswordAndSecurity";
 
+
+import Search from "../pages/Client/Search";
+import Notification from "../pages/Client/Notification";
+import New from "../pages/Client/New";
 // Router không cần đăng nhập vẫn vô được
 const pulicRouter = [
     {
@@ -42,7 +44,7 @@ const pulicRouter = [
     {
         path: "/repassword", component: Repassword
     },
-    
+
 ]
 
 
@@ -60,7 +62,7 @@ const privateRouters = [
     {
         path: "/messages/:id", component: Messages, layout: LayoutMessages
     },
-    
+
     // cài đặt 
     {
         path: "/setting", component: Settings, layout: LayoutSettings
@@ -90,6 +92,15 @@ const privateRouters = [
     {
         path: "/profile", component: Canhan
     },
+    {
+        path: "/search", component: Search
+    },
+    {
+        path: "/thongbao", component: Notification
+    },
+    {
+        path: "/new", component: New
+    },
 ];
 
-export {pulicRouter, privateRouters};
+export { pulicRouter, privateRouters };
