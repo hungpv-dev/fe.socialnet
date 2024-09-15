@@ -1,16 +1,8 @@
 
 
-.thng-bo {
-  font-size: 23px;
-  text-decoration: none;
-  width: 154px;
-  font-weight: 700;
-  color: inherit;
-  display: inline-block;
-  margin-bottom: 30px;
-}
+
 .tt{
-  font-size: 20px;
+  font-size: 19px;
      font-weight: 500;
    background-color: #0065E0;
   width: 90px;
@@ -21,13 +13,8 @@
 }
 
 .tt a{
-  color: #ffffff;
-  margin-top: 20px;
-  text-decoration: none;
-  width: 50px;
-  padding-left: 15px;
-
-  
+ font-size: 18px;
+ margin-left: 5px;
 }
 .tt a:hover{
 color: #000;
@@ -36,9 +23,8 @@ color: #000;
 
 .action-indicators img{
  
-  border-radius: 30px;
-  width: 60px;
-  height: 60px;
+
+ 
   
  
 }
@@ -67,18 +53,16 @@ span a{
 border-radius: 10px;
 
 margin-left: 30px;
-
-
- 
 }
 .cha a{
 
   text-decoration: none;
   color: #000;
-  font-size: 20px;
+  font-size: 18px;
   color: #fffbfb;
-  margin-left: 7px;
+  margin-left: 10px;
   line-height: 40px;
+  
 
 }
   .cha a:hover{
@@ -88,13 +72,7 @@ color: #000000;
 
 
 
-.gi2 {
-  width: 84px;
-  color: var(--main-color);
-  z-index: 2;
-  margin-top: -24px;
-  font-size: 17px;
-}
+
 
 
 .show-all-button{
@@ -103,7 +81,8 @@ color: #000000;
   font-size: var(--font-size-xl);
   // font-family: var(--font-inter);
   color: var(--color-black);
-margin-left: 230px;
+margin-left: 250px;
+
  
 }
 
@@ -231,7 +210,7 @@ margin-left: 230px;
 
   margin-bottom: 20px;
   height: auto;
-  border-radius: var(--br-mini);
+
   background-color: var(--color-white);
  
   // padding: 10px 0 40px 37px;
@@ -244,8 +223,14 @@ margin-left: 230px;
   
 }
 .col-md-12 .d-flex:hover{
-  background-color: #f7f7f7;
+  background-color: #dad9d9;
+  border-radius: 10px;
 }
 .col-md-12 .d-flex{
-  margin-top: 10px;
+  margin-top: 3px;
 }
+
+span a{
+  font-size: 18px;
+}
+
