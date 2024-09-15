@@ -2,10 +2,17 @@ import { React, Fragment } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { pulicRouter, privateRouters, adminRouters } from "./routes";
 import { LayoutAdmin, LayoutClient } from "./layouts";
+// import { useState, useEffect } from "react";
 
 const App = () => {
-  const checkLogin = true;
+  // const [checkLogin, setCheckLogin] = useState(false);
   const checkAdmin = true;
+  const checkLogin = true;
+  
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
+  //   setCheckLogin(!!token);
+  // }, []);
 
   return (
     <>

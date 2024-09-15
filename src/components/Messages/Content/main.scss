@@ -1,247 +1,250 @@
 .content {
-    overflow-y: auto;
-    position: relative;
-    max-height: 100vh;
-    padding-left: 1px;
+  overflow-y: auto;
+  position: relative;
+  max-height: 100vh;
+  padding-left: 1px;
 
-    header {
-        box-shadow: 0 1px 5px 0px rgba(0, 0, 0, 0.1);
-        padding: 5px 15px;
-        position: sticky;
-        top: 0;
-        z-index: 100;
+  header {
+    box-shadow: 0 1px 5px 0px rgba(0, 0, 0, 0.1);
+    padding: 5px 15px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: white;
+
+    .link-back {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      color: var(--main-color);
+      font-size: 1.3rem;
+
+      &:hover {
+        background-color: var(--bg-color);
+      }
+    }
+  }
+
+  .user {
+    padding: 0 20px 0 0;
+  }
+
+  .list-settings {
+    display: flex;
+
+    button {
+      background-color: transparent;
+      width: 2.5rem;
+      color: var(--main-color);
+      transition: all 0.2s linear;
+      height: 2.5rem;
+      border-radius: 50%;
+      border: none;
+
+      &:hover {
+        background-color: var(--bg-color);
+      }
+    }
+  }
+
+  .send-messages {
+    position: sticky;
+    bottom: 0;
+
+    .send-message-content {
+      box-shadow: 1px 0 10px 10px rgba(0, 0, 0, 0.1);
+
+      .reply-to-message {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #cdcdcd;
+        padding: 10px;
         background-color: white;
 
-        .link-back {
-            width: 2rem;
-            height: 2rem;
-            border-radius: 50%;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            color: var(--main-color);
+        .icon-close {
+          width: 2rem;
+          height: 2rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 50%;
+          transition: all 0.2s linear;
+
+          &:hover {
+            background-color: var(--bg-color);
+          }
+
+          button {
+            border: none;
+            background-color: transparent;
+          }
+        }
+      }
+
+      .content-child-message {
+        background-color: white;
+        display: flex;
+        gap: 10px;
+        padding: 0.5rem 1rem;
+        justify-content: space-between;
+        align-items: end;
+
+        .send-icons {
+          color: var(--main-color);
+          width: 2rem;
+          height: 2rem;
+          padding-right: 10px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          label {
+            cursor: pointer;
             font-size: 1.3rem;
+            background-color: transparent;
+            color: var(--main-color);
+            transition: opacity 0.2s ease;
 
             &:hover {
-                background-color: var(--bg-color);
+              opacity: 0.7;
             }
+          }
         }
-    }
 
-    .user {
-        padding: 0 20px 0 0;
+        .content-chile-mesage {
+          background-color: #f2f0f0;
+          border-radius: 20px;
+          flex: 1;
+          .selected-images {
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+            .image-item {
+              position: relative;
+              border: 1px solid #cdcdcd;
+              border-radius: 10px;
+              height: 50px;
+              width: auto;
+              .btn-close-image {
+                border-radius: 50%;
+                height: 20px;
+                background-color: var(--bg-color);
+                z-index: 100;
+                position: absolute;
+                top: -8px;
+                right: -8px;
+                &:hover {
+                  color: var(--main-color);
+                }
+              }
+              img {
+                width: 100%;
+                border-radius: 10px;
+                height: 100%;
+                object-fit: cover;
+              }
+            }
+          }
+          .send-message {
+            display: flex;
+
+            input {
+              padding-left: 5px;
+              background-color: transparent;
+              border: none;
+              outline: none;
+              width: 100%;
+              font-size: 1.2rem;
+            }
+
+            div {
+              height: 2rem;
+              width: 2rem;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              cursor: pointer;
+              border-radius: 50%;
+              i {
+                color: var(--main-color);
+                font-size: 1.4rem;
+              }
+              transition: all 0.2s linear;
+
+              &:hover {
+                background-color: var(--bg-color-light);
+              }
+            }
+          }
+        }
+        .send-button {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 50%;
+          background-color: transparent;
+          color: var(--main-color);
+          .custom-loading-button {
+            border: none;
+            box-shadow: none;
+            min-width: 2rem;
+            width: 2rem;
+            height: 2rem;
+            padding: 6px;
+
+            .MuiButton-endIcon {
+              margin: 0;
+            }
+            &:hover {
+              background-color: var(--bg-color-light);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  #messages-content {
+    min-height: 90%;
+  }
+  .content::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .content::-webkit-scrollbar-thumb {
+    background-color: var(--main-color);
+    border-radius: 20px;
+  }
+
+  .content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  @media screen and (max-width: 867px) {
+    header {
+      padding: 2px 6px;
+
+      .link-back {
+        display: flex !important;
+      }
     }
 
     .list-settings {
-        display: flex;
+      li {
+        width: 2.5rem;
+        height: 2.5rem;
 
         button {
+          &:hover {
             background-color: transparent;
-            width: 2.5rem;
-            color: var(--main-color);
-            transition: all 0.2s linear;
-            height: 2.5rem;
-            border-radius: 50%;
-            border: none;
-
-            &:hover {
-                background-color: var(--bg-color);
-            }
+          }
         }
-
+      }
     }
-
-    .send-messages {
-        position: sticky;
-        bottom: 0;
-
-        .send-message-content {
-            box-shadow: 1px 0 10px 10px rgba(0, 0, 0, 0.1);
-
-            .reply-to-message {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                border-top: 1px solid #cdcdcd;
-                padding: 10px;
-                background-color: white;
-
-                .icon-close {
-                    width: 2rem;
-                    height: 2rem;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    border-radius: 50%;
-                    transition: all 0.2s linear;
-
-                    &:hover {
-                        background-color: var(--bg-color);
-                    }
-
-                    button {
-                        border: none;
-                        background-color: transparent;
-                    }
-                }
-            }
-
-            .content-child-message {
-                background-color: white;
-                display: flex;
-                gap: 10px;
-                padding: 0.5rem 1rem;
-                justify-content: space-between;
-                align-items: end;
-
-                .send-icons {
-                    color: var(--main-color);
-                    width: 2rem;
-                    height: 2rem;
-                    padding-right: 10px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-
-                    label {
-                        cursor: pointer;
-                        font-size: 1.3rem;
-                        background-color: transparent;
-                        color: var(--main-color);
-                        transition: opacity 0.2s ease;
-
-                        &:hover {
-                            opacity: 0.7;
-                        }
-                    }
-                }
-                
-                .content-chile-mesage{
-                    background-color: #f2f0f0;
-                    border-radius: 20px;
-                    flex: 1;
-                    .selected-images{
-                        display: flex;
-                        justify-content: flex-start;
-                        gap: 10px;
-                        .image-item{
-                            position: relative;
-                            border: 1px solid #cdcdcd;
-                            border-radius: 10px;
-                            height: 50px;
-                            width: auto;
-                            .btn-close-image{
-                                border-radius: 50%;
-                                height: 20px;
-                                background-color: var(--bg-color);
-                                z-index: 100;
-                                position: absolute;
-                                top: -8px;
-                                right: -8px;
-                                &:hover{
-                                    color: var(--main-color);
-                                }
-                            }
-                            img{
-                                width: 100%;
-                                border-radius: 10px;
-                                height: 100%;
-                                object-fit: cover;
-                            }
-                        }
-                    }
-                    .send-message {
-                        display: flex;
-                        
-                        input {
-                            padding-left: 5px;
-                            background-color: transparent;
-                            border: none;
-                            outline: none;
-                            width: 100%;
-                            font-size: 1.2rem;
-                        }
-    
-                        div {
-                            height: 2rem;
-                            width: 2rem;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            cursor: pointer;
-                            border-radius: 50%;
-                            i{
-                                color: var(--main-color);
-                                font-size: 1.4rem;
-                            }
-                            transition: all 0.2s linear;
-    
-                            &:hover {
-                                background-color: var(--bg-color-light);
-                            }
-                        }
-                    }
-                }
-                
-                .send-button {
-                    width: 2rem;
-                    height: 2rem;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    border-radius: 50%;
-                    border: none;
-                    background-color: transparent;
-                    color: var(--main-color);
-
-                    &:hover {
-                        background-color: var(--bg-color-light);
-                    }
-                }
-            }
-        }
-    }
-
-
-    #messages-content {
-        min-height: 90%;
-    }
-    .content::-webkit-scrollbar {
-        width: 5px;
-    }
-
-    .content::-webkit-scrollbar-thumb {
-        background-color: var(--main-color);
-        border-radius: 20px;
-    }
-
-    .content::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-
-    @media screen and (max-width: 867px) {
-        header {
-            padding: 2px 6px;
-
-            .link-back {
-                display: flex !important;
-            }
-        }
-
-        .list-settings {
-            li {
-                width: 2.5rem;
-                height: 2.5rem;
-
-                button {
-                    &:hover {
-                        background-color: transparent;
-                    }
-                }
-            }
-        }
-    }
-
+  }
 }

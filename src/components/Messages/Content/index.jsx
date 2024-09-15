@@ -1,12 +1,12 @@
 import classNames from 'classnames/bind';
 import { Link } from 'react-router-dom';
+import { LoadingButton } from '@mui/lab';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import SendIcon from '@mui/icons-material/Send';
 import styles from "./main.scss";
 import React, { useEffect, useState } from 'react';
 import Message from '../Message';
 import { useParams } from 'react-router-dom';
-
 import axios from 'axios';
 
 const cx = classNames.bind(styles);
@@ -16,6 +16,8 @@ function Content() {
   const [user, setUser] = useState(null);
   const [selectImages, setSelectImages] = useState([]);
   const [viewSelectImages, setViewSelectImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [messages, setMessages] = useState([
     { id: 1, me: false },
     { id: 2, me: true },
@@ -79,9 +81,13 @@ function Content() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    setIsLoading(true);
     console.log(inputText);
     console.log(selectImages);
     console.log(viewSelectImages);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
   }
 
   return (
@@ -178,17 +184,21 @@ function Content() {
                 </div>
               </div>
             </div>
-            <button className='send-button'>
-              {!Boolean(inputText || selectImages.length) ?
-                <button>
-                  <ThumbUpAltIcon sx={{ fontSize: 25 }} />
-                </button>
-                :
-                <button>
-                  <SendIcon sx={{ fontSize: 25 }} />
-                </button>
-              }
-            </button>
+            <div className='send-button'>
+              <LoadingButton
+                loading={isLoading}
+                className='send-button custom-loading-button'
+                loadingPosition="center"
+                endIcon={!isLoading && (!Boolean(inputText || selectImages.length) ?
+                  <ThumbUpAltIcon sx={{ fontSize: 20 }} />
+                  :
+                  <SendIcon sx={{ fontSize: 20 }} />
+                )}
+                variant="contained"
+                type="submit"
+              >
+              </LoadingButton>
+            </div>
           </form>
         </div>
       </footer>

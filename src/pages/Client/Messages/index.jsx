@@ -1,6 +1,6 @@
 import className from "classnames/bind";
 import styles from "./main.scss";
-import Content from "../../../components/Messages/Content";
+import Content from "@/components/Messages/Content";
 import { useParams } from 'react-router-dom';
 
 const cx = className.bind(styles);
