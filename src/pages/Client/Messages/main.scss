@@ -1,8 +1,18 @@
 
+body {
+    overflow: hidden;
+}
+
 #messages{
-    display: flex;
+    width: 100%;
     display: grid;
-    grid-template-columns: 100% 0%;
+    grid-template-columns: 100% 0;
+
+    #sliderbar{
+        display: none;
+    }
+
+    height: 100vh;
 }
 
 
@@ -12,6 +22,10 @@
         display: flex;
         display: grid;
         grid-template-columns: 30% 70%;
+        #sliderbar{
+            display: block;
+        }
+        
     }
     
 }
@@ -22,6 +36,9 @@
         display: flex;
         display: grid;
         grid-template-columns: 30% 70%;
+        #sliderbar{
+            display: block;
+        }
     }
     
 }   
@@ -32,6 +49,9 @@
         display: flex;
         display: grid;
         grid-template-columns: 40% 60%;
+        #sliderbar{
+            display: block;
+        }
     }
     
 }

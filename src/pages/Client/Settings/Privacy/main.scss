@@ -1,0 +1,124 @@
+.app {
+    display: flex;
+    height: 100vh;
+
+    .row .col-8{
+        margin-left: 40px;
+    }
+  
+    .sidebar {
+      width: 240px;
+      background-color: #f0f2f5;
+      padding: 20px;
+      border-right: 1px solid #ccc;
+      position: fixed; /* Sidebar is fixed on the left */
+      top: 0;
+      left: 0;
+      bottom: 0;
+      margin-top: 30px;
+      overflow-y: auto; /* Allows sidebar content to scroll if it overflows */
+      z-index: 1000; /* Ensures sidebar stays on top */
+  
+      .sidebar-search-bar {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fff;
+      }
+  
+      nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+  
+        li {
+          display: flex;
+          align-items: center;
+          margin-bottom: 20px;
+          font-size: 16px;
+          color: #333;
+  
+          i {
+            margin-right: 10px;
+            font-size: 20px;
+            color: #555;
+          }
+  
+          &:hover {
+            cursor: pointer;
+            color: #007bff; /* Highlight on hover */
+          }
+        }
+      }
+    }
+  
+    .main-content {
+      flex: 1;
+      margin-left: 300px; 
+      margin-right: 60px;/* Creates space for the sidebar */
+      padding: 40px;
+      margin-top: 30px;
+      background-color: #ffffff;
+      overflow-y: auto; /* Ensures main content can scroll */
+  
+      .main-search-bar-container {
+        margin-bottom: 30px;
+  
+        .main-search-bar {
+          width: 100%;
+          padding: 12px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          background-color: #f7f7f7;
+        }
+      }
+  
+      .most-accessed {
+        h3 {
+          margin-bottom: 20px;
+          font-size: 18px;
+          color: #333;
+        }
+  
+        .cards {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+  
+          .card {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            text-align: center;
+            background-color: #fafafa;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  
+            i {
+              font-size: 30px;
+              margin-bottom: 10px;
+              color: #555;
+            }
+  
+            h4 {
+              margin-bottom: 10px;
+              font-size: 16px;
+              color: #333;
+            }
+  
+            p {
+              font-size: 14px;
+              color: #777;
+            }
+  
+            &:hover {
+              background-color: #f0f0f0;
+              cursor: pointer;
+              box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            }
+          }
+        }
+      }
+    }
+  }

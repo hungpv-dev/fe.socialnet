@@ -10,3 +10,53 @@
     object-fit: cover;
     object-position: center;
 }
+
+@keyframes openScale {
+    0%{
+        transform: scale(0);
+    }
+    100%{
+        transform: scale(1);
+    }
+}
+
+@mixin popup {
+    animation: openScale 0.05s linear;
+    transform-origin: calc(100% - 20px) top;
+}
+
+@mixin modalPopup{
+    z-index: 50;
+    background-color: white;
+    width: 250px;
+    position: absolute;
+    right: 1rem;
+    font-size: 1rem;
+    top: 4.1rem;
+    box-shadow: 0 0 7px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 7px;
+    @include popup;
+    &::after {
+      content: "";
+      position: absolute;
+      top: -18px;
+      right: 10px;
+      border-width: 10px;
+      border-style: solid;
+      filter: drop-shadow(0 0 7px rgba(0, 0, 0, 0.1));
+      border-color: transparent transparent white transparent;
+    }
+    ul{
+      list-style: none;
+      padding-left: 0;
+
+      li{
+        border-radius: 5px;
+        cursor: pointer;
+        padding: 3px 10px;
+        &:hover{
+          background-color: var(--bg-color-light);
+        }
+      }
+    }
+}

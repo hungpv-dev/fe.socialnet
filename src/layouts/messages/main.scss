@@ -1,0 +1,76 @@
+
+body {
+    overflow: hidden;
+}
+#root{
+    background-color: white;
+}
+
+#messages{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 100% 0;
+
+    #sliderbar{
+        display: none;
+    }
+    &.content-messages{
+        #sliderbar{
+            display: block;
+        }
+        #content{
+            display: none;
+        }
+    }
+
+    height: 100vh;
+}
+
+
+// desktop
+@media screen and (min-width: 1080px) and (max-width: 1920px) {
+    #messages{
+        display: flex;
+        display: grid;
+        grid-template-columns: 30% 70%;
+        #sliderbar{
+            display: block;
+        }
+        #content{
+            display: block !important;
+        }
+    }
+    
+}
+
+// ipad pro
+@media screen and (min-width: 1024px) and  (max-width: 1366px) {
+    #messages{
+        display: flex;
+        display: grid;
+        grid-template-columns: 30% 70%;
+        #sliderbar{
+            display: block;
+        }
+        #content{
+            display: block !important;
+        }
+    }
+    
+}   
+
+// tablet
+@media screen and (min-width: 767px) and  (max-width: 1023px) {
+    #messages{
+        display: flex;
+        display: grid;
+        grid-template-columns: 40% 60%;
+        #sliderbar{
+            display: block;
+        }
+        #content{
+            display: block !important;
+        }
+    }
+    
+}

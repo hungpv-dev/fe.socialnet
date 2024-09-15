@@ -1,0 +1,70 @@
+body {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: flex-start; /* Đảm bảo rằng sidebar nằm ở đầu trang */
+  justify-content: flex-end; /* Đẩy sidebar sang góc phải */
+  background-color: #e0e0e0; /* Tạo nền */
+}
+
+.sidebar {
+  width: 350px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  position: fixed; /* Cố định sidebar tại một vị trí */
+  top: 20px; /* Đặt sidebar cách mép trên của trang 20px */
+  right: 20px; /* Đặt sidebar cách mép phải của trang 20px */
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  background-color: #6db3f2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.user-name {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.divider {
+  margin: 20px 0;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.menu-item i {
+  margin-right: 10px;
+}
+
+.menu-item:hover {
+  background-color: #929191;
+  border-radius: 5px;
+}
+.lable{
+      margin-left: 12px;
+}
