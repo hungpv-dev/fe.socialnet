@@ -30,9 +30,13 @@ import PasswordAndSecurity from "../pages/Client/Settings/PasswordAndSecurity";
 import Search from "../pages/Client/Search";
 import Notification from "../pages/Client/Notification";
 import New from "../pages/Client/New";
+<<<<<<< HEAD
+
+=======
 import trangAnh from "../pages/Client/TrangCaNhan/trangAnh";
 // import trangBanBe from "../pages/Client/TrangCaNhan/trangbanbe";
 import trangGioiThieu from "../pages/Client/TrangCaNhan/trangGioiThieu";
+>>>>>>> 320c4fc4c005d09e130f6b3d392448b5329d9f38
 // Router không cần đăng nhập vẫn vô được
 const pulicRouter = [
     {
@@ -114,6 +118,7 @@ const privateRouters = [
     {
         path: "/new", component: New
     },
+
 ];
 
 export { pulicRouter, privateRouters };
