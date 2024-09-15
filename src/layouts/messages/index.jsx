@@ -7,8 +7,9 @@ import axios from "axios";
 const cx = classNames.bind(styles);
 
 async function fetchUsers(){
-    let response = axios.get('http://localhost:2004/message_users');
-    let users = await response.then(res => res.data );
+    // let response = axios.get('http://localhost:2004/message_users');
+    // let users = await response.then(res => res.data );
+    let users = [];
     return users;
 }; 
 
