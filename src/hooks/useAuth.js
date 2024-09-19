@@ -3,6 +3,7 @@ import {
   register as registerService,
   logout_from_other_driver as logout_from_other_driverService,
   logout as logoutService,
+  me as meService,
 } from '../services/authService';
 
 const useAuth = () => {
@@ -28,6 +29,24 @@ const useAuth = () => {
     }
   };
 
+  const me = async () => {
+    const access_token = localStorage.getItem('access_token');
+    const response = await meService(access_token);
+    console.log(response);
+  };
+
+  const checkLogin = () => {
+    const access_token = localStorage.getItem('access_token');
+    const expires_in = localStorage.getItem('expires_in');
+    if(expires_in && access_token){
+      const now = Date.now();
+      if(now > expires_in){
+        return false;
+      }
+      return true;
+    }
+  };
+
   const logout = () => {
     logoutService();
   };
@@ -40,7 +59,7 @@ const useAuth = () => {
     logout_from_other_driverService();
   };
 
-  return { login, logout, logout_from_other_driver, register };
+  return { login, me, logout, logout_from_other_driver, register, checkLogin};
 };
 
 export default useAuth;

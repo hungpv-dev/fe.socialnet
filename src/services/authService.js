@@ -79,3 +79,17 @@ export const logout_from_other_driver = async (access_token, password) => {
     throw error;
   }
 };
+
+
+export const me = async (access_token) => {
+  try {
+    const response = await axios.get(`${API_URL}/api/user`,{
+      headers: {
+        'Authorization': `Bearer ${access_token}`
+      },
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

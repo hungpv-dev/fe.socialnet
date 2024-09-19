@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import classNames from "classnames";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from "./main.scss";
 import useAuth from "@/hooks/useAuth";
 const cx = classNames.bind(styles);
 
 const Login = () => {
   const auth = useAuth();
+  const navigate = useNavigate();
   // login 
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState(null);
@@ -25,9 +26,11 @@ const Login = () => {
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    auth.login(email, password);
+    await auth.login(email, password);
+    await auth.me();
+    navigate('/');
   };
 
   return (
