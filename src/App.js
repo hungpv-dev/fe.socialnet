@@ -1,18 +1,20 @@
-import { React, Fragment } from "react";
+import { React, Fragment, useEffect,useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { pulicRouter, privateRouters, adminRouters } from "./routes";
 import { LayoutAdmin, LayoutClient } from "./layouts";
-// import { useState, useEffect } from "react";
+import useAuth from "@/hooks/useAuth";
 
 const App = () => {
-  // const [checkLogin, setCheckLogin] = useState(false);
+  const auth = useAuth();
+  const [checkLogin, setCheckLogin] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const checkAdmin = true;
-  const checkLogin = true;
   
-  // useEffect(() => {
-  //   const token = localStorage.getItem('token');
-  //   setCheckLogin(!!token);
-  // }, []);
+  useEffect(() => {
+    setCheckLogin(auth.checkLogin());
+    setIsReady(true);
+  }, []);
+  if (!isReady) return null;
 
   return (
     <>
