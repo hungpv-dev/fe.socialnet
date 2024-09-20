@@ -1,143 +1,68 @@
 import className from "classnames/bind";
 import { Link } from "react-router-dom";
 import styles from "./main.scss";
+import { ChartContainer } from "@mui/x-charts/ChartContainer";
+import {
+  LinePlot,
+  MarkPlot,
+  lineElementClasses,
+  markElementClasses,
+} from "@mui/x-charts/LineChart";
 
-const cx = className.bind(styles);
-
+const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
+const xLabels = [
+  "Page A",
+  "Page B",
+  "Page C",
+  "Page D",
+  "Page E",
+  "Page F",
+  "Page G",
+];
 const Thongke = () => {
   return (
-    <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 className="h2">Thống Kê</h1>
+    <div className="container-tk mt-4">
+      <div className="row">
+        <div className="col">
+          <div className="indicator blue"></div>
+          <h3>34</h3>
+          <p>Hôm Nay</p>
+        </div>
+        <div className="col">
+          <div className="indicator orange"></div>
+          <h3>120</h3>
+          <p>Một Tuần Qua</p>
+        </div>
+        <div className="col">
+          <div className="indicator green"></div>
+          <h3>6353</h3>
+          <p>Một Tháng Qua</p>
+        </div>
       </div>
-      <div className="table-responsive small">
-        <table className="table table-striped table-sm">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Header</th>
-              <th scope="col">Header</th>
-              <th scope="col">Header</th>
-              <th scope="col">Header</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1,001</td>
-              <td>random</td>
-              <td>data</td>
-              <td>placeholder</td>
-              <td>text</td>
-            </tr>
-            <tr>
-              <td>1,002</td>
-              <td>placeholder</td>
-              <td>irrelevant</td>
-              <td>visual</td>
-              <td>layout</td>
-            </tr>
-            <tr>
-              <td>1,003</td>
-              <td>data</td>
-              <td>rich</td>
-              <td>dashboard</td>
-              <td>tabular</td>
-            </tr>
-            <tr>
-              <td>1,003</td>
-              <td>information</td>
-              <td>placeholder</td>
-              <td>illustrative</td>
-              <td>data</td>
-            </tr>
-            <tr>
-              <td>1,004</td>
-              <td>text</td>
-              <td>random</td>
-              <td>layout</td>
-              <td>dashboard</td>
-            </tr>
-            <tr>
-              <td>1,005</td>
-              <td>dashboard</td>
-              <td>irrelevant</td>
-              <td>text</td>
-              <td>placeholder</td>
-            </tr>
-            <tr>
-              <td>1,006</td>
-              <td>dashboard</td>
-              <td>illustrative</td>
-              <td>rich</td>
-              <td>data</td>
-            </tr>
-            <tr>
-              <td>1,007</td>
-              <td>placeholder</td>
-              <td>tabular</td>
-              <td>information</td>
-              <td>irrelevant</td>
-            </tr>
-            <tr>
-              <td>1,008</td>
-              <td>random</td>
-              <td>data</td>
-              <td>placeholder</td>
-              <td>text</td>
-            </tr>
-            <tr>
-              <td>1,009</td>
-              <td>placeholder</td>
-              <td>irrelevant</td>
-              <td>visual</td>
-              <td>layout</td>
-            </tr>
-            <tr>
-              <td>1,010</td>
-              <td>data</td>
-              <td>rich</td>
-              <td>dashboard</td>
-              <td>tabular</td>
-            </tr>
-            <tr>
-              <td>1,011</td>
-              <td>information</td>
-              <td>placeholder</td>
-              <td>illustrative</td>
-              <td>data</td>
-            </tr>
-            <tr>
-              <td>1,012</td>
-              <td>text</td>
-              <td>placeholder</td>
-              <td>layout</td>
-              <td>dashboard</td>
-            </tr>
-            <tr>
-              <td>1,013</td>
-              <td>dashboard</td>
-              <td>irrelevant</td>
-              <td>text</td>
-              <td>visual</td>
-            </tr>
-            <tr>
-              <td>1,014</td>
-              <td>dashboard</td>
-              <td>illustrative</td>
-              <td>rich</td>
-              <td>data</td>
-            </tr>
-            <tr>
-              <td>1,015</td>
-              <td>random</td>
-              <td>tabular</td>
-              <td>information</td>
-              <td>text</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </main>
+
+      <ChartContainer
+        width={800}
+        height={400}
+        series={[{ type: "line", data: pData }]}
+        xAxis={[{ scaleType: "point", data: xLabels }]}
+        sx={{
+          [`& .${lineElementClasses.root}`]: {
+            stroke: "#8884d8",
+            strokeWidth: 2,
+          },
+          [`& .${markElementClasses.root}`]: {
+            stroke: "#8884d8",
+            scale: "0.6",
+            fill: "#fff",
+            strokeWidth: 2,
+          },
+        }}
+        disableAxisListener
+      >
+        <LinePlot />
+        <MarkPlot />
+      </ChartContainer>
+    </div>
   );
 };
 
