@@ -5,7 +5,7 @@ import User from '../User';
 import React, { useState, useEffect, useRef } from 'react';
 const cx = classNames.bind(styles);
 
-function SlideBar({ users }) {
+function SlideBar({ rooms }) {
   const [modalVisible, setModalVisible] = useState(false);
   const modalPopup = useRef(null);
   const buttonToggle = useRef(null);
@@ -100,8 +100,8 @@ function SlideBar({ users }) {
       </div>
       <div className='list-user mb-2 p-2 d-flex flex-column gap-2'>
         {
-          users.map((user) =>
-            (<User key={user.id} user={user} />)
+          rooms.map((room) =>
+            (<User key={room.id} room={room} />)
           )
         }
       </div>

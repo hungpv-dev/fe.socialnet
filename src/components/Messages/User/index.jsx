@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
 const cx = classNames.bind(styles);
 
-function User({ user }) {
+function User({ room }) {
   const [modalVisible, setModalVisible] = useState(false);
   const modalPopup = useRef(null);
   const buttonToggle = useRef(null);
@@ -52,14 +52,14 @@ function User({ user }) {
 
   return (
     <div className={cx("user")}>
-      <Link to={`/messages/${user.id}`} className="user-avatar">
-        <img src={user.avatar} className="avatar" alt="" />
-        <div className={user.status ? "status" : ""}></div>
+      <Link to={`/messages/${room.chat_room_id}`} className="user-avatar">
+        <img src={room.users[0].avatar} className="avatar" alt="" />
+        <div className={room.status ? "status" : ""}></div>
       </Link>
-      <Link to={`/messages/${user.id}`} className="content">
-        <h5 className="m-0">{user.name}</h5>
-        <p className={!user.send ? "m-0 mt-1 text-dark fw-bold" : "m-0"}>
-          {user.last_message} . {user.last_time}
+      <Link to={`/messages/${room.chat_room_id}`} className="content">
+        <h5 className="m-0">{room.name}</h5>
+        <p className={!room.last_message?.is_seen ? "m-0 mt-1 text-dark fw-bold" : "m-0"}>
+          {!room.last_message ? 'Bắt đầu cuộc trò chuyện ngay?' : room.last_message.body} . {room.last_active}
         </p>
       </Link>
       <button
