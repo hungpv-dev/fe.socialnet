@@ -32,7 +32,7 @@ const useAuth = () => {
   const me = async () => {
     const access_token = localStorage.getItem('access_token');
     const response = await meService(access_token);
-    console.log(response);
+    return response;
   };
 
   const checkLogin = () => {

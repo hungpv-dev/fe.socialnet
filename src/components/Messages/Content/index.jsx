@@ -7,53 +7,87 @@ import styles from "./main.scss";
 import React, { useEffect, useState } from 'react';
 import Message from '../Message';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import { formatDateToNow } from "@/components/FormatDate";
+import {
+  index as indexMessages,
+  create as createMessage,
+} from '@/services/messageService.js';
+import {
+  show as showChatRoom,
+} from '@/services/chatRoomService.js';
+
+import useAuth from '@/hooks/useAuth';
+
+
 
 const cx = classNames.bind(styles);
 
 function Content() {
   const { id } = useParams();
-  const [user, setUser] = useState(null);
+  
+  const { me } = useAuth();
+
   const [selectImages, setSelectImages] = useState([]);
   const [viewSelectImages, setViewSelectImages] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const [messages, setMessages] = useState([
-    { id: 1, me: false },
-    { id: 2, me: true },
-    { id: 3, me: true },
-    { id: 4, me: false, rep: { message: 'Đã bảo là không được rồi' } },
-    { id: 5, me: false },
-    { id: 6, me: true },
-    { id: 7, me: false },
-    { id: 8, me: false },
-    { id: 9, me: true, rep: { message: 'Lại là joinny đây' } },
-    { id: 10, me: true },
-    { id: 11, me: false },
-    { id: 12, me: false },
-    {
-      id: 13, me: true, send: [
-        { avatar: 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745' },
-        { avatar: 'https://reputationprotectiononline.com/wp-content/uploads/2022/04/78-786207_user-avatar-png-user-avatar-icon-png-transparent.png' },
-        { avatar: 'https://i.pinimg.com/474x/0a/a8/58/0aa8581c2cb0aa948d63ce3ddad90c81.jpg' }
-      ]
-    },
-  ]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(true);
+
+  const [messages, setMessages] = useState([]);
+  const [room, setRoom] = useState(null);
+  const [user, setUser] = useState(null);
+
+  const [inputText, setInputText] = useState('');
+  const [replyContent, setReplyContent] = useState(null);
+
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetctMe = async () => {
       try {
-        // const response = await axios.get(`http://localhost:2004/message_users/${id}`);
-        setUser([]);
+        const response = await me();
+        const user = response.data;
+        setUser(user);
       } catch (error) {
-        console.error('Error fetching user:', error);
+        console.error(error);
+      }
+    };
+    
+    const showRoom = async () => {
+      try {
+        const response = await showChatRoom(id);
+        const room = response.data.data;
+        setRoom(room);
+      } catch (error) {
+        console.error(error);
       }
     };
 
-    fetchUser();
+    const fetchMessages = async () => {
+      try {
+        const response = await indexMessages({
+          chat_room_id: id
+        });
+        const messages = response.data.data;
+        setMessages(messages);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    const loadMessages = async () => {
+      setIsLoadingMessages(true);
+      await fetctMe();
+      await showRoom();
+      await fetchMessages();
+      setIsLoadingMessages(false);
+    };
+
+    loadMessages();
   }, [id]);
 
-  const [inputText, setInputText] = useState('');
+  if (isLoadingMessages) {
+    return <div>Loading...</div>;
+  }
+
   const handleInputChange = (event) => {
     setInputText(event.target.value);
   };
@@ -70,26 +104,31 @@ function Content() {
     setSelectImages(prevFiles => prevFiles.filter((_, i) => i !== index));
   };
 
-  const [replyContent, setReplyContent] = useState(null);
   function handleReply(message) {
     setReplyContent(message);
   }
 
-  if (!user) {
-    return '';
-  }
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async(event) => {
     event.preventDefault();
     setIsLoading(true);
-    console.log(inputText);
-    console.log(selectImages);
-    console.log(viewSelectImages);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-  }
+    let formData = new FormData();
+    formData.append('content', inputText);
 
+    selectImages.forEach(file => {
+      formData.append('files[]', file);
+    });
+    formData.append('reply_to', replyContent ? replyContent.id : null);
+
+    let response = await createMessage(id, formData);
+    if(response.status === 200){
+      setInputText('');
+      setSelectImages([]);
+      setViewSelectImages([]);
+      setReplyContent(null);
+      console.log(response.data);
+    }
+    setIsLoading(false);
+  }
   return (
     <div id='content' className={cx("content")}>
       <header className='d-flex justify-content-between align-items-center'>
@@ -99,13 +138,13 @@ function Content() {
           </Link>
           <div className={cx('user')}>
             <div className='user-avatar'>
-              <img src={user.avatar} className='avatar' alt='' />
-              <div className={user.status ? 'status' : ''}></div>
+              <img src={room.users[0]?.avatar} className='avatar' alt='' />
+              <div className={room.status ? 'status' : ''}></div>
             </div>
             <div className='content'>
-              <h5 className='m-0 mb-1 fs-6'>{user.name}</h5>
+              <h5 className='m-0 mb-1 fs-6'>{room.name}</h5>
               <p className='m-0'>
-                {user.status ? 'Đang hoạt động' : 'Hoạt động 6p trước'}
+                {room.status ? 'Đang hoạt động' : formatDateToNow(room.users[0]?.time_offline)}
               </p>
             </div>
           </div>
@@ -131,14 +170,14 @@ function Content() {
         </div>
       </header>
       <div id='messages-content'>
-        {messages.map((message, key) => (
+        {messages.map((message) => (
           <Message
-            key={key}
-            user={user}
+            key={message.id} message={message}
+            user={message.user_send}
             onReply={handleReply}
-            me={message.me}
-            rep={message.rep}
-            send={message.send}
+            me={user && user.id === message.user_send.id}
+            rep={message.reply_to}
+            send={message.is_seen}
           />
         ))}
       </div>
@@ -147,8 +186,8 @@ function Content() {
           {replyContent && (
             <div className='reply-to-message'>
               <div>
-                <p className='m-0'>Đang trả lời {user.name}</p>
-                <p className='m-0'><i className="bi bi-repeat"></i> {replyContent}</p>
+                <p className='m-0'>Đang trả lời {room.name}</p>
+                <p className='m-0'><i className="bi bi-repeat"></i> {replyContent.content}</p>
               </div>
               <div className='icon-close'>
                 <button onClick={() => handleReply(null)}>

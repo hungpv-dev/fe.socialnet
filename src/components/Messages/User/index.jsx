@@ -1,4 +1,5 @@
 import classNames from "classnames/bind";
+import { formatDateToNow } from "@/components/FormatDate";
 import styles from "./main.scss";
 import { Link } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
@@ -59,7 +60,11 @@ function User({ room }) {
       <Link to={`/messages/${room.chat_room_id}`} className="content">
         <h5 className="m-0">{room.name}</h5>
         <p className={!room.last_message?.is_seen ? "m-0 mt-1 text-dark fw-bold" : "m-0"}>
-          {!room.last_message ? 'Bắt đầu cuộc trò chuyện ngay?' : room.last_message.body} . {room.last_active}
+          {!room.last_message ? 'Bắt đầu cuộc trò chuyện ngay?' : ( (room.last_message.body.length > 20 
+            ? room.last_message.body.substring(0, 40) + '...' 
+            : room.last_message.body))} . {
+              formatDateToNow(room.users[0]?.time_offline)
+          }
         </p>
       </Link>
       <button

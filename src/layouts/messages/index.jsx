@@ -16,7 +16,7 @@ function LayoutMessages({children}) {
     useEffect(() => {
         const fetchRooms = async () => {
             try {
-                const response = await chatRoom.list();
+                const response = await chatRoom.index();
                 setRooms(response.data); 
             } catch (error) {
                 console.error("There was a problem with the fetch operation:", error);
