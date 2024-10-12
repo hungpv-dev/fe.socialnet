@@ -50,37 +50,40 @@ function User({ room }) {
       setPopupDirection("down");
     }
   };
-
   return (
     <div className={cx("user")}>
       <Link to={`/messages/${room.chat_room_id}`} className="user-avatar">
-        <img src={room.users[0].avatar} className="avatar" alt="" />
-        <div className={room.status ? "status" : ""}></div>
+        <div className="user-avatars">
+          {room.users.slice(0, 4).map((user) => (
+            <div className='image-user' key={user.id}>
+              <img key={user.id} src={user.avatar} className="avatar" alt="" />
+            </div>
+          ))}
+        </div>
+        <div className={room.online ? "status" : ""}></div>
       </Link>
       <Link to={`/messages/${room.chat_room_id}`} className="content">
         <h5 className="m-0">{room.name}</h5>
-        <p className={!room.last_message?.is_seen ? "m-0 mt-1 text-dark fw-bold" : "m-0"}>
-          {!room.last_message ? 'Bắt đầu cuộc trò chuyện ngay?' : ( (room.last_message.body.length > 20 
-            ? room.last_message.body.substring(0, 40) + '...' 
-            : room.last_message.body))} . {
-              formatDateToNow(room.users[0]?.time_offline)
+        <p className={!room.last_message?.is_seen ? "m-0 mt-1 text-dark" : "m-0"}>
+          {!room.last_message ? 'Bắt đầu cuộc trò chuyện ngay?' : ((room.last_message.body.length > 20
+            ? room.last_message.body.substring(0, 40) + '...'
+            : (room.last_message.body || 'Đã gửi một hình ảnh')))} . {
+            room.last_message ? formatDateToNow(room.last_message?.created_at) : ''
           }
         </p>
       </Link>
       <button
         ref={buttonToggle}
         onClick={toggleModal}
-        className={`popup ${
-          modalVisible ? "d-flex" : "d-none"
-        } justify-content-center align-items-center`}
+        className={`popup ${modalVisible ? "d-flex" : "d-none"
+          } justify-content-center align-items-center`}
       >
         <i className="bi bi-three-dots fs-3 d-flex justify-content-center align-items-center"></i>
       </button>
       {modalVisible && (
         <div
-          className={`popup-modal border p-2 ${
-            popupDirection === "up" ? "popup-up" : "popup-down"
-          }`}
+          className={`popup-modal border p-2 ${popupDirection === "up" ? "popup-up" : "popup-down"
+            }`}
           ref={modalPopup}
         >
           <ul className="list-unstyled mb-0">

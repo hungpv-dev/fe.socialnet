@@ -5,26 +5,71 @@ import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import SendIcon from '@mui/icons-material/Send';
 import styles from "./main.scss";
 import React, { useEffect, useState } from 'react';
-import Message from '../Message';
 import { useParams } from 'react-router-dom';
 import { formatDateToNow } from "@/components/FormatDate";
+import echo from '@/components/EchoComponent';
+import { sendMessage } from '@/components/MessageComponent';
 import {
-  index as indexMessages,
   create as createMessage,
 } from '@/services/messageService.js';
 import {
   show as showChatRoom,
 } from '@/services/chatRoomService.js';
-
 import useAuth from '@/hooks/useAuth';
-
+import InfiniteScroll from "react-infinite-scroll-component";
+import axios from '@/axios';
+import Message from '../Message';
+import { useDispatch, useSelector } from 'react-redux';
+import { setRooms } from '@/actions/rooms';
 
 
 const cx = classNames.bind(styles);
 
 function Content() {
+  const currentRooms = useSelector(state => state.rooms); 
+  const dispatch = useDispatch();
+
   const { id } = useParams();
-  
+
+  useEffect(() => {
+    const channel = echo.private(`room.push-message.${id}`);
+    channel.listen('ChatRoom\\PushMessage', (data) => {
+      const userId = data.message[0]?.user_send?.id;
+      setMessages(prevMessages => {
+        let newMessages = data.message.filter(newMessage =>
+          !prevMessages.some(existingMessage => existingMessage.message_id === newMessage.message_id)
+        );
+        prevMessages = prevMessages.map(mes => {
+          return {
+            ...mes,
+            is_seen: mes.is_seen.filter(user => user.id !== userId)
+          }
+        });
+        sendMessage(id);
+        return [...newMessages,...prevMessages];
+      });
+    });
+    channel.listen('ChatRoom\\SendMessage', (data) => {
+      const userId = data.user_id;
+      const mes = data.message;
+      setMessages(prevMessages => {
+        const updatedMessages = prevMessages.map(currentMessage => {
+          currentMessage.is_seen = currentMessage.is_seen.filter(us => us.id !== userId);
+          if (currentMessage.message_id === mes.message_id) {
+            currentMessage.is_seen = mes.is_seen;
+          };
+          return currentMessage;
+        });
+        return [...updatedMessages];
+      });
+    });
+
+    return () => {
+      channel.stopListening('ChatRoom\\PushMessage');
+      channel.stopListening('ChatRoom\\SendMessage');
+    };
+  }, [id]);
+
   const { me } = useAuth();
 
   const [selectImages, setSelectImages] = useState([]);
@@ -33,15 +78,36 @@ function Content() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
 
-  const [messages, setMessages] = useState([]);
   const [room, setRoom] = useState(null);
   const [user, setUser] = useState(null);
 
   const [inputText, setInputText] = useState('');
   const [replyContent, setReplyContent] = useState(null);
 
+  const [messages, setMessages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [maxMessage, setMaxMessage] = useState(0);
+
+
+  const fetchMessages = async () => {
+    try {
+      const response = await axios('/messages', {params: {chat_room_id: id,page}}).then(res => res.data);
+      setMessages(prevMessages => [...prevMessages, ...response.data]);
+      setPage(response.meta.current_page + 1)
+      setMaxMessage(pre => pre + response.meta.per_page);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
+    let newRooms = currentRooms.map(room => {
+      if (room.chat_room_id === parseInt(id)) {
+        room.last_message.is_seen = true;
+      }
+      return room;
+    });
+    dispatch(setRooms(newRooms));
     const fetctMe = async () => {
       try {
         const response = await me();
@@ -51,7 +117,7 @@ function Content() {
         console.error(error);
       }
     };
-    
+
     const showRoom = async () => {
       try {
         const response = await showChatRoom(id);
@@ -61,28 +127,29 @@ function Content() {
         console.error(error);
       }
     };
-
-    const fetchMessages = async () => {
+    const initMessage = async () => {
       try {
-        const response = await indexMessages({
-          chat_room_id: id
-        });
-        const messages = response.data.data;
-        setMessages(messages);
+        const response = await axios('/messages', {params: {chat_room_id: id,page: 1}}).then(res => res.data);
+        setMessages(response.data);
+        setPage(2)
+        setMaxMessage(response.meta.per_page);
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
     };
-    const loadMessages = async () => {
+
+    const loadContent = async () => {
       setIsLoadingMessages(true);
+      sendMessage(id);
+      await initMessage();
       await fetctMe();
       await showRoom();
-      await fetchMessages();
       setIsLoadingMessages(false);
     };
 
-    loadMessages();
+    loadContent();
   }, [id]);
+
 
   if (isLoadingMessages) {
     return <div>Loading...</div>;
@@ -108,24 +175,26 @@ function Content() {
     setReplyContent(message);
   }
 
-  const handleSubmit = async(event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
     let formData = new FormData();
-    formData.append('content', inputText);
-
     selectImages.forEach(file => {
       formData.append('files[]', file);
     });
-    formData.append('reply_to', replyContent ? replyContent.id : null);
-
+    formData.append('reply_to', replyContent ? replyContent.message_id : null);
+    let body = inputText;
+    if (inputText === '' && selectImages.length === 0) {
+      body = '👍';
+    }
+    formData.append('content', body);
     let response = await createMessage(id, formData);
-    if(response.status === 200){
+    if (response.status === 200) {
       setInputText('');
       setSelectImages([]);
       setViewSelectImages([]);
       setReplyContent(null);
-      console.log(response.data);
+      setMessages(prevMessages => [...response.data,...prevMessages]);
     }
     setIsLoading(false);
   }
@@ -138,13 +207,19 @@ function Content() {
           </Link>
           <div className={cx('user')}>
             <div className='user-avatar'>
-              <img src={room.users[0]?.avatar} className='avatar' alt='' />
+              <div className="user-avatars">
+                {room.users.slice(0, 4).map((user) => (
+                  <div className='image-user' key={user.id}>
+                    <img key={user.id} src={user.avatar} className="avatar" alt="" />
+                  </div>
+                ))}
+              </div>
               <div className={room.status ? 'status' : ''}></div>
             </div>
             <div className='content'>
               <h5 className='m-0 mb-1 fs-6'>{room.name}</h5>
               <p className='m-0'>
-                {room.status ? 'Đang hoạt động' : formatDateToNow(room.users[0]?.time_offline)}
+                {room.status ? 'Đang hoạt động' : formatDateToNow(room.chat_room_type === 1 ? room.users[0]?.time_offline : (room.last_message?.created_at ?? new Date().toISOString()))}
               </p>
             </div>
           </div>
@@ -169,17 +244,27 @@ function Content() {
           </ul>
         </div>
       </header>
-      <div id='messages-content'>
-        {messages.map((message) => (
-          <Message
-            key={message.id} message={message}
-            user={message.user_send}
-            onReply={handleReply}
-            me={user && user.id === message.user_send.id}
-            rep={message.reply_to}
-            send={message.is_seen}
-          />
-        ))}
+      <div id='messages-content' style={{height: "90vh", overflowY: "scroll", display: "flex", flexDirection: "column-reverse", margin: "auto"}} className="bg-body-tertiary p-3">
+        <div style={{ height: '30px' }}></div>
+        <InfiniteScroll
+          dataLength={messages.length}
+          next={fetchMessages}
+          hasMore={messages.length >= maxMessage}
+          loader={<p className="text-center m-5">⏳&nbsp;Loading...</p>}
+          endMessage={<p className="text-center m-5">That&apos;s all folks!🐰🥕</p>}
+          style={{ display: "flex", flexDirection: "column-reverse",paddingBottom: "50px", overflow: "visible" }}
+          scrollableTarget="messages-content"
+          inverse={true}
+        >
+          {messages.map((item) => (
+            <Message
+              key={item.message_id}
+              message={item}
+              user={user}
+              onReply={handleReply}
+            />
+          ))}
+        </InfiniteScroll>
       </div>
       <footer className='send-messages'>
         <div className="send-message-content">
@@ -187,7 +272,7 @@ function Content() {
             <div className='reply-to-message'>
               <div>
                 <p className='m-0'>Đang trả lời {room.name}</p>
-                <p className='m-0'><i className="bi bi-repeat"></i> {replyContent.content}</p>
+                <p className='m-0'><i className="bi bi-repeat"></i> {replyContent.content || 'Trả lời hình ảnh'}</p>
               </div>
               <div className='icon-close'>
                 <button onClick={() => handleReply(null)}>

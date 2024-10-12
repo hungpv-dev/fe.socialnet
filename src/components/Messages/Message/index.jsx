@@ -4,18 +4,32 @@ import styles from "./main.scss";
 import { showImages } from "@/components/ImageComponent";
 const cx = classNames.bind(styles);
 
-function Message({ message, user, me, rep, send, onReply }) {
+function Message({ message, user, onReply }) {
+  const me = user && user.id === message.user_send.id
+  const rep = message.reply_to
+  const send = message.is_seen.filter(seen => seen.id !== user.id)
   return (
     <>
+      <div className={cx('user-sends')}>
+        {
+          send && send.map((user) =>
+          (
+            <div key={user.id} className={cx('user-send')}>
+              <img src={user.avatar} alt="" />
+            </div>
+          )
+          )
+        }
+      </div>
       <div className={cx('user-message', { 'flex-row-reverse': me, 'reply-success': rep })}>
         {!me && (
           <div className='avatar'>
-            <img src={user.avatar} alt="Avatar" />
+            <img src={message.user_send.avatar} alt="Avatar" />
           </div>
         )}
         {rep && (
           <div className='reply'>
-            {!rep.flagged ? rep.content : 'Tin nhắn đã bị thu hồi!'}
+            {!rep.flagged ? rep.content || 'Trả lời hình ảnh!' : 'Tin nhắn đã bị thu hồi!'}
           </div>
         )}
         <div className='message'>
@@ -28,7 +42,7 @@ function Message({ message, user, me, rep, send, onReply }) {
         </div>
         <div className='message-settings'>
           {!message.flagged && (
-            <ul className='list-unstyled d-flex gap-2 mb-0'> 
+            <ul className='list-unstyled d-flex gap-2 mb-0'>
               <li className='d-flex align-items-center'>
                 <button title='Bày tỏ cảm xúc'>
                   <i className="bi bi-emoji-smile"></i>
@@ -48,17 +62,7 @@ function Message({ message, user, me, rep, send, onReply }) {
           )}
         </div>
       </div>
-      <div className={cx('user-sends')}>
-        {
-          send && send.map((user) =>
-          (
-            <div className={cx('user-send')}>
-              <img src={user.avatar} alt="" />
-            </div>
-          )
-          )
-        }
-      </div>
+
     </>
   );
 }

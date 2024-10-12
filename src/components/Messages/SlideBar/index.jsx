@@ -3,13 +3,15 @@ import classNames from 'classnames/bind';
 import styles from "./main.scss";
 import User from '../User';
 import React, { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 const cx = classNames.bind(styles);
 
-function SlideBar({ rooms }) {
+function SlideBar() {
   const [modalVisible, setModalVisible] = useState(false);
   const modalPopup = useRef(null);
   const buttonToggle = useRef(null);
 
+  var rooms = useSelector((state) => state.rooms);
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
@@ -35,8 +37,6 @@ function SlideBar({ rooms }) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [modalVisible]);
-
-
 
   return (
     <aside id='sliderbar' className={cx("slidebar")}>
@@ -101,7 +101,7 @@ function SlideBar({ rooms }) {
       <div className='list-user mb-2 p-2 d-flex flex-column gap-2'>
         {
           rooms.map((room) =>
-            (<User key={room.id} room={room} />)
+            (<User key={room.chat_room_id} room={room} />)
           )
         }
       </div>
