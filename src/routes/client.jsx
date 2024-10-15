@@ -33,6 +33,8 @@ import New from "../pages/Client/New";
 import trangAnh from "../pages/Client/TrangCaNhan/trangAnh";
 // import trangBanBe from "../pages/Client/TrangCaNhan/trangbanbe";
 import trangGioiThieu from "../pages/Client/TrangCaNhan/trangGioiThieu";
+import baiViet from "../pages/Client/TrangCaNhan/baiviet/baiViet";
+import tieuDe from "../pages/Client/TrangCaNhan/he/inde";
 // Router không cần đăng nhập vẫn vô được
 const pulicRouter = [
     {
@@ -94,6 +96,12 @@ const privateRouters = [
     // trang ca nhan
     {
         path: "/profile", component: Canhan
+    },
+    {
+        path: "/baiViet", component: baiViet
+    },
+    {
+        path: "/tieuDe", component: tieuDe
     },
     {
         path: "/trangAnh", component: trangAnh
