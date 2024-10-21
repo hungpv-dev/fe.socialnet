@@ -11,9 +11,13 @@ const App = () => {
   const checkAdmin = true;
   
   useEffect(() => {
-    setCheckLogin(auth.checkLogin());
-    setIsReady(true);
-  }, []);
+    const checkLoginStatus = async () => {
+      const isLoggedIn = await auth.checkLogin();
+      setCheckLogin(isLoggedIn);
+      setIsReady(true);
+    };
+    checkLoginStatus();
+  }, [auth]);
   if (!isReady) return null;
 
   return (

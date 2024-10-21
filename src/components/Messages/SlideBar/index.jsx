@@ -4,6 +4,7 @@ import styles from "./main.scss";
 import User from '../User';
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 const cx = classNames.bind(styles);
 
 function SlideBar() {
@@ -43,7 +44,9 @@ function SlideBar() {
       <div className='nav-top'>
         <header className='d-flex justify-content-between align-items-center'>
           <div className='title'>
-            <h3 className='fw-bold'>Đoạn chat</h3>
+            <Link to="/">
+              <h3 className='fw-bold'>Đoạn chat</h3>
+            </Link>
           </div>
           <button
             ref={buttonToggle}

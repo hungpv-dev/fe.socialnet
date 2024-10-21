@@ -12,11 +12,7 @@ export const login = async (username, password) => {
     username: username,
     password: password
   }
-  try {
-    return await axios.post(`${API_URL}/oauth/token`, data);
-  } catch (error) {
-    throw error;
-  }
+  return await axios.post(`${API_URL}/oauth/token`, data);
 };
 
 // Đăng kí
@@ -29,11 +25,7 @@ export const register = async (email, name, password, c_password) => {
     password: password,
     c_password: c_password
   }
-  try {
-    return await axios.post(`${API_URL}/api/register`, data);
-  } catch (error) {
-    throw error;
-  }
+  return await axios.post(`${API_URL}/api/register`, data);
 };
 
 // Cập lại access
@@ -44,52 +36,36 @@ export const refresh = async (refreshToken) => {
     grant_type: 'refresh_token',
     refresh_token: refreshToken
   }
-  try {
-    return await axios.post(`${API_URL}/oauth/token`, data);
-  } catch (error) {
-    throw error;
-  }
+  return await axios.post(`${API_URL}/oauth/token`, data);
 };
 
 // Đăng xuất
 export const logout = async (access_token) => {
-  try {
-    return await axios.post(`${API_URL}/api/logout`,{
+  return await axios.post(`${API_URL}/api/logout`,{
       headers: {
         'Authorization': `Bearer ${access_token}`
       }
-    });
-  } catch (error) {
-    throw error;
-  }
+  });
 };
 
 // Đăng xuất khỏi các thiết bị khác
 export const logout_from_other_driver = async (access_token, password) => {
   let data = {password};
-  try {
-    const response = await axios.post(`${API_URL}/api/logout-all-driver`,{
+  const response = await axios.post(`${API_URL}/api/logout-all-driver`,{
       headers: {
         'Authorization': `Bearer ${access_token}`
       },
       data: data
-    });
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  });
+  return response;
 };
 
 
 export const me = async (access_token) => {
-  try {
-    const response = await axios.get(`${API_URL}/api/user`,{
+  const response = await axios.get(`${API_URL}/api/user`,{
       headers: {
         'Authorization': `Bearer ${access_token}`
       },
-    });
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  });
+  return response;
 };

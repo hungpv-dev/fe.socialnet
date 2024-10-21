@@ -4,11 +4,11 @@ import { LoadingButton } from '@mui/lab';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import SendIcon from '@mui/icons-material/Send';
 import styles from "./main.scss";
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { formatDateToNow } from "@/components/FormatDate";
 import echo from '@/components/EchoComponent';
-import { sendMessage } from '@/components/MessageComponent';
+import { sendMessage, showRoomAvatar } from '@/components/MessageComponent';
 import {
   create as createMessage,
 } from '@/services/messageService.js';
@@ -21,12 +21,15 @@ import axios from '@/axios';
 import Message from '../Message';
 import { useDispatch, useSelector } from 'react-redux';
 import { setRooms } from '@/actions/rooms';
-
+import dataPicker from '@emoji-mart/data'
+import Picker from '@emoji-mart/react'
+import PageLoading from '@/components/LoadingComponent';
+import { LinearProgress } from '@mui/material';
 
 const cx = classNames.bind(styles);
 
 function Content() {
-  const currentRooms = useSelector(state => state.rooms); 
+  const currentRooms = useSelector(state => state.rooms);
   const dispatch = useDispatch();
 
   const { id } = useParams();
@@ -46,7 +49,7 @@ function Content() {
           }
         });
         sendMessage(id);
-        return [...newMessages,...prevMessages];
+        return [...newMessages, ...prevMessages];
       });
     });
     channel.listen('ChatRoom\\SendMessage', (data) => {
@@ -63,10 +66,34 @@ function Content() {
         return [...updatedMessages];
       });
     });
+    channel.listen('ChatRoom\\DestroyMesssage', (data) => {
+      const message = data.message;
+      setMessages(prevMessages => {
+        return prevMessages.map(msg => {
+          if (msg.message_id === message.id) {
+            return { ...msg, flagged: true };
+          }
+          return msg;
+        });
+      });
+    });
+    channel.listen('ChatRoom\\SendIcon', (data) => {
+      const message = data.message;
+      const icon = data.icon;
+      setMessages(prevMessages => {
+        return prevMessages.map(msg => {
+          if (msg.message_id === message.id) {
+            return { ...msg, emotions: icon };
+          }
+          return msg;
+        });
+      });
+    });
 
     return () => {
       channel.stopListening('ChatRoom\\PushMessage');
       channel.stopListening('ChatRoom\\SendMessage');
+      channel.stopListening('ChatRoom\\DestroyMesssage');
     };
   }, [id]);
 
@@ -74,6 +101,7 @@ function Content() {
 
   const [selectImages, setSelectImages] = useState([]);
   const [viewSelectImages, setViewSelectImages] = useState([]);
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
@@ -85,16 +113,14 @@ function Content() {
   const [replyContent, setReplyContent] = useState(null);
 
   const [messages, setMessages] = useState([]);
-  const [page, setPage] = useState(1);
   const [maxMessage, setMaxMessage] = useState(0);
-
+  const inputRef = useRef(null);
 
   const fetchMessages = async () => {
     try {
-      const response = await axios('/messages', {params: {chat_room_id: id,page}}).then(res => res.data);
+      const response = await axios('/messages', { params: { chat_room_id: id, index: messages.length } }).then(res => res.data);
       setMessages(prevMessages => [...prevMessages, ...response.data]);
-      setPage(response.meta.current_page + 1)
-      setMaxMessage(pre => pre + response.meta.per_page);
+      setMaxMessage(messages.length + 20);
     } catch (error) {
       console.log(error);
     }
@@ -104,6 +130,9 @@ function Content() {
     let newRooms = currentRooms.map(room => {
       if (room.chat_room_id === parseInt(id)) {
         room.last_message.is_seen = true;
+        room.selected = true;
+      } else {
+        room.selected = false;
       }
       return room;
     });
@@ -124,15 +153,14 @@ function Content() {
         const room = response.data.data;
         setRoom(room);
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
     };
     const initMessage = async () => {
       try {
-        const response = await axios('/messages', {params: {chat_room_id: id,page: 1}}).then(res => res.data);
+        const response = await axios('/messages', { params: { chat_room_id: id, index: 0 } }).then(res => res.data);
         setMessages(response.data);
-        setPage(2)
-        setMaxMessage(response.meta.per_page);
+        setMaxMessage(response.data.length);
       } catch (error) {
         console.log(error);
       }
@@ -150,14 +178,42 @@ function Content() {
     loadContent();
   }, [id]);
 
+  const handlePaste = useCallback((event) => {
+    if (document.activeElement !== inputRef.current) return;
+
+    const items = event.clipboardData.items;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const blob = items[i].getAsFile();
+        const imageURL = URL.createObjectURL(blob);
+        setViewSelectImages(prevImages => [...prevImages, imageURL]);
+        setSelectImages(prevFiles => [...prevFiles, blob]);
+      }
+    }
+  }, []);
+  useEffect(() => {
+    document.addEventListener('paste', handlePaste);
+    return () => {
+      document.removeEventListener('paste', handlePaste);
+    };
+  }, [handlePaste]);
 
   if (isLoadingMessages) {
-    return <div>Loading...</div>;
+    return <PageLoading />;
   }
+  if(!room) {
+    return <h1>Không tìm thấy cuộc trò chuyện</h1>;
+  }
+  const updateMessage = (updatedMessage) => {
+    setMessages(prevMessages => prevMessages.map(msg => 
+      msg.message_id === updatedMessage.message_id ? updatedMessage : msg
+    ));
+  };
 
   const handleInputChange = (event) => {
     setInputText(event.target.value);
   };
+  
 
   const handleImageChange = (event) => {
     const files = Array.from(event.target.files);
@@ -172,12 +228,15 @@ function Content() {
   };
 
   function handleReply(message) {
+    inputRef.current.focus();
+    setIsPickerOpen(false);
     setReplyContent(message);
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
+    setIsPickerOpen(false);
     let formData = new FormData();
     selectImages.forEach(file => {
       formData.append('files[]', file);
@@ -194,7 +253,15 @@ function Content() {
       setSelectImages([]);
       setViewSelectImages([]);
       setReplyContent(null);
-      setMessages(prevMessages => [...response.data,...prevMessages]);
+      setMessages(prevMessages => [...response.data, ...prevMessages]);
+      let newRooms = currentRooms.map(room => {
+        if (room.chat_room_id === parseInt(id)) {
+          room.last_message.is_seen = true;
+          room.selected = true;
+        }
+        return room;
+      });
+      dispatch(setRooms(newRooms));
     }
     setIsLoading(false);
   }
@@ -207,14 +274,7 @@ function Content() {
           </Link>
           <div className={cx('user')}>
             <div className='user-avatar'>
-              <div className="user-avatars">
-                {room.users.slice(0, 4).map((user) => (
-                  <div className='image-user' key={user.id}>
-                    <img key={user.id} src={user.avatar} className="avatar" alt="" />
-                  </div>
-                ))}
-              </div>
-              <div className={room.status ? 'status' : ''}></div>
+              {showRoomAvatar(room)}
             </div>
             <div className='content'>
               <h5 className='m-0 mb-1 fs-6'>{room.name}</h5>
@@ -244,24 +304,26 @@ function Content() {
           </ul>
         </div>
       </header>
-      <div id='messages-content' style={{height: "90vh", overflowY: "scroll", display: "flex", flexDirection: "column-reverse", margin: "auto"}} className="bg-body-tertiary p-3">
+      <div id='messages-content' style={{ height: "90vh", overflowY: "scroll", display: "flex", flexDirection: "column-reverse", margin: "auto" }} className="bg-body-tertiary p-3">
         <div style={{ height: '30px' }}></div>
         <InfiniteScroll
           dataLength={messages.length}
           next={fetchMessages}
           hasMore={messages.length >= maxMessage}
-          loader={<p className="text-center m-5">⏳&nbsp;Loading...</p>}
+          loader={<LinearProgress />}
           endMessage={<p className="text-center m-5">That&apos;s all folks!🐰🥕</p>}
-          style={{ display: "flex", flexDirection: "column-reverse",paddingBottom: "50px", overflow: "visible" }}
+          style={{ display: "flex", flexDirection: "column-reverse", paddingBottom: "20px", overflow: "visible" }}
           scrollableTarget="messages-content"
           inverse={true}
         >
           {messages.map((item) => (
             <Message
+              setMessage={setMessages}
               key={item.message_id}
               message={item}
               user={user}
               onReply={handleReply}
+              updateMessage={updateMessage}
             />
           ))}
         </InfiniteScroll>
@@ -302,9 +364,25 @@ function Content() {
                 ))}
               </div>
               <div className='send-message'>
-                <input type="text" value={inputText} onInput={handleInputChange} placeholder='Aa...' />
-                <div>
-                  <i className="bi-emoji-smile-fill"></i>
+                <input 
+                  type="text"
+                  value={inputText} autoFocus onInput={handleInputChange} placeholder='Aa...'
+                  ref={inputRef}
+                />
+                <div style={{ position: 'relative' }}>
+                  <div style={{ position: 'absolute', bottom: '250px', right: '128px' }}>
+                    {isPickerOpen ? (
+                      <Picker
+                        data={dataPicker}
+                        emojiButtonSize={30}
+                        emojiSize={20}
+                        onEmojiSelect={(emoji) => {
+                          setInputText(prevText => prevText + emoji.native);
+                        }}
+                      />
+                    ) : ''}
+                  </div>
+                  <i onClick={() => setIsPickerOpen(!isPickerOpen)} className="bi-emoji-smile-fill"></i>
                 </div>
               </div>
             </div>

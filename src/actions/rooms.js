@@ -1,11 +1,11 @@
 export const getRooms = () => {
     return {
-        type: 'GET',
+        type: 'GET_ROOM',
     };
 };
 export const setRooms = (rooms) => {
     return {
-        type: 'SET',
+        type: 'SET_ROOM',
         payload: rooms,
     };
 };

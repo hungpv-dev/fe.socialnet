@@ -52,6 +52,7 @@
 
   .send-messages {
     position: sticky;
+    z-index: 10;
     bottom: 0;
 
     .send-message-content {

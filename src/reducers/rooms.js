@@ -1,8 +1,8 @@
 export const rooms = (state = {}, action) => {
   switch (action.type) {
-    case 'SET':
+    case 'SET_ROOM':
       return action.payload;
-    case 'GET':
+    case 'GET_ROOM':
       return state;
     default:
       return state;

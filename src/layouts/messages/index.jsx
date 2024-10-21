@@ -11,6 +11,8 @@ import {
 } from '@/services/chatRoomService.js';
 import { useDispatch, useSelector } from "react-redux";
 import { setRooms } from "@/actions/rooms";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 const cx = classNames.bind(styles);
 
 function LayoutMessages({ children }) {
@@ -19,6 +21,7 @@ function LayoutMessages({ children }) {
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState([]);
+    const [currentId, setCurrentId] = useState(null);
     const { id } = useParams();
     const currentRooms = useSelector(state => state.rooms); 
 
@@ -28,14 +31,25 @@ function LayoutMessages({ children }) {
             let room_id = data.room.id;
             const response = await showChatRoom(room_id);
             const room = response.data.data;
-            const updatedRooms = [room, ...currentRooms.filter(r => r.chat_room_id !== room.chat_room_id)];
+            let updatedRooms = [room, ...currentRooms.filter(r => r.chat_room_id !== room.chat_room_id)];
+            updatedRooms.forEach(r => {
+                if (r.chat_room_id === parseInt(currentId)) {
+                    r.last_message.is_seen = true;
+                    r.selected = true;
+                } else {
+                    r.selected = false;
+                }
+            });
             dispatch(setRooms(updatedRooms));
         });
         return () => {
             channel.stopListening('ChatRoom\\RefreshUsers');
         };
-    }, [user]);
+    }, [user, currentId]);
 
+    useEffect(() => {
+        setCurrentId(id);
+    }, [id]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -54,13 +68,14 @@ function LayoutMessages({ children }) {
     }, []);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return '';
     }
 
     return (
         <div id="messages" className={cx("messages", { 'content-messages': !id })}>
             <SlideBar />
             {children}
+            <ToastContainer />
         </div>
     );
 }
