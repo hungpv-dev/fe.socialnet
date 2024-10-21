@@ -3,6 +3,7 @@ import { formatDateToNow } from "@/components/FormatDate";
 import styles from "./main.scss";
 import { Link } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
+import { showRoomAvatar } from "@/components/MessageComponent";
 const cx = classNames.bind(styles);
 
 function User({ room }) {
@@ -51,16 +52,9 @@ function User({ room }) {
     }
   };
   return (
-    <div className={cx("user")}>
+    <div className={cx("user", { selected: room.selected })}>
       <Link to={`/messages/${room.chat_room_id}`} className="user-avatar">
-        <div className="user-avatars">
-          {room.users.slice(0, 4).map((user) => (
-            <div className='image-user' key={user.id}>
-              <img key={user.id} src={user.avatar} className="avatar" alt="" />
-            </div>
-          ))}
-        </div>
-        <div className={room.online ? "status" : ""}></div>
+        {showRoomAvatar(room)}
       </Link>
       <Link to={`/messages/${room.chat_room_id}`} className="content">
         <h5 className="m-0">{room.name}</h5>

@@ -1,6 +1,9 @@
 @import "../../GlobalStyles/mixin.scss";
 
 .user {
+  &.selected {
+    background-color: var(--bg-color-light);
+  }
   display: flex;
   align-items: center;
   justify-content: start;
