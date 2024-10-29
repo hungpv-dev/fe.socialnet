@@ -5,16 +5,23 @@ import User from '../User';
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { PupupCreateGroupChat } from '@/components/PopupComponent';
 const cx = classNames.bind(styles);
 
 function SlideBar() {
   const [modalVisible, setModalVisible] = useState(false);
+  const [createGroupModalVisible, setCreateGroupModalVisible] = useState(false);
   const modalPopup = useRef(null);
   const buttonToggle = useRef(null);
 
   var rooms = useSelector((state) => state.rooms);
   const toggleModal = () => {
     setModalVisible(!modalVisible);
+  };
+
+  const toggleCreateGroupModal = () => {
+    setCreateGroupModalVisible(!createGroupModalVisible);
+    setModalVisible(false);
   };
 
   const handleClickOutside = (event) => {
@@ -58,15 +65,7 @@ function SlideBar() {
           {modalVisible && (
             <div className='popup-modal border p-2' ref={modalPopup}>
               <ul className='list-unstyled mb-0'>
-                <li className='d-flex align-items-center fs-8'>
-                  <div className='modal-icon fw-bold m-1 me-3 fs-5'>
-                    <i className="bi bi-circle-square"></i>
-                  </div>
-                  <div className='modal-text'>
-                    <p className='m-0 fw-bold'>Trạng thái hoạt động</p>
-                  </div>
-                </li>
-                <li className='d-flex align-items-center fs-8'>
+                <li className='d-flex align-items-center fs-8' onClick={toggleCreateGroupModal}>
                   <div className='modal-icon fw-bold m-1 me-3 fs-5'>
                     <i className="bi bi-people-fill"></i>
                   </div>
@@ -74,26 +73,11 @@ function SlideBar() {
                     <p className='m-0 fw-bold'>Tạo nhóm chat</p>
                   </div>
                 </li>
-                <li className='d-flex align-items-center fs-8'>
-                  <div className='modal-icon fw-bold m-1 me-3 fs-5'>
-                    <i className="bi bi-archive"></i>
-                  </div>
-                  <div className='modal-text'>
-                    <p className='m-0 fw-bold'>Kho lưu trữ</p>
-                  </div>
-                </li>
-                <li className='d-flex align-items-center fs-8'>
-                  <div className='modal-icon fw-bold m-1 me-3 fs-5'>
-                    <i className="bi bi-person-fill-slash"></i>
-                  </div>
-                  <div className='modal-text'>
-                    <p className='m-0 fw-bold'>Đã chặn</p>
-                  </div>
-                </li>
               </ul>
             </div>
           )}
         </header>
+        {createGroupModalVisible && <PupupCreateGroupChat onClose={() => setCreateGroupModalVisible(false)} />}
         <div className='search'>
           <div className='icon me-2'>
             <i className="bi bi-search"></i>

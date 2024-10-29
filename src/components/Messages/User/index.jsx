@@ -51,6 +51,7 @@ function User({ room }) {
       setPopupDirection("down");
     }
   };
+
   return (
     <div className={cx("user", { selected: room.selected })}>
       <Link to={`/messages/${room.chat_room_id}`} className="user-avatar">
