@@ -56,13 +56,14 @@ const DangerButton = styled(Button)(({ theme }) => ({
   '&:hover': {
     backgroundColor: theme.palette.error.dark,
   },
-  position: 'absolute',
+  position: 'absolute', 
   bottom: theme.spacing(2),
   width: 'calc(100% - 48px)',
 }));
 
-function ChatInfo({ room, onClose }) {
+function ChatInfo({ room, isOut,outs, onClose }) {
   // State
+  outs = outs ?? [];
   const [showMembers, setShowMembers] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [openNickname, setOpenNickname] = useState(false);
@@ -70,58 +71,77 @@ function ChatInfo({ room, onClose }) {
   const [openConfirm, setOpenConfirm] = useState(false);
   const [openBlockConfirm, setOpenBlockConfirm] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState(null);
   const currentUser = useSelector(state => state.user);
 
   // Xử lý dữ liệu
   if (!room) return null;
-  const admins = room.admin;
-  const isAdmin = admins.some(admin => admin.id === currentUser.id);
-  const members = [currentUser,...room.users];
+  let admins = room.admin;
+  let isAdmin = admins.some(admin => admin.id === currentUser.id);
+  let members = [currentUser,...room.users];
+  outs.forEach(item => {
+    const userId = item.replace('user_', '');
+    members = members.filter(member => member.id !== parseInt(userId));
+    admins = admins.filter(admin => admin.id !== parseInt(userId));
+  });
 
   // Xử lý sự kiện
-  const handleMemberAction = (user, action) => {
-    console.log(`${action} người dùng:`, user);
+  const handleMemberAction = async (id, action) => {
+    if (isOut) return;
+    try{
+      if(action === 'admin'){
+        await axiosInstance.put(`chat-room/${room.chat_room_id}?type=addadmin`,{id});
+      }else if(action === 'kick'){
+        await axiosInstance.post(`chat-room/out-group/${room.chat_room_id}`,{id}).then(res => res);
+      }
+      console.log(action);
+    }catch(e){
+      console.log(e);
+    }
+    handleMenuClose();
   };
 
-  const handleMenuClick = (event) => {
+  const handleMenuClick = (event, userId) => {
+    if (isOut) return;
     setAnchorEl(event.currentTarget);
+    setSelectedUserId(userId);
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+    setSelectedUserId(null);
   };
 
   const handleAvatarClick = () => {
-    if (room.chat_room_type !== 1 && isAdmin) {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.onchange = async (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const formData = new FormData();
-          formData.append('avatar', file);
-          formData.append('_method', 'PUT');
-          try {
-            await toast.promise(
-              axiosInstance.post(`chat-room/${room.chat_room_id}?type=avatar`, formData, {
-                headers: {
-                  'Content-Type': 'multipart/form-data'
-                }
-              }),
-              {
-                pending: 'Đang xử lý...',
-                success: 'Cập nhật ảnh nhóm thành công 👌',
-                error: 'Cập nhật thất bại 🤯'
+    if (isOut || !room.chat_room_type !== 1 || !isAdmin) return;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const formData = new FormData();
+        formData.append('avatar', file);
+        formData.append('_method', 'PUT');
+        try {
+          await toast.promise(
+            axiosInstance.post(`chat-room/${room.chat_room_id}?type=avatar`, formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
               }
-            );
-          } catch (error) {
-            console.error('Lỗi:', error);
-          }
+            }),
+            {
+              pending: 'Đang xử lý...',
+              success: 'Cập nhật ảnh nhóm thành công 👌',
+              error: 'Cập nhật thất bại 🤯'
+            }
+          );
+        } catch (error) {
+          console.error('Lỗi:', error);
         }
-      };
-      input.click();
-    }
+      }
+    };
+    input.click();
   };
 
   // Render header
@@ -131,15 +151,28 @@ function ChatInfo({ room, onClose }) {
         src={room.chat_room_type === 1 ? room.users[0].avatar : room.avatar}
         alt={room.name}
         onClick={handleAvatarClick}
-        title={room.chat_room_type !== 1 && isAdmin ? "Nhấp để thay đổi ảnh nhóm" : ""}
+        title={room.chat_room_type !== 1 && isAdmin && !isOut ? "Nhấp để thay đổi ảnh nhóm" : ""}
       />
       <Typography variant="h5" gutterBottom>{room.name}</Typography>
     </>
   );
 
   // Render actions
-  const renderActions = () => (
-    room.chat_room_type === 1 ? (
+  const renderActions = () => {
+    if (isOut) {
+      return (
+        <>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Bạn đã rời khỏi cuộc trò chuyện này
+          </Typography>
+          <FullWidthButton startIcon={<ImageIcon />} onClick={() => setOpenImages(true)}>
+            Xem file/ảnh đã gửi
+          </FullWidthButton>
+        </>
+      );
+    }
+
+    return room.chat_room_type === 1 ? (
       <>
         <FullWidthButton startIcon={<EditIcon />} onClick={() => setOpenNickname(true)}>
           Đặt biệt danh
@@ -160,8 +193,8 @@ function ChatInfo({ room, onClose }) {
           Xem file/ảnh đã gửi
         </FullWidthButton>
       </>
-    )
-  );
+    );
+  };
 
   // Render members
   const renderMembers = () => (
@@ -204,9 +237,9 @@ function ChatInfo({ room, onClose }) {
                 }
                 secondary={admins.some(admin => admin.id === user.id) ? "Quản trị viên" : "Thành viên"}
               />
-              {isAdmin && currentUser.id !== user.id && (
+              {isAdmin && !isOut && currentUser.id !== user.id && !admins.some(admin => admin.id === user.id) && (
                 <>
-                  <IconButton onClick={handleMenuClick}>
+                  <IconButton onClick={(e) => handleMenuClick(e, user.id)}>
                     <MoreVertIcon />
                   </IconButton>
                   <Menu
@@ -214,8 +247,8 @@ function ChatInfo({ room, onClose }) {
                     open={Boolean(anchorEl)}
                     onClose={handleMenuClose}
                   >
-                    <MenuItem onClick={() => handleMemberAction(user, 'admin')}>Thêm admin</MenuItem>
-                    <MenuItem onClick={() => handleMemberAction(user, 'kick')}>Kick khỏi nhóm</MenuItem>
+                    <MenuItem onClick={() => handleMemberAction(selectedUserId, 'admin')}>Thêm admin</MenuItem>
+                    <MenuItem onClick={() => handleMemberAction(selectedUserId, 'kick')}>Kick khỏi nhóm</MenuItem>
                   </Menu>
                 </>
               )}
@@ -228,15 +261,6 @@ function ChatInfo({ room, onClose }) {
 
   let theirUserId = room.users[0]?.id;
   let isBlocked = room.block?.includes('user_'+theirUserId);
-  // Render description
-  const renderDescription = () => (
-    room.description && (
-      <Box mt={2} width="100%">
-        <Typography variant="subtitle1" gutterBottom>Mô tả:</Typography>
-        <Typography variant="body2">{room.description}</Typography>
-      </Box>
-    )
-  );
 
   // Render dialogs
   const renderDialogs = () => (
@@ -249,19 +273,66 @@ function ChatInfo({ room, onClose }) {
         onClose={() => setOpenImages(false)}
       />
 
-      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
-        <DialogTitle>Xác nhận rời khỏi nhóm</DialogTitle>
+      <Dialog 
+        open={openConfirm} 
+        onClose={() => setOpenConfirm(false)}
+        PaperProps={{
+          style: {
+            borderRadius: '12px',
+            padding: '8px'
+          }
+        }}
+      >
+        <DialogTitle sx={{
+          textAlign: 'center',
+          color: '#d32f2f',
+          fontWeight: 'bold'
+        }}>
+          Xác nhận rời khỏi nhóm
+        </DialogTitle>
         <DialogContent>
-          <Typography>Bạn có chắc chắn muốn rời khỏi nhóm này?</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
-          <DangerButton onClick={() => {
-            console.log('Rời khỏi nhóm');
-            setOpenConfirm(false);
+          <Typography sx={{
+            textAlign: 'center',
+            color: '#666',
+            marginTop: 1
           }}>
+            Bạn có chắc chắn muốn rời khỏi nhóm này?
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{
+          padding: '16px',
+          justifyContent: 'center',
+          gap: 2
+        }}>
+          <Button 
+            variant="outlined"
+            onClick={() => setOpenConfirm(false)}
+            sx={{
+              borderRadius: '8px',
+              minWidth: '120px'
+            }}
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="contained" 
+            color="error"
+            onClick={async () => {
+              try{
+                let res = await axiosInstance.post(`chat-room/out-group/${room.chat_room_id}`).then(res => res);
+                console.log(res);
+              }catch(e){
+                console.log(e);
+              }
+              setOpenConfirm(false);
+            }}
+            sx={{
+              borderRadius: '8px',
+              minWidth: '120px'
+            }}
+          >
             Rời khỏi nhóm
-          </DangerButton>
+          </Button>
         </DialogActions>
       </Dialog>
 
@@ -278,20 +349,21 @@ function ChatInfo({ room, onClose }) {
 
       {renderHeader()}
       {renderActions()}
-      {room.chat_room_type !== 1 && renderMembers()}
-      {renderDescription()}
-
-      <Box mt="auto" width="100%">
-        {room.chat_room_type === 1 ? (
-          <DangerButton fullWidth startIcon={<BlockIcon />} onClick={() => setOpenBlockConfirm(true)}>
-            {isBlocked ? 'Bỏ chặn' : 'Chặn'}
-          </DangerButton>
-        ) : (
-          <DangerButton fullWidth startIcon={<ExitToAppIcon />} onClick={() => setOpenConfirm(true)}>
-            Rời khỏi nhóm
-          </DangerButton>
-        )}
-      </Box>
+      {room.chat_room_type !== 1 && !isOut && renderMembers()}
+    
+      {!isOut && (
+        <Box mt="auto" width="100%">
+          {room.chat_room_type === 1 ? (
+            <DangerButton fullWidth startIcon={<BlockIcon />} onClick={() => setOpenBlockConfirm(true)}>
+              {isBlocked ? 'Bỏ chặn' : 'Chặn'}
+            </DangerButton>
+          ) : (
+            <DangerButton fullWidth startIcon={<ExitToAppIcon />} onClick={() => setOpenConfirm(true)}>
+              Rời khỏi nhóm
+            </DangerButton>
+          )}
+        </Box>
+      )}
 
       {renderDialogs()}
     </StyledBox>

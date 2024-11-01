@@ -37,38 +37,68 @@ function Content() {
 
   const { id } = useParams();
 
+  const [selectImages, setSelectImages] = useState([]);
+  const [viewSelectImages, setViewSelectImages] = useState([]);
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+
+  const [open, setOpen] = useState(false);
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(true);
+
+  let room = currentRooms.find(room => room.chat_room_id === parseInt(id));
+  const user = useSelector((state) => state.user);
+  const [inputText, setInputText] = useState('');
+  const [replyContent, setReplyContent] = useState(null);
+  const [openBlockConfirm, setOpenBlockConfirm] = useState(false);
+
+  const [messages, setMessages] = useState([]);
+  const [maxMessage, setMaxMessage] = useState(0);
+  const inputRef = useRef(null);
+
+  const isOut = room.outs?.includes('user_'+user.id);
+
   useEffect(() => {
     const channel = echo.private(`room.push-message.${id}`);
-    channel.listen('ChatRoom\\PushMessage', (data) => {
-      const userId = data.message[0]?.user_send?.id;
-      setMessages(prevMessages => {
-        let newMessages = data.message.filter(newMessage =>
-          !prevMessages.some(existingMessage => existingMessage.message_id === newMessage.message_id)
-        );
-        prevMessages = prevMessages.map(mes => {
-          return {
-            ...mes,
-            is_seen: mes.is_seen.filter(user => user.id !== userId)
-          }
+    if(!isOut){
+      channel.listen('ChatRoom\\PushMessage', (data) => {
+        const userId = data.message[0]?.user_send?.id;
+        setMessages(prevMessages => {
+          let newMessages = data.message.filter(newMessage =>
+            !prevMessages.some(existingMessage => existingMessage.message_id === newMessage.message_id)
+          );
+          prevMessages = prevMessages.map(mes => {
+            return {
+              ...mes,
+              is_seen: mes.is_seen.filter(user => user.id !== userId)
+            }
+          });
+          sendMessage(id);
+          return [...newMessages, ...prevMessages];
         });
-        sendMessage(id);
-        return [...newMessages, ...prevMessages];
       });
-    });
-    channel.listen('ChatRoom\\SendMessage', (data) => {
-      const userId = data.user_id;
-      const mes = data.message;
-      setMessages(prevMessages => {
-        const updatedMessages = prevMessages.map(currentMessage => {
-          currentMessage.is_seen = currentMessage.is_seen.filter(us => us.id !== userId);
-          if (currentMessage.message_id === mes.message_id) {
-            currentMessage.is_seen = mes.is_seen;
-          };
-          return currentMessage;
+      channel.listen('ChatRoom\\SendMessage', (data) => {
+        const userId = data.user_id;
+        const mes = data.message;
+        setMessages(prevMessages => {
+          const updatedMessages = prevMessages.map(currentMessage => {
+            currentMessage.is_seen = currentMessage.is_seen.filter(us => us.id !== userId);
+            if (currentMessage.message_id === mes.message_id) {
+              currentMessage.is_seen = mes.is_seen;
+            };
+            return currentMessage;
+          });
+          return [...updatedMessages];
         });
-        return [...updatedMessages];
       });
-    });
+    }
     channel.listen('ChatRoom\\DestroyMesssage', (data) => {
       const message = data.message;
       setMessages(prevMessages => {
@@ -98,35 +128,7 @@ function Content() {
       channel.stopListening('ChatRoom\\SendMessage');
       channel.stopListening('ChatRoom\\DestroyMesssage');
     };
-  }, [id]);
-
-  const [selectImages, setSelectImages] = useState([]);
-  const [viewSelectImages, setViewSelectImages] = useState([]);
-  const [isPickerOpen, setIsPickerOpen] = useState(false);
-
-  const [open, setOpen] = useState(false);
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingMessages, setIsLoadingMessages] = useState(true);
-
-  let room = currentRooms.find(room => room.chat_room_id === parseInt(id));
-
-  const user = useSelector((state) => state.user);
-
-  const [inputText, setInputText] = useState('');
-  const [replyContent, setReplyContent] = useState(null);
-  const [openBlockConfirm, setOpenBlockConfirm] = useState(false);
-
-  const [messages, setMessages] = useState([]);
-  const [maxMessage, setMaxMessage] = useState(0);
-  const inputRef = useRef(null);
+  }, [id,isOut]);
 
   const fetchMessages = async () => {
     try {
@@ -268,7 +270,6 @@ function Content() {
   const handleBlockConfirmToggle = () => {
     setOpenBlockConfirm(prev => !prev);
   };
-
   return (
     <div id='content' className={cx("content")}>
       <Drawer
@@ -281,7 +282,9 @@ function Content() {
         }}
       >
         <ChatInfo
+          outs={room.outs}
           room={room}
+          isOut={isOut}
           onClose={handleDrawerClose}
         />
       </Drawer>
@@ -304,29 +307,33 @@ function Content() {
         </div>
         <div className={cx('list-settings')}>
           <Stack direction="row" spacing={1}>
-            <IconButton
-              title="Bắt đầu gọi thoại"
-              sx={{
-                color: 'primary.main',
-                '&:hover': {
-                  backgroundColor: 'primary.light',
-                }
-              }}
-            >
-              <CallIcon />
-            </IconButton>
+            {!isOut && (
+              <>
+                <IconButton
+                  title="Bắt đầu gọi thoại"
+                  sx={{
+                    color: 'primary.main',
+                    '&:hover': {
+                      backgroundColor: 'primary.light',
+                    }
+                  }}
+                >
+                  <CallIcon />
+                </IconButton>
 
-            <IconButton
-              title="Bắt đầu gọi video"
-              sx={{
-                color: 'primary.main',
-                '&:hover': {
-                  backgroundColor: 'primary.light',
-                }
-              }}
-            >
-              <VideocamIcon />
-            </IconButton>
+                <IconButton
+                  title="Bắt đầu gọi video"
+                  sx={{
+                    color: 'primary.main',
+                    '&:hover': {
+                      backgroundColor: 'primary.light',
+                    }
+                  }}
+                >
+                  <VideocamIcon />
+                </IconButton>
+              </>
+            )}
 
             <IconButton
               onClick={handleDrawerOpen}
@@ -360,16 +367,42 @@ function Content() {
               setMessage={setMessages}
               key={item.message_id}
               message={item}
+              isOut={isOut}
               user={user}
               onReply={handleReply}
               updateMessage={updateMessage}
+              disabled={isOut}
             />
           ))}
         </InfiniteScroll>
       </div>
       {openBlockConfirm && <BlockUser room={room} block={isBlockedTo} open={openBlockConfirm} onClose={() => setOpenBlockConfirm(false)} />}
       <footer className='send-messages'>
-        {isBlockedTo ? (
+        {isOut ? (
+          <Typography
+            variant="body1"
+            color="text.primary"
+            align="center"
+            sx={{
+              p: 2,
+              bgcolor: 'background.paper',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 1,
+              '& svg': {
+                fontSize: 20,
+                color: 'text.primary'
+              }
+            }}
+          >
+            <WarningIcon />
+            Bạn đã rời khỏi cuộc trò chuyện này
+          </Typography>
+        ) : isBlockedTo ? (
           <LoadingButton
             variant="contained"
             color="inherit"

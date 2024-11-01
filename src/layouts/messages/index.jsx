@@ -31,18 +31,24 @@ function LayoutMessages({ children }) {
             let room_id = data.room.id;
             const response = await showChatRoom(room_id);
             const room = response.data.data;
-            let updatedRooms = [room, ...currentRooms.filter(r => r.chat_room_id !== room.chat_room_id)];
-            updatedRooms.forEach(r => {
-                if (r.chat_room_id === parseInt(currentId)) {
-                    if(r.last_message){
-                        r.last_message.is_seen = true;
-                    }
-                    r.selected = true;
-                } else {
-                    r.selected = false;
+            const isOut = room.outs?.includes('user_' + user.id);
+            if (!isOut) {
+                let updatedRooms = [...currentRooms.filter(r => r.chat_room_id !== room.chat_room_id)];
+                if (room.last_message) {
+                    updatedRooms = [room, ...updatedRooms];
                 }
-            });
-            dispatch(setRooms(updatedRooms));
+                updatedRooms.forEach(r => {
+                    if (r.chat_room_id === parseInt(currentId)) {
+                        if (r.last_message) {
+                            r.last_message.is_seen = true;
+                        }
+                        r.selected = true;
+                    } else {
+                        r.selected = false;
+                    }
+                });
+                dispatch(setRooms(updatedRooms));
+            }
         });
         return () => {
             channel.stopListening('ChatRoom\\RefreshUsers');

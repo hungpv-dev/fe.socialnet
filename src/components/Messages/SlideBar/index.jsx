@@ -15,6 +15,7 @@ function SlideBar() {
   const buttonToggle = useRef(null);
 
   var rooms = useSelector((state) => state.rooms);
+  console.log(rooms);
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };

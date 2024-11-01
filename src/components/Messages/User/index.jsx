@@ -1,57 +1,58 @@
 import classNames from "classnames/bind";
 import { formatDateToNow } from "@/components/FormatDate";
 import styles from "./main.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
 import { showRoomAvatar } from "@/components/MessageComponent";
+import { IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button } from '@mui/material';
+import { NotificationsOff, Delete, Person, Archive, PersonOff, MoreVert, Warning } from '@mui/icons-material';
+import BlockUser from "../ChatInfo/BlockUser";
+import axiosInstance from '@/axios';
+import { useSelector } from "react-redux";
+
 const cx = classNames.bind(styles);
 
 function User({ room }) {
-  const [modalVisible, setModalVisible] = useState(false);
-  const modalPopup = useRef(null);
-  const buttonToggle = useRef(null);
-  const [popupDirection, setPopupDirection] = useState("down");
+  const navigate = useNavigate();
+  const user = useSelector(state => state.user);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [showBlockModal, setShowBlockModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const open = Boolean(anchorEl);
 
-  const toggleModal = (event) => {
+  let theirUserId = room.users[0]?.id;
+  let isBlocked = room.block?.includes('user_'+theirUserId);
+  const isOut = room.outs?.includes('user_' + user.id);
+
+
+  const handleClick = (event) => {
     event.stopPropagation();
-    adjustPopupDirection();
-    setModalVisible(!modalVisible);
+    setAnchorEl(event.currentTarget);
   };
 
-  const handleClickOutside = (event) => {
-    if (
-      modalPopup.current &&
-      !modalPopup.current.contains(event.target) &&
-      !buttonToggle.current.contains(event.target)
-    ) {
-      setModalVisible(false);
-    }
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
-  useEffect(() => {
-    if (modalVisible) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [modalVisible]);
-
-  const adjustPopupDirection = () => {
-    const buttonRect = buttonToggle.current.getBoundingClientRect();
-    const viewportHeight = window.innerHeight;
-    const popupHeight = 250;
-
-    if (buttonRect.bottom + popupHeight > viewportHeight) {
-      setPopupDirection("up");
-    } else {
-      setPopupDirection("down");
-    }
+  const handleBlockUser = () => {
+    setShowBlockModal(true);
+    handleClose();
   };
 
+  const handleDeleteChat = () => {
+    setShowDeleteModal(true);
+    handleClose();
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await axiosInstance.put(`chat-room/${room.chat_room_id}?type=remove`);
+      navigate('/messages');
+    } catch(e) {
+      console.log(e);
+    }
+    setShowDeleteModal(false);
+  };
   return (
     <div className={cx("user", { selected: room.selected })}>
       <Link to={`/messages/${room.chat_room_id}`} className="user-avatar">
@@ -59,7 +60,7 @@ function User({ room }) {
       </Link>
       <Link to={`/messages/${room.chat_room_id}`} className="content">
         <h5 className="m-0">{room.name}</h5>
-        <p className={!room.last_message?.is_seen ? "m-0 mt-1 text-dark" : "m-0"}>
+        <p className={!room.last_message?.is_seen && !isOut ? "m-0 mt-1 text-dark" : "m-0"}>
           {!room.last_message ? 'Bắt đầu cuộc trò chuyện ngay?' : ((room.last_message.body.length > 20
             ? room.last_message.body.substring(0, 40) + '...'
             : (room.last_message.body || 'Đã gửi một hình ảnh')))} . {
@@ -67,64 +68,115 @@ function User({ room }) {
           }
         </p>
       </Link>
-      <button
-        ref={buttonToggle}
-        onClick={toggleModal}
-        className={`popup ${modalVisible ? "d-flex" : "d-none"
-          } justify-content-center align-items-center`}
+      
+      <IconButton
+        onClick={handleClick}
+        size="small"
+        sx={{ ml: 2 }}
+        aria-controls={open ? 'account-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
       >
-        <i className="bi bi-three-dots fs-3 d-flex justify-content-center align-items-center"></i>
-      </button>
-      {modalVisible && (
-        <div
-          className={`popup-modal border p-2 ${popupDirection === "up" ? "popup-up" : "popup-down"
-            }`}
-          ref={modalPopup}
-        >
-          <ul className="list-unstyled mb-0">
-            <li className="d-flex align-items-center fs-8">
-              <div className="modal-icon fw-bold m-1 me-3 fs-5">
-                <i className="bi bi-bell"></i>
-              </div>
-              <div className="modal-text">
-                <p className="m-0 fw-bold">Tắt thông báo</p>
-              </div>
-            </li>
-            <li className="d-flex align-items-center fs-8">
-              <div className="modal-icon fw-bold m-1 me-3 fs-5">
-                <i className="bi bi-trash3"></i>
-              </div>
-              <div className="modal-text">
-                <p className="m-0 fw-bold">Xóa đoạn chat</p>
-              </div>
-            </li>
-            <li className="d-flex align-items-center fs-8">
-              <div className="modal-icon fw-bold m-1 me-3 fs-5">
-                <i className="bi bi-person-circle"></i>
-              </div>
-              <div className="modal-text">
-                <p className="m-0 fw-bold">Xem trang cá nhân</p>
-              </div>
-            </li>
-            <li className="d-flex align-items-center fs-8">
-              <div className="modal-icon fw-bold m-1 me-3 fs-5">
-                <i className="bi bi-archive"></i>
-              </div>
-              <div className="modal-text">
-                <p className="m-0 fw-bold">Lưu trữ đoạn chat</p>
-              </div>
-            </li>
-            <li className="d-flex align-items-center fs-8">
-              <div className="modal-icon fw-bold m-1 me-3 fs-5">
-                <i className="bi bi-person-fill-slash"></i>
-              </div>
-              <div className="modal-text">
-                <p className="m-0 fw-bold">Chặn</p>
-              </div>
-            </li>
-          </ul>
-        </div>
-      )}
+        <MoreVert />
+      </IconButton>
+
+      <Menu
+        anchorEl={anchorEl}
+        id="account-menu"
+        open={open}
+        onClose={handleClose}
+        onClick={handleClose}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            mt: 1.5,
+            '& .MuiAvatar-root': {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        {/* <MenuItem>
+          <ListItemIcon>
+            <NotificationsOff fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Tắt thông báo</ListItemText>
+        </MenuItem> */}
+
+        <MenuItem onClick={handleDeleteChat}>
+          <ListItemIcon>
+            <Delete fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Xóa đoạn chat</ListItemText>
+        </MenuItem>
+
+        {/* <MenuItem>
+          <ListItemIcon>
+            <Person fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Xem trang cá nhân</ListItemText>
+        </MenuItem> */}
+
+        {/* <MenuItem>
+          <ListItemIcon>
+            <Archive fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Lưu trữ đoạn chat</ListItemText>
+        </MenuItem> */}
+
+        {room.chat_room_type === 1 && (
+          <MenuItem onClick={handleBlockUser}>
+            <ListItemIcon>
+              <PersonOff fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>{isBlocked ? 'Bỏ chặn' : 'Chặn'}</ListItemText>
+          </MenuItem>
+        )}
+      </Menu>
+
+      {showBlockModal && <BlockUser room={room} block={isBlocked} open={showBlockModal} onClose={() => setShowBlockModal(false)} />}
+
+      <Dialog
+        open={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ bgcolor: 'error.main', color: 'error.contrastText', display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Warning />
+          Xác nhận xóa đoạn chat
+        </DialogTitle>
+        <DialogContent sx={{ pt: 2 }}>
+          <Typography variant="body1" gutterBottom>
+            Bạn có chắc chắn muốn xóa đoạn chat này không?
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Sau khi xóa, bạn sẽ không thể khôi phục lại đoạn chat này.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="outlined"
+            onClick={() => setShowDeleteModal(false)}
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleConfirmDelete}
+          >
+            Xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
