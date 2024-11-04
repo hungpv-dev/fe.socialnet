@@ -1,4 +1,4 @@
-export const rooms = (state = {}, action) => {
+export const rooms = (state = [], action) => {
   switch (action.type) {
     case 'SET_ROOM':
       return action.payload;

@@ -49,6 +49,11 @@
     font-size: 18px;
     font-weight: 600;
 }
+.header h3 {
+    margin: 10px 0;
+    font-size: 20px;
+    font-weight: 600;
+}
 
 .closeButton {
     position: absolute;
@@ -91,7 +96,24 @@
     position: relative;
     padding-left: 28px;
 }
+.chipSpacing {
+    margin: 4px;
+}
+.loadingContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 16px;
+}
 
+.loadingText {
+    margin-left: 8px;
+}
+
+.noResultsText {
+    text-align: center;
+    margin-top: 16px;
+}
 .radioText::before {
     content: '';
     position: absolute;
@@ -103,7 +125,12 @@
     border: 2px solid #BCC0C4;
     border-radius: 50%;
 }
-
+.avatarContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+  }
 .radioInput:checked + .radioText::after {
     content: '';
     position: absolute;

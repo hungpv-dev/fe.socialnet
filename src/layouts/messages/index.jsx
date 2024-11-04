@@ -23,7 +23,7 @@ function LayoutMessages({ children }) {
     const [user, setUser] = useState([]);
     const [currentId, setCurrentId] = useState(null);
     const { id } = useParams();
-    const currentRooms = useSelector(state => state.rooms); 
+    const currentRooms = useSelector(state => state.rooms);
 
     useEffect(() => {
         const channel = echo.private(`room.refresh-users.${user.id}`);
@@ -31,16 +31,24 @@ function LayoutMessages({ children }) {
             let room_id = data.room.id;
             const response = await showChatRoom(room_id);
             const room = response.data.data;
-            let updatedRooms = [room, ...currentRooms.filter(r => r.chat_room_id !== room.chat_room_id)];
-            updatedRooms.forEach(r => {
-                if (r.chat_room_id === parseInt(currentId)) {
-                    r.last_message.is_seen = true;
-                    r.selected = true;
-                } else {
-                    r.selected = false;
+            const isOut = room.outs?.includes('user_' + user.id);
+            if (!isOut) {
+                let updatedRooms = [...currentRooms.filter(r => r.chat_room_id !== room.chat_room_id)];
+                if (room.last_message) {
+                    updatedRooms = [room, ...updatedRooms];
                 }
-            });
-            dispatch(setRooms(updatedRooms));
+                updatedRooms.forEach(r => {
+                    if (r.chat_room_id === parseInt(currentId)) {
+                        if (r.last_message) {
+                            r.last_message.is_seen = true;
+                        }
+                        r.selected = true;
+                    } else {
+                        r.selected = false;
+                    }
+                });
+                dispatch(setRooms(updatedRooms));
+            }
         });
         return () => {
             channel.stopListening('ChatRoom\\RefreshUsers');
@@ -51,11 +59,13 @@ function LayoutMessages({ children }) {
         setCurrentId(id);
     }, [id]);
 
+
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const responseRooms = await chatRoom.index();
-                dispatch(setRooms(responseRooms.data)); 
+                dispatch(setRooms(responseRooms.data));
                 const responseUser = await auth.me();
                 setUser(responseUser.data);
             } catch (error) {
