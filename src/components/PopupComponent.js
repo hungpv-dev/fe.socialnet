@@ -21,8 +21,9 @@ export const PopupDeleteMessage = ({ onClose, onDeleteForMe, onDeleteForAll, me 
     useEffect(() => {
         checkOption();
     }, [me]);
+
     const handleDelete = () => {
-        if (deleteOption === 'forAll') {
+        if (deleteOption === 'forMe') {
             onDeleteForMe();
         } else {
             onDeleteForAll();
@@ -88,7 +89,6 @@ export const PopupDeleteMessage = ({ onClose, onDeleteForMe, onDeleteForAll, me 
     );
 };
 
-
 export const PupupCreateGroupChat = ({ onClose }) => {
     const navigate = useNavigate();
     const [groupName, setGroupName] = useState('');
@@ -135,24 +135,27 @@ export const PupupCreateGroupChat = ({ onClose }) => {
         }
     };
 
-    useEffect(() => {
-        const searchFriends = async () => {
-            setIsLoading(true);
+    const searchFriends = async () => {
+        setIsLoading(true);
+        setNoResults(false);
+
+        if (searchTerm.trim() !== '') {
+            console.log('tìm');
+            const response = await axios.post(`friend/find?name=${searchTerm}`).then(res => res);
+            const data = await response.data.data;
+            setFriends(data);
+            setNoResults(data.length === 0);
+        } else {
             setNoResults(false);
+            setFriends([]);
+        }
+        setIsLoading(false);
+    }
 
-            if (searchTerm.trim() !== '') {
-                const response = await axios(`search-friends?q=${searchTerm}`).then(res => res);
-                const data = await response.data;
-                setFriends(data);
-                setNoResults(data.length === 0);
-            } else {
-                setNoResults(false);
-                setFriends([]);
-            }
-            setIsLoading(false);
-        };
-
-        const debounce = setTimeout(searchFriends, 300);
+    useEffect(() => {
+        const debounce = setTimeout(() => {
+            searchFriends();
+        }, 500);
         return () => clearTimeout(debounce);
     }, [searchTerm]);
 
@@ -251,7 +254,13 @@ export const PupupCreateGroupChat = ({ onClose }) => {
                                         key={friend.id}
                                         className={styles.friendItem}
                                         onClick={() => handleAddFriend(friend)}
-                                        style={{ cursor: 'pointer' }}
+                                        sx={{
+                                            cursor: 'pointer',
+                                            '&:hover': {
+                                                backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                                transition: 'background-color 0.3s'
+                                            }
+                                        }}
                                     >
                                         <ListItemAvatar>
                                             <Avatar src={friend.avatar} alt={friend.name} />

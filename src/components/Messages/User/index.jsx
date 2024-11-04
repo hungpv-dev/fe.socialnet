@@ -2,18 +2,20 @@ import classNames from "classnames/bind";
 import { formatDateToNow } from "@/components/FormatDate";
 import styles from "./main.scss";
 import { Link, useNavigate } from "react-router-dom";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { showRoomAvatar } from "@/components/MessageComponent";
 import { IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button } from '@mui/material';
-import { NotificationsOff, Delete, Person, Archive, PersonOff, MoreVert, Warning } from '@mui/icons-material';
+import { Delete, PersonOff, MoreVert, Warning } from '@mui/icons-material';
 import BlockUser from "../ChatInfo/BlockUser";
 import axiosInstance from '@/axios';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setRooms } from "@/actions/rooms";
 
 const cx = classNames.bind(styles);
 
-function User({ room }) {
+function User({ room, currentRooms = [] }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const user = useSelector(state => state.user);
   const [anchorEl, setAnchorEl] = useState(null);
   const [showBlockModal, setShowBlockModal] = useState(false);
@@ -22,7 +24,8 @@ function User({ room }) {
 
   let theirUserId = room.users[0]?.id;
   let isBlocked = room.block?.includes('user_'+theirUserId);
-  const isOut = room.outs?.includes('user_' + user.id);
+  const outs = room.outs ?? [];
+  const isOut = outs?.includes('user_'+user.id);
 
 
   const handleClick = (event) => {
@@ -47,6 +50,8 @@ function User({ room }) {
   const handleConfirmDelete = async () => {
     try {
       await axiosInstance.put(`chat-room/${room.chat_room_id}?type=remove`);
+      const updatedRooms = currentRooms.filter(r => r.chat_room_id !== room.chat_room_id);
+      dispatch(setRooms(updatedRooms));
       navigate('/messages');
     } catch(e) {
       console.log(e);
