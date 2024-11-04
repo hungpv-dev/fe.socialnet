@@ -52,9 +52,12 @@ function Content() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
+  const user = useSelector((state) => state.user);
 
   let room = currentRooms.find(room => room.chat_room_id === parseInt(id));
-  const user = useSelector((state) => state.user);
+  const outs = room?.outs ?? [];
+  const isOut = outs?.includes('user_'+user.id);
+
   const [inputText, setInputText] = useState('');
   const [replyContent, setReplyContent] = useState(null);
   const [openBlockConfirm, setOpenBlockConfirm] = useState(false);
@@ -63,7 +66,20 @@ function Content() {
   const [maxMessage, setMaxMessage] = useState(0);
   const inputRef = useRef(null);
 
-  const isOut = room.outs?.includes('user_'+user.id);
+  useEffect(() => {
+    const fetchRoom = async () => {
+      if (!room) {
+        try {
+          const response = await axios.get(`chat-room/${id}`);
+          let newRooms = [response.data.data,...currentRooms];
+          dispatch(setRooms(newRooms));
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    };
+    fetchRoom();
+  }, [id]);
 
   useEffect(() => {
     const channel = echo.private(`room.push-message.${id}`);
@@ -194,10 +210,12 @@ function Content() {
   }, [handlePaste]);
 
   if (isLoadingMessages) {
+    console.log('loading');
     return <PageLoading />;
   }
   if (!room) {
-    return <h1>Không tìm thấy cuộc trò chuyện</h1>;
+    console.log(room);
+    return <PageLoading />;
   }
   const updateMessage = (updatedMessage) => {
     setMessages(prevMessages => prevMessages.map(msg =>

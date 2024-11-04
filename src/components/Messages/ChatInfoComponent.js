@@ -16,6 +16,7 @@ import BlockUser from './ChatInfo/BlockUser';
 import { toast } from 'react-toastify';
 import axiosInstance from '@/axios';
 import ListImages from './ChatInfo/ListImages';
+import AddMember from './ChatInfo/AddMember';
 
 // Styled components
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -66,13 +67,15 @@ function ChatInfo({ room, isOut,outs, onClose }) {
   outs = outs ?? [];
   const [showMembers, setShowMembers] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
-  const [openNickname, setOpenNickname] = useState(false);
+  const [openNickname, setOpenNickname] = useState(false); 
   const [openImages, setOpenImages] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [openBlockConfirm, setOpenBlockConfirm] = useState(false);
+  const [openAddMember, setOpenAddMember] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const currentUser = useSelector(state => state.user);
+  isOut = outs.includes('user_' + currentUser.id);
 
   // Xử lý dữ liệu
   if (!room) return null;
@@ -92,9 +95,8 @@ function ChatInfo({ room, isOut,outs, onClose }) {
       if(action === 'admin'){
         await axiosInstance.put(`chat-room/${room.chat_room_id}?type=addadmin`,{id});
       }else if(action === 'kick'){
-        await axiosInstance.post(`chat-room/out-group/${room.chat_room_id}`,{id}).then(res => res);
+        await axiosInstance.put(`chat-room/${room.chat_room_id}?type=out`,{id}).then(res => res);
       }
-      console.log(action);
     }catch(e){
       console.log(e);
     }
@@ -113,7 +115,7 @@ function ChatInfo({ room, isOut,outs, onClose }) {
   };
 
   const handleAvatarClick = () => {
-    if (isOut || !room.chat_room_type !== 1 || !isAdmin) return;
+    if (isOut || room.chat_room_type === 1 || !isAdmin) return;
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -184,9 +186,9 @@ function ChatInfo({ room, isOut,outs, onClose }) {
     ) : (
       <>
         <Typography variant="body2" color="text.secondary" gutterBottom>
-          Số thành viên: {room.users.length}
+          Số thành viên: {members.length}
         </Typography>
-        <FullWidthButton startIcon={<PersonAddIcon />}>
+        <FullWidthButton startIcon={<PersonAddIcon />} onClick={() => setOpenAddMember(true)}>
           Thêm thành viên
         </FullWidthButton>
         <FullWidthButton startIcon={<ImageIcon />} onClick={() => setOpenImages(true)}>
@@ -273,6 +275,13 @@ function ChatInfo({ room, isOut,outs, onClose }) {
         onClose={() => setOpenImages(false)}
       />
 
+      <AddMember
+        open={openAddMember}
+        room={room}
+        members={members}
+        onClose={() => setOpenAddMember(false)}
+      />
+
       <Dialog 
         open={openConfirm} 
         onClose={() => setOpenConfirm(false)}
@@ -319,8 +328,7 @@ function ChatInfo({ room, isOut,outs, onClose }) {
             color="error"
             onClick={async () => {
               try{
-                let res = await axiosInstance.post(`chat-room/out-group/${room.chat_room_id}`).then(res => res);
-                console.log(res);
+                await axiosInstance.put(`chat-room/${room.chat_room_id}?type=out`).then(res => res);
               }catch(e){
                 console.log(e);
               }

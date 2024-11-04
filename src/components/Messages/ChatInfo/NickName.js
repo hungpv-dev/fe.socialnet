@@ -54,7 +54,15 @@ function NickName({ room, open, onClose, closeModal }) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog 
+      open={open} 
+      onClose={handleClose}
+      onClick={(e) => {
+        if (e.target.classList.contains('MuiDialog-container')) {
+          handleClose();
+        }
+      }}
+    >
       <DialogTitle>Đặt biệt danh</DialogTitle>
       <DialogContent>
         <TextField

@@ -31,7 +31,8 @@ function LayoutMessages({ children }) {
             let room_id = data.room.id;
             const response = await showChatRoom(room_id);
             const room = response.data.data;
-            const isOut = room.outs?.includes('user_' + user.id);
+            const outs = room.outs ?? [];
+            const isOut = outs?.includes('user_' + user.id);
             if (!isOut) {
                 let updatedRooms = [...currentRooms.filter(r => r.chat_room_id !== room.chat_room_id)];
                 if (room.last_message) {
@@ -48,6 +49,14 @@ function LayoutMessages({ children }) {
                     }
                 });
                 dispatch(setRooms(updatedRooms));
+            } else {
+                let newRoom = currentRooms.map(item => {
+                    if(item.chat_room_id === room_id){
+                        item.outs = outs;
+                    }
+                    return item;
+                });
+                dispatch(setRooms(newRoom));
             }
         });
         return () => {
@@ -58,8 +67,6 @@ function LayoutMessages({ children }) {
     useEffect(() => {
         setCurrentId(id);
     }, [id]);
-
-
 
     useEffect(() => {
         const fetchData = async () => {
