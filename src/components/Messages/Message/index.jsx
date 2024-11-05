@@ -7,14 +7,13 @@ import { useEffect, useRef, useState } from 'react';
 import { ShowEmojiMessage } from '@/components/EmojiComponent';
 const cx = classNames.bind(styles);
 
-function Message({ message, user, onReply, updateMessage, setMessage }) {
+function Message({ message, isOut, user, onReply, updateMessage, setMessage }) {
   const [showEmoji,setShowEmoji] = useState(false)
   const me = user && user.id === message.user_send.id
   const rep = message.reply_to
   const send = message.is_seen.filter(seen => seen.id !== user.id)
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
-
   const emojiRef = useRef(null);
 
   useEffect(() => {
@@ -56,6 +55,33 @@ function Message({ message, user, onReply, updateMessage, setMessage }) {
     setShowDeletePopup(false);
   };
 
+  if (message.is_nofi) {
+    return (
+      <>
+        <div className={cx('user-sends')} style={{ margin: send?.length > 0 ? '10px 0' : '0px' }}>
+          {
+            send && send.map((user) =>
+            (
+              <div key={user.id} className={cx('user-send')}>
+                <img src={user.avatar} alt="" />
+              </div>
+            )
+            )
+          }
+        </div>
+        <div style={{
+          textAlign: 'center', 
+          fontSize: '12px',
+          color: '#666',
+          margin: '5px 0',
+          fontStyle: 'italic'
+        }}>
+          {message.content}
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <div className={cx('user-sends')} style={{ marginBottom: '15px' }}>
@@ -96,7 +122,7 @@ function Message({ message, user, onReply, updateMessage, setMessage }) {
             </div>
             <div dangerouslySetInnerHTML={{ __html: showMessageContent(message) }} />
             <div className={`message-settings ${showEmoji ? 'd-flex' : ''}`}>
-              {!message.flagged && (
+              {!message.flagged && !isOut && (
                 <ul className='list-unstyled d-flex gap-2 mb-0'>
                   <li className='d-flex align-items-center position-relative' ref={emojiRef}>
                     <button

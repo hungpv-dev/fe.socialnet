@@ -1,8 +1,9 @@
-import { React, Fragment, useEffect,useState } from "react";
+import { React, Fragment, useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { pulicRouter, privateRouters, adminRouters } from "./routes";
 import { LayoutAdmin, LayoutClient } from "./layouts";
 import useAuth from "@/hooks/useAuth";
+import GlobalImageViewer from "./components/GlobalImageViewer";
 
 const App = () => {
   const auth = useAuth();
@@ -21,6 +22,8 @@ const App = () => {
   // }, [auth]);
   // if (!isReady) return null;
 
+  if (!isReady) return null;
+  
   return (
     <>
       <Routes>
@@ -92,6 +95,7 @@ const App = () => {
           }
         })}
       </Routes>
+      <GlobalImageViewer />
     </>
   );
 };

@@ -39,6 +39,9 @@ body {
         #content{
             display: block !important;
         }
+        #content-none{
+            display: flex;
+        }
     }
     
 }
@@ -54,6 +57,9 @@ body {
         }
         #content{
             display: block !important;
+        }
+        #content-none{
+            display: flex;
         }
     }
     
@@ -71,6 +77,14 @@ body {
         #content{
             display: block !important;
         }
+        #content-none{
+            display: flex;
+        }
     }
     
+}
+@media screen and (max-width: 767px) {
+    #content-none{
+        display: none;
+    }
 }

@@ -12,7 +12,6 @@ type Props = {}
 
 const Home = (props: Props) => {
 
-
   return (
     <div  className = {cx("home")}>
         <LeftSidebar />
