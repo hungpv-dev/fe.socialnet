@@ -8,8 +8,8 @@ const cx = classNames.bind(styles);
 function LayoutClient({ children }) {
     return (
         <section className={cx("page")}>
-            <Header className={cx("header")} />
             <div className={cx("content")}>
+            <Header className={cx("header")} />
                 {children}
             </div>
         </section>

@@ -30,9 +30,7 @@ import PasswordAndSecurity from "../pages/Client/Settings/PasswordAndSecurity";
 import Search from "../pages/Client/Search";
 import Notification from "../pages/Client/Notification";
 import New from "../pages/Client/New";
-import trangAnh from "../pages/Client/TrangCaNhan/trangAnh";
-// import trangBanBe from "../pages/Client/TrangCaNhan/trangbanbe";
-import trangGioiThieu from "../pages/Client/TrangCaNhan/trangGioiThieu";
+
 // Router không cần đăng nhập vẫn vô được
 const pulicRouter = [
     {
@@ -93,18 +91,9 @@ const privateRouters = [
     },
     // trang ca nhan
     {
-        path: "/profile", component: Canhan
+        path: "/frofile", component: Canhan
     },
-    {
-        path: "/trangAnh", component: trangAnh
-    },
-    // {
-    //     path: "/trangBanBe", component: trangBanBe
-    // },
-    {
-        path: "/trangGioiThieu", component: trangGioiThieu
-    },
-
+   
     {
         path: "/search", component: Search
     },
