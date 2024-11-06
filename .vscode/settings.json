@@ -1,5 +1,6 @@
 {
     "multiDiffEditor.experimental.enabled": true,
     "editor.find.addExtraSpaceOnTop": true,
-    "workbench.remoteIndicator.showExtensionRecommendations": true
+    "workbench.remoteIndicator.showExtensionRecommendations": true,
+    "liveServer.settings.port": 5501
 }

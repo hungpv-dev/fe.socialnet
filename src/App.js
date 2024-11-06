@@ -3,20 +3,25 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { pulicRouter, privateRouters, adminRouters } from "./routes";
 import { LayoutAdmin, LayoutClient } from "./layouts";
 import useAuth from "@/hooks/useAuth";
+import GlobalImageViewer from "./components/GlobalImageViewer";
 
 const App = () => {
-  // const auth = useAuth();
-  // const [checkLogin, setCheckLogin] = useState(false);
-  // const [isReady, setIsReady] = useState(false);
+  const auth = useAuth();
+  const [checkLogin, setCheckLogin] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const checkAdmin = true;
-  const checkLogin = true;
 
-  // useEffect(() => {
-  //   setCheckLogin(auth.checkLogin());
-  //   setIsReady(true);
-  // }, []);
-  // if (!isReady) return null;
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const isLoggedIn = await auth.checkLogin();
+      setCheckLogin(isLoggedIn);
+      setIsReady(true);
+    };
+    checkLoginStatus();
+  }, [auth]);
 
+  if (!isReady) return null;
+  
   return (
     <>
       <Routes>
@@ -88,6 +93,7 @@ const App = () => {
           }
         })}
       </Routes>
+      <GlobalImageViewer />
     </>
   );
 };

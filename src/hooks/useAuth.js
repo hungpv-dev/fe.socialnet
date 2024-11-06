@@ -1,3 +1,4 @@
+import { useDispatch } from 'react-redux';
 import {
   login as loginService,
   register as registerService,
@@ -5,8 +6,10 @@ import {
   logout as logoutService,
   me as meService,
 } from '../services/authService';
+import { setUser } from '@/actions/user';
 
 const useAuth = () => {
+  const dispatch = useDispatch();
 
   const login = async (email, password) => {
     try {
@@ -35,15 +38,25 @@ const useAuth = () => {
     return response;
   };
 
-  const checkLogin = () => {
+  const checkLogin = async () => {
     const access_token = localStorage.getItem('access_token');
     const expires_in = localStorage.getItem('expires_in');
     if(expires_in && access_token){
       const now = Date.now();
       if(now > expires_in){
         return false;
+      }else{
+        try{
+          const response = await meService(access_token);
+          dispatch(setUser(response.data)); 
+          return true;
+        }catch(errors){
+          console.log(errors);
+          return false;  
+        }
       }
-      return true;
+    }else{
+      return false
     }
   };
 

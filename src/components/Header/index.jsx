@@ -33,7 +33,9 @@ function Header() {
             <i className={cx('bi bi-grid-3x3-gap-fill')}></i>
           </div>
           <div data-tooltip="SocialChat">
+          <Link to='/messages'>
             <i className={cx('bi bi-chat-dots-fill')}></i>
+          </Link>
           </div>
           <div data-tooltip="Thông báo">
             <i className={cx('bi bi-bell-fill')}></i>

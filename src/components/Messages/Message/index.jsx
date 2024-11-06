@@ -1,64 +1,165 @@
 import classNames from 'classnames/bind';
 
 import styles from "./main.scss";
-import { showImages } from "@/components/ImageComponent";
+import { deleteMessage, showContentReply, showMessageContent } from '@/components/MessageComponent';
+import { PopupDeleteMessage } from '@/components/PopupComponent';
+import { useEffect, useRef, useState } from 'react';
+import { ShowEmojiMessage } from '@/components/EmojiComponent';
 const cx = classNames.bind(styles);
 
-function Message({ message, user, me, rep, send, onReply }) {
+function Message({ message, isOut, user, onReply, updateMessage, setMessage }) {
+  const [showEmoji,setShowEmoji] = useState(false)
+  const me = user && user.id === message.user_send.id
+  const rep = message.reply_to
+  const send = message.is_seen.filter(seen => seen.id !== user.id)
+
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const emojiRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (emojiRef.current && !emojiRef.current.contains(event.target)) {
+        setShowEmoji(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleDeleteClick = () => {
+    setShowDeletePopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setShowDeletePopup(false);
+  };
+
+  const handleDeleteForMe = async () => {
+    let response = await deleteMessage(message.message_id);
+    if (response.status === 200) {
+      let message = response.data.data;
+      updateMessage(message);
+    }
+    setShowDeletePopup(false);
+  };
+
+  const handleDeleteForAll = async () => {
+    let response = await deleteMessage(message.message_id, true);
+    if (response.status === 200) {
+      let message = response.data.data;
+      updateMessage(message);
+    }
+    setShowDeletePopup(false);
+  };
+
+  if (message.is_nofi) {
+    return (
+      <>
+        <div className={cx('user-sends')} style={{ margin: send?.length > 0 ? '10px 0' : '0px' }}>
+          {
+            send && send.map((user) =>
+            (
+              <div key={user.id} className={cx('user-send')}>
+                <img src={user.avatar} alt="" />
+              </div>
+            )
+            )
+          }
+        </div>
+        <div style={{
+          textAlign: 'center', 
+          fontSize: '12px',
+          color: '#666',
+          margin: '5px 0',
+          fontStyle: 'italic'
+        }}>
+          {message.content}
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
-      <div className={cx('user-message', { 'flex-row-reverse': me, 'reply-success': rep })}>
-        {!me && (
-          <div className='avatar'>
-            <img src={user.avatar} alt="Avatar" />
-          </div>
-        )}
-        {rep && (
-          <div className='reply'>
-            {!rep.flagged ? rep.content : 'Tin nhắn đã bị thu hồi!'}
-          </div>
-        )}
-        <div className='message'>
-          {showImages(message.files)}
-          {message.content && <div className='message-content'>
-            <p>
-              {!message.flagged ? message.content : 'Tin nhắn đã bị thu hồi!'}
-            </p>
-          </div>}
-        </div>
-        <div className='message-settings'>
-          {!message.flagged && (
-            <ul className='list-unstyled d-flex gap-2 mb-0'> 
-              <li className='d-flex align-items-center'>
-                <button title='Bày tỏ cảm xúc'>
-                  <i className="bi bi-emoji-smile"></i>
-                </button>
-              </li>
-              <li className='d-flex align-items-center'>
-                <button title='Trả lời' onClick={() => onReply(message)}>
-                  <i className="bi bi-reply-fill"></i>
-                </button>
-              </li>
-              <li className='d-flex align-items-center'>
-                <button title='Xem thêm'>
-                  <i className="bi bi-three-dots-vertical"></i>
-                </button>
-              </li>
-            </ul>
-          )}
-        </div>
-      </div>
-      <div className={cx('user-sends')}>
+      <div className={cx('user-sends')} style={{ marginBottom: '15px' }}>
         {
           send && send.map((user) =>
           (
-            <div className={cx('user-send')}>
+            <div key={user.id} className={cx('user-send')}>
               <img src={user.avatar} alt="" />
             </div>
           )
           )
         }
       </div>
+      <div className={cx('user-message', { 'flex-row-reverse': me, 'reply-success': rep })}>
+        {!me && (
+          <div className='avatar'>
+            <img src={message.user_send.avatar} alt="Avatar" />
+          </div>
+        )}
+        {rep && (
+          <div className='reply' dangerouslySetInnerHTML={{ __html: showContentReply(rep) }} />
+        )}
+        <div className='message'>
+          <div className='message-content'>
+            <div className={cx('list-icon-in-message')}>
+              {
+                <>
+                  {message.emotions.length > 0 && (() => {
+                    const lastTwoEmotions = message.emotions.slice(-2);
+                    return lastTwoEmotions.map((emotion, index) => (
+                      <div key={index} className={`icon-${index + 1}`} style={{ zIndex: 2 - index }}>
+                        <span>{emotion.emoji}</span>
+                      </div>
+                    ));
+                  })()}
+                </>
+              }
+            </div>
+            <div dangerouslySetInnerHTML={{ __html: showMessageContent(message) }} />
+            <div className={`message-settings ${showEmoji ? 'd-flex' : ''}`}>
+              {!message.flagged && !isOut && (
+                <ul className='list-unstyled d-flex gap-2 mb-0'>
+                  <li className='d-flex align-items-center position-relative' ref={emojiRef}>
+                    <button
+                      title='Bày tỏ cảm xúc'
+                      className='message-select-icons'
+                      onClick={() => setShowEmoji(!showEmoji)}
+                    >
+                      <i className="bi bi-emoji-smile"></i>
+                    </button>
+                    {showEmoji && (
+                      <ShowEmojiMessage emos={message.emotions} setMessage={setMessage} setShowEmoji={setShowEmoji} messageId={message.message_id} />
+                    )}
+                  </li>
+                  <li className='d-flex align-items-center'>
+                    <button title='Trả lời' onClick={() => onReply(message)}>
+                      <i className="bi bi-reply-fill"></i>
+                    </button>
+                  </li>
+                  <li className='d-flex align-items-center'>
+                    <button title='Xóa tin nhắn' onClick={handleDeleteClick}>
+                      <i className="bi bi-trash"></i>
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      {showDeletePopup && (
+        <PopupDeleteMessage
+          onClose={handleClosePopup}
+          me={me}
+          onDeleteForMe={handleDeleteForMe}
+          onDeleteForAll={handleDeleteForAll}
+        />
+      )}
     </>
   );
 }

@@ -1,9 +1,8 @@
 .content {
-  overflow-y: auto;
+  // overflow-y: auto;
   position: relative;
   max-height: 100vh;
   padding-left: 1px;
-
   header {
     box-shadow: 0 1px 5px 0px rgba(0, 0, 0, 0.1);
     padding: 5px 15px;
@@ -53,6 +52,7 @@
 
   .send-messages {
     position: sticky;
+    z-index: 10;
     bottom: 0;
 
     .send-message-content {
@@ -210,6 +210,18 @@
   }
 
   #messages-content {
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+  
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--main-color);
+      border-radius: 10px;
+    }
+  
+    &::-webkit-scrollbar-track {
+      background: transparent; // Màu nền của thanh cuộn
+    }
     min-height: 90%;
   }
   .content::-webkit-scrollbar {
