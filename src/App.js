@@ -1,20 +1,21 @@
-import { React, Fragment, useEffect,useState } from "react";
+import { React, Fragment, useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { pulicRouter, privateRouters, adminRouters } from "./routes";
 import { LayoutAdmin, LayoutClient } from "./layouts";
 import useAuth from "@/hooks/useAuth";
 
 const App = () => {
-  const auth = useAuth();
-  const [checkLogin, setCheckLogin] = useState(false);
-  const [isReady, setIsReady] = useState(false);
+  // const auth = useAuth();
+  // const [checkLogin, setCheckLogin] = useState(false);
+  // const [isReady, setIsReady] = useState(false);
   const checkAdmin = true;
-  
-  useEffect(() => {
-    setCheckLogin(auth.checkLogin());
-    setIsReady(true);
-  }, []);
-  if (!isReady) return null;
+  const checkLogin = true;
+
+  // useEffect(() => {
+  //   setCheckLogin(auth.checkLogin());
+  //   setIsReady(true);
+  // }, []);
+  // if (!isReady) return null;
 
   return (
     <>
