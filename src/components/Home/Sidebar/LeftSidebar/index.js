@@ -1,36 +1,117 @@
-import classNames from "classnames/bind";
-import styles from "./LeftSidebar.module.scss";
-import Button from "./Button";
-
-const cx = classNames.bind(styles);
+import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Avatar, Divider } from '@mui/material';
+import { Home, People, Groups, Storefront, OndemandVideo, History, Bookmark, Flag, Event, SportsEsports } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 function LeftSidebar() {
-    return <aside className={cx('left-sidebar')}>
-        <Button icon={<img src="/user_default.png" alt="Avatar" style={{ width: '100%', height: '100%', borderRadius: '100%' }} />} name="Đinh Quang Hiến" />
-        <Button icon={<i className="bi bi-house" ></i>} name="Home" />
-        <Button icon={<i className="bi bi-house" ></i>} name="Home" />
-        <Button icon={<i className="bi bi-house"></i>} name="Home" />
-        <Button icon={<i className="bi bi-house"></i>} name="Home" />
-        <Button icon={<i className="bi bi-house"></i>} name="Home" />
-        <Button icon={<i className="bi bi-house"></i>} name="Home" />
-        <Button icon={<i className="bi bi-house"></i>} name="Home" />
-        <Button icon={<i className="bi bi-house"></i>} name="Home" />
-        <Button icon={<i className="bi bi-house"></i>} name="Home" />
-        <Button icon={<i className="bi bi-house"></i>} name="Home" />
-        <Button icon={<i className="bi bi-house"></i>} name="Home" />
-        <Button icon={<i className="bi bi-house"></i>} name="Home" />
-        <Button icon={<i className="bi bi-house"></i>} name="Home" />
-        <Button icon={<i className="bi bi-house"></i>} name="Home" />
-        <Button icon={<i className="bi bi-house"></i>} name="Home" />
-        <hr></hr>
-        <Button icon={<img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s40x40&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=yAx7GqcuuqUQ7kNvgFe2_fS&_nc_ht=scontent.fhan15-1.fna&oh=00_AYDp6tPWH9pQe5gGNlRY2O6iX4pkKq0LNIFKI4der17R8A&oe=66CDBFAA" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home Home Home Home Home Home Home Home Home " />
-        <Button icon={<img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s40x40&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=yAx7GqcuuqUQ7kNvgFe2_fS&_nc_ht=scontent.fhan15-1.fna&oh=00_AYDp6tPWH9pQe5gGNlRY2O6iX4pkKq0LNIFKI4der17R8A&oe=66CDBFAA" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home Home Home Home Home Home Home Home Home Home Home Home Home Home Home Home Home Home " />
-        <Button icon={<img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s40x40&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=yAx7GqcuuqUQ7kNvgFe2_fS&_nc_ht=scontent.fhan15-1.fna&oh=00_AYDp6tPWH9pQe5gGNlRY2O6iX4pkKq0LNIFKI4der17R8A&oe=66CDBFAA" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-        <Button icon={<img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s40x40&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=yAx7GqcuuqUQ7kNvgFe2_fS&_nc_ht=scontent.fhan15-1.fna&oh=00_AYDp6tPWH9pQe5gGNlRY2O6iX4pkKq0LNIFKI4der17R8A&oe=66CDBFAA" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-        <Button icon={<img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s40x40&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=yAx7GqcuuqUQ7kNvgFe2_fS&_nc_ht=scontent.fhan15-1.fna&oh=00_AYDp6tPWH9pQe5gGNlRY2O6iX4pkKq0LNIFKI4der17R8A&oe=66CDBFAA" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-        <Button icon={<img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s40x40&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=yAx7GqcuuqUQ7kNvgFe2_fS&_nc_ht=scontent.fhan15-1.fna&oh=00_AYDp6tPWH9pQe5gGNlRY2O6iX4pkKq0LNIFKI4der17R8A&oe=66CDBFAA" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-        <Button icon={<img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s40x40&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=yAx7GqcuuqUQ7kNvgFe2_fS&_nc_ht=scontent.fhan15-1.fna&oh=00_AYDp6tPWH9pQe5gGNlRY2O6iX4pkKq0LNIFKI4der17R8A&oe=66CDBFAA" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-    </aside>;
+    const user = useSelector(state => state.user);
+
+    return (
+        <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+            <List component="nav">
+                <ListItem disablePadding>
+                    <ListItemButton component={Link} to="/profile">
+                        <ListItemIcon>
+                            <Avatar src={user?.avatar || "/user_default.png"} />
+                        </ListItemIcon>
+                        <ListItemText primary={user?.fullName || "Người dùng"} />
+                    </ListItemButton>
+                </ListItem>
+
+                <ListItem disablePadding>
+                    <ListItemButton component={Link} to="/">
+                        <ListItemIcon>
+                            <Home sx={{ color: '#1976d2' }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Trang chủ" />
+                    </ListItemButton>
+                </ListItem>
+
+                <ListItem disablePadding>
+                    <ListItemButton component={Link} to="/friends">
+                        <ListItemIcon>
+                            <People />
+                        </ListItemIcon>
+                        <ListItemText primary="Bạn bè" />
+                    </ListItemButton>
+                </ListItem>
+
+                <ListItem disablePadding>
+                    <ListItemButton component={Link} to="/groups">
+                        <ListItemIcon>
+                            <Groups />
+                        </ListItemIcon>
+                        <ListItemText primary="Nhóm" />
+                    </ListItemButton>
+                </ListItem>
+
+                <ListItem disablePadding>
+                    <ListItemButton component={Link} to="/marketplace">
+                        <ListItemIcon>
+                            <Storefront />
+                        </ListItemIcon>
+                        <ListItemText primary="Marketplace" />
+                    </ListItemButton>
+                </ListItem>
+
+                <ListItem disablePadding>
+                    <ListItemButton component={Link} to="/watch">
+                        <ListItemIcon>
+                            <OndemandVideo />
+                        </ListItemIcon>
+                        <ListItemText primary="Watch" />
+                    </ListItemButton>
+                </ListItem>
+
+                <ListItem disablePadding>
+                    <ListItemButton>
+                        <ListItemIcon>
+                            <History />
+                        </ListItemIcon>
+                        <ListItemText primary="Kỷ niệm" />
+                    </ListItemButton>
+                </ListItem>
+
+                <ListItem disablePadding>
+                    <ListItemButton>
+                        <ListItemIcon>
+                            <Bookmark />
+                        </ListItemIcon>
+                        <ListItemText primary="Đã lưu" />
+                    </ListItemButton>
+                </ListItem>
+
+                <Divider sx={{ my: 1 }} />
+
+                <ListItem disablePadding>
+                    <ListItemButton>
+                        <ListItemIcon>
+                            <Flag />
+                        </ListItemIcon>
+                        <ListItemText primary="Trang" />
+                    </ListItemButton>
+                </ListItem>
+
+                <ListItem disablePadding>
+                    <ListItemButton>
+                        <ListItemIcon>
+                            <Event />
+                        </ListItemIcon>
+                        <ListItemText primary="Sự kiện" />
+                    </ListItemButton>
+                </ListItem>
+
+                <ListItem disablePadding>
+                    <ListItemButton>
+                        <ListItemIcon>
+                            <SportsEsports />
+                        </ListItemIcon>
+                        <ListItemText primary="Chơi game" />
+                    </ListItemButton>
+                </ListItem>
+            </List>
+        </Box>
+    );
 }
 
 export default LeftSidebar;

@@ -1,7 +1,10 @@
 .home-content {
-    flex: var(--layout-middle);
-    margin-top: 60px;
-    background-color: rgb(255, 255, 255);
+  flex: var(--layout-middle);
+  margin-top: 60px;
+  background-color: rgb(255, 255, 255);
+  height: calc(100vh - 60px); // Chiều cao bằng viewport trừ đi margin-top
+  overflow-y: auto; // Cho phép cuộn dọc
+  padding: 20px;
 }
 /* Giả sử bạn có lớp cơ bản cho danh sách story */
 .story-list {

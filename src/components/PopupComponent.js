@@ -24,9 +24,9 @@ export const PopupDeleteMessage = ({ onClose, onDeleteForMe, onDeleteForAll, me 
 
     const handleDelete = () => {
         if (deleteOption === 'forMe') {
-            onDeleteForMe();
-        } else {
             onDeleteForAll();
+        } else {
+            onDeleteForMe();
         }
     };
 

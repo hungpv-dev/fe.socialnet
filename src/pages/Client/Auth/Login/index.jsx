@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Modal, Button } from 'react-bootstrap';
 import classNames from "classnames";
-import { Link, redirect } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from "./main.scss";
 import useAuth from "@/hooks/useAuth";
 import { setUser } from '@/actions/user';
@@ -11,6 +11,7 @@ const cx = classNames.bind(styles);
 const Login = () => {
   const auth = useAuth();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   // login 
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState(null);
@@ -32,8 +33,8 @@ const Login = () => {
     event.preventDefault();
     await auth.login(email, password);
     let profile = await auth.me();
-    dispatch(setUser(profile.data)); 
-    redirect('/');
+    dispatch(setUser(profile.data));
+    navigate('/');
   };
 
   return (
