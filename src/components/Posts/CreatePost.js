@@ -30,7 +30,7 @@ import Picker from '@emoji-mart/react'
 import axiosInstance from '@/axios';
 import { toast } from 'react-toastify';
 
-const CreatePost = ( { onClose } ) => {
+const CreatePost = ( { setPosts, onClose } ) => {
     const [content, setContent] = useState('');
     const [mediaFiles, setMediaFiles] = useState([]);
     const currentUser = useSelector(state => state.user);
@@ -49,7 +49,7 @@ const CreatePost = ( { onClose } ) => {
 
         try {
             onClose();
-            await toast.promise(
+            let response = await toast.promise(
                 axiosInstance.post('posts', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -61,6 +61,10 @@ const CreatePost = ( { onClose } ) => {
                     error: 'Thêm bài viết thất bại 🤯'
                 }
             );
+            if(response.status === 200){
+                let post = response.data.data;
+                setPosts(prevPosts => [post, ...prevPosts])
+            }
         } catch (e) {
             console.log('Lỗi khi gửi file:', e);
         }
@@ -85,6 +89,22 @@ const CreatePost = ( { onClose } ) => {
 
     const handleEmojiClose = () => {
         setAnchorEl(null);
+    };
+
+    const handlePaste = async (e) => {
+        const items = e.clipboardData.items;
+        const files = [];
+        
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                const file = items[i].getAsFile();
+                files.push(file);
+            }
+        }
+        
+        if (files.length > 0) {
+            setMediaFiles(prev => [...prev, ...files]);
+        }
     };
 
     return (
@@ -143,6 +163,7 @@ const CreatePost = ( { onClose } ) => {
                     placeholder="Bạn đang nghĩ gì?"
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
+                    onPaste={handlePaste}
                     variant="outlined"
                     sx={{
                         '& .MuiOutlinedInput-root': {

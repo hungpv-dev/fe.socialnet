@@ -1,7 +1,7 @@
 import classNames from "classnames/bind";
 import styles from "./Content.module.scss";
 import Posts from "@/components/Posts/Posts";
-import { Dialog, Button, Avatar, Typography } from "@mui/material";
+import { Dialog, Button, Avatar, Typography, CircularProgress, Box } from "@mui/material";
 import CreatePost from "@/components/Posts/CreatePost";
 import { useState, useEffect } from "react";
 import Stories from "@/components/Stories/Stories";
@@ -103,12 +103,14 @@ function Content() {
             }
           }}
         >
-          <CreatePost onClose={() => setOpenCreatePost(false)} />
+          <CreatePost setPosts={setPosts} onClose={() => setOpenCreatePost(false)} />
         </Dialog>
 
-        <Posts posts={posts} />
+        <Posts setPosts={setPosts} posts={posts} />
         {loading && (
-          <Typography sx={{ textAlign: 'center', py: 2 }}>Đang tải thêm bài viết...</Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+            <CircularProgress size={30} thickness={4} />
+          </Box>
         )}
         {!hasMore && (
           <Typography sx={{ textAlign: 'center', py: 2, color: 'text.secondary' }}>
