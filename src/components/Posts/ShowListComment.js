@@ -16,12 +16,12 @@ import axiosInstance from '@/axios';
 import { toast } from 'react-toastify';
 import { formatDateToNow } from '@/components/FormatDate';
 
-const CommentItem = ({ comment, level = 0,deleteCommentChil, setDeleteCommentChil, commentChilde, setCommentChilde, onReply, onDelete, currentUser, post }) => {
+const CommentItem = ({ comment, level = 0, deleteCommentChil, setDeleteCommentChil, commentChilde, setCommentChilde, onReply, onDelete, currentUser, post }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [showReplies, setShowReplies] = useState(false);
     const [replies, setReplies] = useState([]);
     const [isLoadingReplies, setIsLoadingReplies] = useState(false);
-    const [selectedIcon, setSelectedIcon] = useState(null);
+    const [selectedIcon, setSelectedIcon] = useState(comment.user_emotion?.emoji || null);
 
     const icons = ['👍', '❤️', '😆', '😢', '😮', '😡'];
 
@@ -35,11 +35,17 @@ const CommentItem = ({ comment, level = 0,deleteCommentChil, setDeleteCommentChi
 
     const handleIconClick = async (icon) => {
         try {
-            await axiosInstance.post(`/comments/${comment.id}/react`, {
-                icon: icon
+            await axiosInstance.post(`/emotions`, {
+                id: comment.id,
+                type: 'comment',
+                emoji: icon
             });
-            setSelectedIcon(icon);
-            toast.success('Đã thả cảm xúc');
+            if (selectedIcon === icon) {
+                setSelectedIcon(null);
+            }else{
+                setSelectedIcon(icon);
+            }
+
         } catch (error) {
             console.error('Lỗi khi thả icon:', error);
             toast.error('Có lỗi xảy ra khi thả cảm xúc');
@@ -65,7 +71,7 @@ const CommentItem = ({ comment, level = 0,deleteCommentChil, setDeleteCommentChi
 
     useEffect(() => {
         if (deleteCommentChil > 0) {
-            setReplies(prevReplies => 
+            setReplies(prevReplies =>
                 prevReplies.filter(comment => comment.id !== deleteCommentChil)
             );
             setDeleteCommentChil(0)
@@ -74,10 +80,10 @@ const CommentItem = ({ comment, level = 0,deleteCommentChil, setDeleteCommentChi
 
     useEffect(() => {
         if (commentChilde && Object.keys(commentChilde).length > 0) {
-            setReplies(prevReplies => 
+            setReplies(prevReplies =>
                 prevReplies.map(item => {
                     if (item.id === parseInt(commentChilde.parent_id)) {
-                        if(!item.countChildren){
+                        if (!item.countChildren) {
                             item.countChildren = 0
                         }
                         item.countChildren += 1
@@ -93,16 +99,16 @@ const CommentItem = ({ comment, level = 0,deleteCommentChil, setDeleteCommentChi
 
     useEffect(() => {
         if (comment.replies) {
-            if(!showReplies){
+            if (!showReplies) {
                 loadReplies();
-            }else{
+            } else {
                 setReplies(pre => [...pre, comment.replies])
             }
         }
-    }, [comment.replies]); 
+    }, [comment.replies]);
 
     const canShowReplies = level < 2;
-    
+
     return (
         <Box sx={{ ml: level * 4, position: 'relative', mb: 1.5 }}>
             {level > 0 && (
@@ -127,50 +133,50 @@ const CommentItem = ({ comment, level = 0,deleteCommentChil, setDeleteCommentChi
                 />
             )}
             <Box sx={{ display: 'flex', gap: 1.5 }}>
-                <Avatar 
-                    src={comment.user.avatar} 
-                    sx={{ width: 32, height: 32 }} 
+                <Avatar
+                    src={comment.user.avatar}
+                    sx={{ width: 32, height: 32 }}
                 />
                 <Box sx={{ flex: 1 }}>
-                    <Box sx={{ 
-                        bgcolor: '#f0f2f5', 
-                        p: 1.5, 
+                    <Box sx={{
+                        bgcolor: '#f0f2f5',
+                        p: 1.5,
                         borderRadius: '18px',
                         display: 'inline-block',
                         maxWidth: '100%',
                         boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
                     }}>
-                        <Typography variant="subtitle2" sx={{fontSize: '0.875rem', fontWeight: 600, color: '#050505', mb: 0.5}}>
+                        <Typography variant="subtitle2" sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#050505', mb: 0.5 }}>
                             {comment.user.name}
                         </Typography>
-                        <Typography variant="body2" sx={{fontSize: '0.9375rem', color: '#050505', whiteSpace: 'pre-wrap', lineHeight: 1.3333}}>
+                        <Typography variant="body2" sx={{ fontSize: '0.9375rem', color: '#050505', whiteSpace: 'pre-wrap', lineHeight: 1.3333 }}>
                             {comment.content.text}
                         </Typography>
                         {comment.content.image && (
                             <Box sx={{ mt: 1 }}>
-                                <img 
-                                    src={comment.content.image} 
-                                    alt="Comment" 
-                                    style={{ 
+                                <img
+                                    src={comment.content.image}
+                                    alt="Comment"
+                                    style={{
                                         maxWidth: '100%',
                                         maxHeight: '250px',
                                         borderRadius: '12px'
-                                    }} 
+                                    }}
                                 />
                             </Box>
                         )}
                     </Box>
-                    
+
                     <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mt: 0.5, pl: 0.5 }}>
                         <Box sx={{ position: 'relative' }}>
-                            <Typography 
-                                variant="caption" 
+                            <Typography
+                                variant="caption"
                                 sx={{
-                                    color: '#65676B',
+                                    color: selectedIcon ? '#1877f2' : '#65676B',
                                     fontWeight: 600,
                                     fontSize: '0.75rem',
-                                    '&:hover': { 
-                                        textDecoration: 'underline', 
+                                    '&:hover': {
+                                        textDecoration: 'underline',
                                         cursor: 'pointer',
                                         color: '#1D1F23'
                                     }
@@ -182,7 +188,15 @@ const CommentItem = ({ comment, level = 0,deleteCommentChil, setDeleteCommentChi
                                     }
                                 }}
                             >
-                                {selectedIcon || 'Thích'}
+                                {selectedIcon ? (
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <span>{selectedIcon}</span>
+                                    </span>
+                                ) : (
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <span>Thích</span>
+                                    </span>
+                                )}
                             </Typography>
                             <Box
                                 sx={{
@@ -208,7 +222,8 @@ const CommentItem = ({ comment, level = 0,deleteCommentChil, setDeleteCommentChi
                                         style={{
                                             cursor: 'pointer',
                                             fontSize: '20px',
-                                            padding: '2px'
+                                            padding: '2px',
+                                            opacity: selectedIcon === icon ? 0.5 : 1
                                         }}
                                     >
                                         {icon}
@@ -217,14 +232,14 @@ const CommentItem = ({ comment, level = 0,deleteCommentChil, setDeleteCommentChi
                             </Box>
                         </Box>
                         {canShowReplies && (
-                            <Typography 
-                                variant="caption" 
+                            <Typography
+                                variant="caption"
                                 sx={{
                                     color: '#65676B',
                                     fontWeight: 600,
                                     fontSize: '0.75rem',
-                                    '&:hover': { 
-                                        textDecoration: 'underline', 
+                                    '&:hover': {
+                                        textDecoration: 'underline',
                                         cursor: 'pointer',
                                         color: '#1D1F23'
                                     }
@@ -237,7 +252,7 @@ const CommentItem = ({ comment, level = 0,deleteCommentChil, setDeleteCommentChi
                         <Typography variant="caption" sx={{ color: '#65676B', fontSize: '0.75rem' }}>
                             {comment.created_at ? formatDateToNow(comment.created_at) : ''}
                         </Typography>
-                        
+
                         {(currentUser?.id === comment.user.id || currentUser?.id === post.user.id) && (
                             <>
                                 <IconButton
@@ -250,7 +265,7 @@ const CommentItem = ({ comment, level = 0,deleteCommentChil, setDeleteCommentChi
                                         }
                                     }}
                                 >
-                                    <MoreVert sx={{fontSize: '1.125rem', color: '#65676B'}} />
+                                    <MoreVert sx={{ fontSize: '1.125rem', color: '#65676B' }} />
                                 </IconButton>
                                 <Menu
                                     anchorEl={anchorEl}
@@ -277,10 +292,10 @@ const CommentItem = ({ comment, level = 0,deleteCommentChil, setDeleteCommentChi
                     </Stack>
 
                     {canShowReplies && comment.countChildren > 0 && (
-                        <Box 
-                            sx={{ 
+                        <Box
+                            sx={{
                                 mt: 1,
-                                display: 'flex', 
+                                display: 'flex',
                                 alignItems: 'center',
                                 gap: 0.5,
                                 cursor: 'pointer',
@@ -294,22 +309,22 @@ const CommentItem = ({ comment, level = 0,deleteCommentChil, setDeleteCommentChi
                         >
                             {isLoadingReplies ? (
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                    <CircularProgress size={14} thickness={5} sx={{color: '#65676B'}} />
-                                    <Typography variant="body2" sx={{color: '#65676B', fontSize: '0.8125rem'}}>
+                                    <CircularProgress size={14} thickness={5} sx={{ color: '#65676B' }} />
+                                    <Typography variant="body2" sx={{ color: '#65676B', fontSize: '0.8125rem' }}>
                                         Đang tải phản hồi...
                                     </Typography>
                                 </Box>
                             ) : showReplies ? (
                                 <>
-                                    <KeyboardArrowUp sx={{fontSize: '1.25rem'}} />
-                                    <Typography variant="body2" sx={{fontWeight: 600, fontSize: '0.8125rem'}}>
+                                    <KeyboardArrowUp sx={{ fontSize: '1.25rem' }} />
+                                    <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8125rem' }}>
                                         Ẩn {comment.countChildren} phản hồi
                                     </Typography>
                                 </>
                             ) : (
                                 <>
-                                    <KeyboardArrowDown sx={{fontSize: '1.25rem'}} />
-                                    <Typography variant="body2" sx={{fontWeight: 600, fontSize: '0.8125rem'}}>
+                                    <KeyboardArrowDown sx={{ fontSize: '1.25rem' }} />
+                                    <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8125rem' }}>
                                         {comment.countChildren} phản hồi
                                     </Typography>
                                 </>
@@ -319,8 +334,8 @@ const CommentItem = ({ comment, level = 0,deleteCommentChil, setDeleteCommentChi
 
                     <Collapse in={showReplies}>
                         {isLoadingReplies ? (
-                            <Box sx={{mt: 1, ml: 2}}>
-                                <Typography variant="body2" sx={{color: '#65676B', fontSize: '0.8125rem'}}>
+                            <Box sx={{ mt: 1, ml: 2 }}>
+                                <Typography variant="body2" sx={{ color: '#65676B', fontSize: '0.8125rem' }}>
                                     Đang tải phản hồi...
                                 </Typography>
                             </Box>
@@ -344,7 +359,7 @@ const CommentItem = ({ comment, level = 0,deleteCommentChil, setDeleteCommentChi
     );
 };
 
-const ShowListComment = ({ comments,deleteCommentChil, setDeleteCommentChil, commentChilde, setCommentChilde, onReply, onDelete, post, hasMore, isLoading, onLoadMore }) => {
+const ShowListComment = ({ comments, deleteCommentChil, setDeleteCommentChil, commentChilde, setCommentChilde, onReply, onDelete, post, hasMore, isLoading, onLoadMore }) => {
     const currentUser = useSelector(state => state.user);
 
     return (
@@ -367,9 +382,9 @@ const ShowListComment = ({ comments,deleteCommentChil, setDeleteCommentChil, com
             {hasMore && (
                 <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
                     {isLoading ? (
-                        <CircularProgress size={20} thickness={5} sx={{color: '#65676B'}} />
+                        <CircularProgress size={20} thickness={5} sx={{ color: '#65676B' }} />
                     ) : (
-                        <Typography 
+                        <Typography
                             onClick={onLoadMore}
                             variant="body2"
                             sx={{

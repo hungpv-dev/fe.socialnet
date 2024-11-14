@@ -38,7 +38,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 function RightSidebar() {
     return (
         <Box component="aside" sx={{ width: 360, p: 2, bgcolor: 'background.paper' }}>
-            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+            {/* <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
                 Được tài trợ
             </Typography>
 
@@ -52,7 +52,7 @@ function RightSidebar() {
                         <Typography sx={{ color: 'text.primary', fontWeight: 500 }}>Facebook</Typography>
                     </Box>
                 </Link>
-            </Paper>
+            </Paper> */}
 
             <Divider sx={{ my: 2 }} />
 

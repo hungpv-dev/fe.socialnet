@@ -64,6 +64,7 @@ const CreatePost = ( { setPosts, onClose } ) => {
             if(response.status === 200){
                 let post = response.data.data;
                 setPosts(prevPosts => [post, ...prevPosts])
+                window.scrollTo({ top: 0, behavior: 'smooth' }); 
             }
         } catch (e) {
             console.log('Lỗi khi gửi file:', e);

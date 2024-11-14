@@ -45,7 +45,7 @@ function Content() {
     const element = e.target;
     const { scrollHeight, scrollTop, clientHeight } = element;
     
-    if (scrollTop + clientHeight >= scrollHeight - 100 && !loading && hasMore) {
+    if (scrollTop + clientHeight >= scrollHeight - 1000 && !loading && hasMore) {
       fetchPosts();
     }
   };
