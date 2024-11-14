@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   AppBar,
   Box,
@@ -27,6 +27,8 @@ import {
 import { styled, alpha } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 import Notification from './Notification';
+import useAuth from '@/hooks/useAuth';
+import { toast } from 'react-toastify';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -68,6 +70,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 function Header() {
+  const auth = useAuth()
+  const navigate = useNavigate();
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElNotif, setAnchorElNotif] = useState(null);
   const user = useSelector(state => state.user);
@@ -87,6 +91,16 @@ function Header() {
 
   const handleCloseNotifMenu = () => {
     setAnchorElNotif(null);
+  };
+
+  const handleLogout = async () => {
+    try{
+      await auth.logout();
+      navigate('/login');
+    }catch(e){
+      toast.error('Đã xảy ra lỗi, vui lòng thử lại sau')
+    }
+    handleCloseUserMenu();
   };
 
   const unreadCount = notifications.filter(notification => !notification.read_at).length;
@@ -177,7 +191,7 @@ function Header() {
               <Settings sx={{ mr: 1 }} />
               <Typography>Cài đặt</Typography>
             </MenuItem>
-            <MenuItem onClick={handleCloseUserMenu}>
+            <MenuItem onClick={handleLogout}>
               <Logout sx={{ mr: 1 }} />
               <Typography>Đăng xuất</Typography>
             </MenuItem>

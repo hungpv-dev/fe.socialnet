@@ -5,6 +5,7 @@
   height: calc(100vh - 60px); // Chiều cao bằng viewport trừ đi margin-top
   overflow-y: auto; // Cho phép cuộn dọc
   padding: 20px;
+  padding-bottom: 50px;
 }
 /* Giả sử bạn có lớp cơ bản cho danh sách story */
 .story-list {

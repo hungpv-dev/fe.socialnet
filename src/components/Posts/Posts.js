@@ -1,11 +1,11 @@
 import { Box, Typography } from '@mui/material';
 import Post from './Post';
 
-const Posts = ( { posts } ) => {
+const Posts = ( { setPosts, posts } ) => {
     return (
         <Box>
             {posts.map((post) => (
-                <Post key={post.id} post={post} />
+                <Post setPosts={setPosts} key={post.id} post={post} />
             ))}
             {posts.length === 0 && (
                 <Box sx={{ textAlign: 'center', py: 2 }}>
