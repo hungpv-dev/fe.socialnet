@@ -2,9 +2,9 @@
     width: 100%;
     min-height: 100vh;
     display: flex;
-    background-color: var(--bg-color);
+    background-color: #fff;
     padding-top: 56px; // Để tránh bị header che mất
-    justify-content: space-between;
+    justify-content: center;
 
     > *:first-child {
         position: fixed;
@@ -12,6 +12,8 @@
         top: 56px;
         height: calc(100vh - 56px);
         overflow-y: auto;
+        background-color: #fff;
+        width: 360px;
         
         &::-webkit-scrollbar {
             width: 8px;
@@ -33,6 +35,8 @@
         top: 56px;
         height: calc(100vh - 56px);
         overflow-y: auto;
+        background-color: #fff;
+        width: 360px;
         
         &::-webkit-scrollbar {
             width: 8px;
@@ -49,9 +53,11 @@
     }
 
     > *:nth-child(2) {
-        margin: 0 360px;
+        margin: 0 380px; // Giảm margin để phù hợp với sidebar rộng hơn
+        max-width: 700px; // Thu nhỏ content lại
         flex: 1;
         overflow-y: auto;
+        background-color: #fff;
         
         &::-webkit-scrollbar {
             width: 8px;

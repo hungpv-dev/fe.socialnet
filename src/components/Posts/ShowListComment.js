@@ -16,11 +16,14 @@ import axiosInstance from '@/axios';
 import { toast } from 'react-toastify';
 import { formatDateToNow } from '@/components/FormatDate';
 
-const CommentItem = ({ comment, level = 0, commentChilde, setCommentChilde, onReply, onDelete, currentUser, post }) => {
+const CommentItem = ({ comment, level = 0,deleteCommentChil, setDeleteCommentChil, commentChilde, setCommentChilde, onReply, onDelete, currentUser, post }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [showReplies, setShowReplies] = useState(false);
     const [replies, setReplies] = useState([]);
     const [isLoadingReplies, setIsLoadingReplies] = useState(false);
+    const [selectedIcon, setSelectedIcon] = useState(null);
+
+    const icons = ['👍', '❤️', '😆', '😢', '😮', '😡'];
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -28,6 +31,19 @@ const CommentItem = ({ comment, level = 0, commentChilde, setCommentChilde, onRe
 
     const handleMenuClose = () => {
         setAnchorEl(null);
+    };
+
+    const handleIconClick = async (icon) => {
+        try {
+            await axiosInstance.post(`/comments/${comment.id}/react`, {
+                icon: icon
+            });
+            setSelectedIcon(icon);
+            toast.success('Đã thả cảm xúc');
+        } catch (error) {
+            console.error('Lỗi khi thả icon:', error);
+            toast.error('Có lỗi xảy ra khi thả cảm xúc');
+        }
     };
 
     const loadReplies = async () => {
@@ -46,6 +62,15 @@ const CommentItem = ({ comment, level = 0, commentChilde, setCommentChilde, onRe
             setShowReplies(!showReplies);
         }
     };
+
+    useEffect(() => {
+        if (deleteCommentChil > 0) {
+            setReplies(prevReplies => 
+                prevReplies.filter(comment => comment.id !== deleteCommentChil)
+            );
+            setDeleteCommentChil(0)
+        }
+    }, [deleteCommentChil]);
 
     useEffect(() => {
         if (commentChilde && Object.keys(commentChilde).length > 0) {
@@ -137,21 +162,60 @@ const CommentItem = ({ comment, level = 0, commentChilde, setCommentChilde, onRe
                     </Box>
                     
                     <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mt: 0.5, pl: 0.5 }}>
-                        <Typography 
-                            variant="caption" 
-                            sx={{
-                                color: '#65676B',
-                                fontWeight: 600,
-                                fontSize: '0.75rem',
-                                '&:hover': { 
-                                    textDecoration: 'underline', 
-                                    cursor: 'pointer',
-                                    color: '#1D1F23'
-                                }
-                            }}
-                        >
-                            Thích
-                        </Typography>
+                        <Box sx={{ position: 'relative' }}>
+                            <Typography 
+                                variant="caption" 
+                                sx={{
+                                    color: '#65676B',
+                                    fontWeight: 600,
+                                    fontSize: '0.75rem',
+                                    '&:hover': { 
+                                        textDecoration: 'underline', 
+                                        cursor: 'pointer',
+                                        color: '#1D1F23'
+                                    }
+                                }}
+                                onMouseEnter={(e) => {
+                                    const iconList = e.currentTarget.nextElementSibling;
+                                    if (iconList) {
+                                        iconList.style.display = 'flex';
+                                    }
+                                }}
+                            >
+                                {selectedIcon || 'Thích'}
+                            </Typography>
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    display: 'none',
+                                    top: '-40px',
+                                    left: '0',
+                                    backgroundColor: 'white',
+                                    borderRadius: '20px',
+                                    padding: '5px',
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                                    zIndex: 1,
+                                    gap: '5px'
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                }}
+                            >
+                                {icons.map((icon, index) => (
+                                    <span
+                                        key={index}
+                                        onClick={() => handleIconClick(icon)}
+                                        style={{
+                                            cursor: 'pointer',
+                                            fontSize: '20px',
+                                            padding: '2px'
+                                        }}
+                                    >
+                                        {icon}
+                                    </span>
+                                ))}
+                            </Box>
+                        </Box>
                         {canShowReplies && (
                             <Typography 
                                 variant="caption" 
@@ -280,7 +344,7 @@ const CommentItem = ({ comment, level = 0, commentChilde, setCommentChilde, onRe
     );
 };
 
-const ShowListComment = ({ comments, commentChilde, setCommentChilde, onReply, onDelete, post, hasMore, isLoading, onLoadMore }) => {
+const ShowListComment = ({ comments,deleteCommentChil, setDeleteCommentChil, commentChilde, setCommentChilde, onReply, onDelete, post, hasMore, isLoading, onLoadMore }) => {
     const currentUser = useSelector(state => state.user);
 
     return (
@@ -289,6 +353,8 @@ const ShowListComment = ({ comments, commentChilde, setCommentChilde, onReply, o
                 <CommentItem
                     commentChilde={commentChilde}
                     setCommentChilde={setCommentChilde}
+                    deleteCommentChil={deleteCommentChil}
+                    setDeleteCommentChil={setDeleteCommentChil}
                     key={comment.id}
                     comment={comment}
                     onReply={onReply}

@@ -26,6 +26,7 @@ const CommentDialog = ({ open, onClose, post }) => {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [commentChilde, setCommentChilde] = useState({});
+    const [deleteCommentChil, setDeleteCommentChil] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const fileInputRef = useRef();
     const currentUser = useSelector(state => state.user);
@@ -93,6 +94,7 @@ const CommentDialog = ({ open, onClose, post }) => {
             setComments(prevComments =>
                 prevComments.filter(comment => comment.id !== commentId)
             );
+            setDeleteCommentChil(commentId)
             toast.success('Xóa bình luận thành công');
         } catch (error) {
             console.error('Lỗi khi xóa bình luận:', error);
@@ -169,7 +171,7 @@ const CommentDialog = ({ open, onClose, post }) => {
         <Dialog
             open={open}
             onClose={onClose}
-            maxWidth="sm"
+            maxWidth="md"
             fullWidth
             PaperProps={{
                 sx: {
@@ -256,6 +258,8 @@ const CommentDialog = ({ open, onClose, post }) => {
                 <ShowListComment
                     commentChilde={commentChilde}
                     setCommentChilde={setCommentChilde}
+                    deleteCommentChil={deleteCommentChil}
+                    setDeleteCommentChil={setDeleteCommentChil}
                     comments={comments}
                     onReply={setReplyTo}
                     onDelete={handleDeleteComment}
