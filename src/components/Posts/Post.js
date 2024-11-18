@@ -33,13 +33,16 @@ import {
     Public,
     Lock,
     People,
-    Close
+    Close,
+    Edit
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import axiosInstance from '@/axios';
 import CommentDialog from './CommentDialog.js';
+import { useSelector } from 'react-redux';
 
-const Post = ({ setPosts, post }) => {
+const Post = ({ setPosts, post, hideCommentButton, onShareSuccess }) => {
+    const user = useSelector(state => state.user)
     const [anchorEl, setAnchorEl] = useState(null);
     const [liked, setLiked] = useState(post.user_emotion ? true : false);
     const [selectedEmoji, setSelectedEmoji] = useState(post.user_emotion?.emoji || null);
@@ -87,8 +90,11 @@ const Post = ({ setPosts, post }) => {
             if (response.status === 200) {
                 let post = response.data.data;
                 setPosts(prevPosts => [post, ...prevPosts])
-                toast.success('Đã chi sẻ bài viết');
+                toast.success('Đã chia sẻ bài viết');
                 handleShareClose();
+                if (onShareSuccess) {
+                    onShareSuccess();
+                }
             }
         } catch (error) {
             console.error('Lỗi khi chia sẻ bài viết:', error);
@@ -279,8 +285,16 @@ const Post = ({ setPosts, post }) => {
                             open={Boolean(anchorEl)}
                             onClose={handleClose}
                         >
-                            <MenuItem onClick={handleClose}>Lưu bài viết</MenuItem>
-                            <MenuItem onClick={handleClose}>Báo cáo</MenuItem>
+                            {post.user_id === user.id ? (
+                                <MenuItem onClick={handleClose}>
+                                    <Edit sx={{ mr: 1 }} />
+                                    Chỉnh sửa bài viết
+                                </MenuItem>
+                            ) : (
+                                <MenuItem onClick={handleClose}>
+                                    Báo cáo
+                                </MenuItem>
+                            )}
                         </Menu>
                     </>
                 }
@@ -330,15 +344,15 @@ const Post = ({ setPosts, post }) => {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         <ThumbUpAlt color="primary" sx={{ fontSize: '18px' }} />
                         <Typography variant="body2" color="text.secondary">
-                            {emojiCount}
+                            {emojiCount || 0}
                         </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', gap: 2 }}>
                         <Typography variant="body2" color="text.secondary">
-                            {post.comment_count} bình luận
+                            {post.comment_count || 0} bình luận
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                            {post.share_count} chia sẻ
+                            {post.share_count || 0} chia sẻ
                         </Typography>
                     </Box>
                 </Box>
@@ -389,13 +403,15 @@ const Post = ({ setPosts, post }) => {
                         </IconButton>
                     ))}
                 </Popover>
-                <Button
-                    startIcon={<ChatBubbleOutline sx={{ fontSize: '18px' }} />}
-                    sx={{ flex: 1 }}
-                    onClick={handleCommentOpen}
-                >
-                    Bình luận
-                </Button>
+                {!hideCommentButton && (
+                    <Button
+                        startIcon={<ChatBubbleOutline sx={{ fontSize: '18px' }} />}
+                        sx={{ flex: 1 }}
+                        onClick={handleCommentOpen}
+                    >
+                        Bình luận
+                    </Button>
+                )}
                 <Button
                     startIcon={<Share sx={{ fontSize: '18px' }} />}
                     sx={{ flex: 1 }}
@@ -497,6 +513,7 @@ const Post = ({ setPosts, post }) => {
                 open={openComment}
                 onClose={handleCommentClose}
                 post={post}
+                setPosts={setPosts}
             />
         </Card>
     );

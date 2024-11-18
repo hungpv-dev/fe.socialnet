@@ -150,7 +150,7 @@ const CommentItem = ({ comment, level = 0, deleteCommentChil, setDeleteCommentCh
                             {comment.user.name}
                         </Typography>
                         <Typography variant="body2" sx={{ fontSize: '0.9375rem', color: '#050505', whiteSpace: 'pre-wrap', lineHeight: 1.3333 }}>
-                            {comment.content.text}
+                            {comment.parent ? <span style={{fontWeight: 600}}>@{comment.parent?.user?.name} </span> : ''}{comment.content.text}
                         </Typography>
                         {comment.content.image && (
                             <Box sx={{ mt: 1 }}>
