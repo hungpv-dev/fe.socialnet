@@ -1,23 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
     Dialog,
-    DialogTitle,
     DialogContent,
     Box,
-    IconButton,
+    Divider,
     Typography,
+    IconButton,
     Avatar,
     TextField,
-    Divider,
 } from '@mui/material';
-import { Close, Send, Image } from '@mui/icons-material';
 import axiosInstance from '@/axios';
 import { toast } from 'react-toastify';
-import { useSelector } from 'react-redux';
 import ShowListComment from './ShowListComment';
-import { formatDateToNow } from '@/components/FormatDate';
+import Post from './Post';
+import { Close, Send } from '@mui/icons-material';
+import Image from '@mui/icons-material/Image';
+import { useSelector } from 'react-redux';
 
-const CommentDialog = ({ open, onClose, post }) => {
+const CommentDialog = ({ open, onClose, post, setPosts }) => {
     const [newComment, setNewComment] = useState('');
     const [selectedImage, setSelectedImage] = useState(null);
     const [previewImage, setPreviewImage] = useState(null);
@@ -30,19 +30,56 @@ const CommentDialog = ({ open, onClose, post }) => {
     const [isLoading, setIsLoading] = useState(false);
     const fileInputRef = useRef();
     const currentUser = useSelector(state => state.user);
+    const [scrollPosition, setScrollPosition] = useState(0);
+    const dialogContentRef = useRef(null);
 
     useEffect(() => {
-        if (open) {
-            fetchComments();
+        if (open && post?.id) {
+            setPage(1);
+            setComments([]);
+            setHasMore(true);
+            fetchComments(false);
         }
-    }, [open, post, page]);
+    }, [open, post?.id]);
 
-    const fetchComments = async () => {
+    useEffect(() => {
+        if (page !== 1 && post?.id) {
+            fetchComments(true);
+        }
+    }, [page]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (dialogContentRef.current) {
+                setScrollPosition(dialogContentRef.current.scrollTop);
+            }
+        };
+
+        const contentElement = dialogContentRef.current;
+        if (contentElement) {
+            contentElement.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (contentElement) {
+                contentElement.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
+
+    const fetchComments = async (prev) => {
+        if (!post?.id) return;
+
         try {
             setIsLoading(true);
             const response = await axiosInstance.get(`comments/by/post/${post.id}?page=${page}`);
             if (response.data.data.length > 0) {
-                setComments(prevComments => [...prevComments, ...response.data.data]);
+                if(prev){
+                    setComments(prevComments => [...prevComments, ...response.data.data]);
+                }else{
+                    setComments(response.data.data);
+                }
+                setHasMore(true);
             } else {
                 setHasMore(false);
             }
@@ -155,6 +192,16 @@ const CommentDialog = ({ open, onClose, post }) => {
                         });
                         return [comment, ...newComment]
                     });
+                    
+                    // Cuộn xuống cuối sau khi thêm comment mới
+                    setTimeout(() => {
+                        if (dialogContentRef.current) {
+                            dialogContentRef.current.scrollTo({
+                                top: dialogContentRef.current.scrollHeight,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }, 100);
                 }
                 setNewComment('');
                 setSelectedImage(null);
@@ -167,6 +214,13 @@ const CommentDialog = ({ open, onClose, post }) => {
         }
     };
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSubmitComment();
+        }
+    };
+
     return (
         <Dialog
             open={open}
@@ -176,85 +230,56 @@ const CommentDialog = ({ open, onClose, post }) => {
             PaperProps={{
                 sx: {
                     height: '90vh',
-                    maxHeight: '800px',
+                    minHeight: '900px', 
                     display: 'flex',
                     flexDirection: 'column',
                     borderRadius: '12px',
-                    overflow: 'hidden'
                 }
             }}
         >
-            <DialogTitle sx={{ p: 2, bgcolor: '#ffffff' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.25rem', color: '#050505' }}>
-                        Bài viết của {post.user.name}
-                    </Typography>
-                    <IconButton
-                        onClick={onClose}
-                        sx={{
-                            bgcolor: '#E4E6EB',
-                            '&:hover': { bgcolor: '#D8DADF' }
-                        }}
-                    >
-                        <Close />
-                    </IconButton>
-                </Box>
-            </DialogTitle>
-
-            <Divider />
-
-            <Box sx={{ p: 3, bgcolor: '#ffffff' }}>
-                <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-                    <Avatar
-                        src={post.user.avatar}
-                        sx={{
-                            width: 40,
-                            height: 40,
-                            mr: 1.5,
-                            border: '1px solid #E4E6EB'
-                        }}
-                    />
-                    <Box>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#050505', mb: 0.5 }}>
-                            {post.user.name}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: '#65676B', fontSize: '0.8125rem' }}>
-                            {formatDateToNow(post.created_at)}
-                        </Typography>
-                    </Box>
-                </Box>
-                <Typography
-                    variant="body1"
-                    sx={{
-                        mb: 2,
-                        whiteSpace: 'pre-wrap',
-                        color: '#050505',
-                        fontSize: '0.9375rem',
-                        lineHeight: 1.3333
-                    }}
-                >
-                    {post.content}
-                </Typography>
-                {post.image && (
-                    <Box sx={{ mb: 2 }}>
-                        <img
-                            src={post.image}
-                            alt="Post"
-                            style={{
-                                width: '100%',
-                                maxHeight: '500px',
-                                objectFit: 'contain',
-                                borderRadius: '8px',
-                                backgroundColor: '#F0F2F5'
-                            }}
-                        />
-                    </Box>
-                )}
+            <Box sx={{ 
+                top: 0,
+                zIndex: 1,
+                bgcolor: '#ffffff',
+                borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                transform: `translateY(-${scrollPosition * 0.3}px)`,
+                transition: 'transform 0.1s ease-out'
+            }}>
+                <Post 
+                    post={post} 
+                    hideCommentButton={true} 
+                    setPosts={setPosts}
+                    onShareSuccess={onClose}
+                />
             </Box>
 
             <Divider />
 
-            <DialogContent sx={{ flex: 1, overflow: 'auto', p: 0, bgcolor: '#ffffff' }}>
+            <DialogContent 
+                ref={dialogContentRef}
+                sx={{ 
+                    flex: 1,
+                    p: 0, 
+                    bgcolor: '#ffffff',
+                    minHeight: '45%',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    '&::-webkit-scrollbar': {
+                        width: '8px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                        background: '#f1f1f1',
+                        borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                        background: '#888',
+                        borderRadius: '4px',
+                        '&:hover': {
+                            background: '#555'
+                        }
+                    }
+                }}
+            >
                 <ShowListComment
                     commentChilde={commentChilde}
                     setCommentChilde={setCommentChilde}
@@ -272,7 +297,14 @@ const CommentDialog = ({ open, onClose, post }) => {
 
             <Divider />
 
-            <Box sx={{ p: 2, bgcolor: '#ffffff' }}>
+            <Box sx={{ 
+                p: 2,
+                position: 'sticky',
+                bottom: 0,
+                bgcolor: '#ffffff',
+                borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+                zIndex: 1
+            }}>
                 {replyTo && (
                     <Box sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Typography variant="body2" sx={{ color: '#65676B', fontSize: '0.8125rem' }}>
@@ -333,6 +365,7 @@ const CommentDialog = ({ open, onClose, post }) => {
                         placeholder={replyTo ? `Trả lời ${replyTo.user.name}...` : "Viết bình luận..."}
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
+                        onKeyPress={handleKeyPress}
                         onPaste={handlePaste}
                         size="small"
                         sx={{

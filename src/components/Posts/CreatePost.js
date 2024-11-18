@@ -37,6 +37,8 @@ const CreatePost = ( { setPosts, onClose } ) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [privacy, setPrivacy] = useState('public');
 
+    const MAX_FILE_SIZE = 30 * 1024 * 1024; // 30MB in bytes
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         let formData = new FormData();
@@ -71,9 +73,18 @@ const CreatePost = ( { setPosts, onClose } ) => {
         }
     };
 
+    const validateFileSize = (file) => {
+        if (file.size > MAX_FILE_SIZE) {
+            toast.error('Kích thước file không được vượt quá 30MB');
+            return false;
+        }
+        return true;
+    };
+
     const handleMediaChange = (e) => {
         const files = Array.from(e.target.files);
-        setMediaFiles(prev => [...prev, ...files]);
+        const validFiles = files.filter(validateFileSize);
+        setMediaFiles(prev => [...prev, ...validFiles]);
     };
 
     const handleRemoveMedia = (index) => {
@@ -99,7 +110,9 @@ const CreatePost = ( { setPosts, onClose } ) => {
         for (let i = 0; i < items.length; i++) {
             if (items[i].type.indexOf('image') !== -1) {
                 const file = items[i].getAsFile();
-                files.push(file);
+                if (validateFileSize(file)) {
+                    files.push(file);
+                }
             }
         }
         
