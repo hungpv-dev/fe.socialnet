@@ -41,7 +41,7 @@ export const refresh = async (refreshToken) => {
 
 // Đăng xuất
 export const logout = async (access_token) => {
-  return await axios.post(`${API_URL}/api/logout`,{
+  return await axios.post(`${API_URL}/api/logout`,null,{
       headers: {
         'Authorization': `Bearer ${access_token}`
       }

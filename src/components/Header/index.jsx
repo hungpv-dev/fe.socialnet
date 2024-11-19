@@ -117,6 +117,17 @@ function Header() {
     setAnchorElNotif(null);
   };
 
+  const handleLogout = async () => {
+    try{
+      await auth.logout();
+      navigate('/login');
+    }catch(e){
+      toast.error('Đã xảy ra lỗi, vui lòng thử lại sau')
+    }
+    handleCloseUserMenu();
+  };
+
+  const unreadCount = notifications.filter(notification => !notification.read_at).length;
 
   return (
     <AppBar position="fixed" sx={{ bgcolor: "white", color: "black" }}>
@@ -221,7 +232,7 @@ function Header() {
               <Settings sx={{ mr: 1 }} />
               <Typography>Cài đặt</Typography>
             </MenuItem>
-            <MenuItem onClick={handleCloseUserMenu}>
+            <MenuItem onClick={handleLogout}>
               <Logout sx={{ mr: 1 }} />
               <Typography>Đăng xuất</Typography>
             </MenuItem>

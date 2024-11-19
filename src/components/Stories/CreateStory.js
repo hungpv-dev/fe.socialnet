@@ -22,7 +22,7 @@ import {
 import { toast } from 'react-toastify';
 import axiosInstance from '@/axios';
 
-const CreateStory = ({ open, onClose }) => {
+const CreateStory = ({ open,stories,  setStories, onClose }) => {
     const [data, setData] = useState(null);
     const [privacy, setPrivacy] = useState('public');
 
@@ -33,10 +33,23 @@ const CreateStory = ({ open, onClose }) => {
         }
     };
 
+    const handlePaste = (event) => {
+        const items = event.clipboardData?.items;
+        if (!items) return;
+
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                const file = items[i].getAsFile();
+                setData(file);
+                break;
+            }
+        }
+    };
+
     const handleSubmit = async () => {
         
         // Kiểm tra kích thước file
-        if (data.size > 10 * 1024 * 1024) { // 10MB
+        if (data.size > 30 * 1024 * 1024) { // 10MB
             toast.error('File không được vượt quá 10MB');
             return;
         }
@@ -53,7 +66,7 @@ const CreateStory = ({ open, onClose }) => {
         formData.append('data', data);
     
         try {
-            await toast.promise(
+            let response = await toast.promise(
                 axiosInstance.post('story', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -65,6 +78,11 @@ const CreateStory = ({ open, onClose }) => {
                     error: 'Thêm tin thất bại 🤯'
                 }
             );
+            if(response.status === 201){
+                let data = response.data.data;
+                const filteredStories = stories.filter(story => story.id !== data.id);
+                setStories([data, ...filteredStories]);
+            }
             onClose();
         } catch (error) {
             console.error('Lỗi khi tạo tin:', error);
@@ -131,6 +149,8 @@ const CreateStory = ({ open, onClose }) => {
                             cursor: 'pointer',
                         }}
                         component="label"
+                        onPaste={handlePaste}
+                        tabIndex={0}
                     >
                         <input
                             accept="image/*,video/*"
@@ -139,7 +159,7 @@ const CreateStory = ({ open, onClose }) => {
                             style={{ display: 'none' }}
                         />
                         <Typography color="text.secondary" sx={{ mb: 1 }}>
-                            Chọn ảnh hoặc video để tải lên
+                            Chọn ảnh hoặc video để tải lên hoặc dán (Ctrl+V)
                         </Typography>
                         <AddPhotoIcon />
                     </Box>

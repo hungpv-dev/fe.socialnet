@@ -30,12 +30,14 @@ import Picker from '@emoji-mart/react'
 import axiosInstance from '@/axios';
 import { toast } from 'react-toastify';
 
-const CreatePost = ( { onClose } ) => {
+const CreatePost = ( { setPosts, onClose } ) => {
     const [content, setContent] = useState('');
     const [mediaFiles, setMediaFiles] = useState([]);
     const currentUser = useSelector(state => state.user);
     const [anchorEl, setAnchorEl] = useState(null);
     const [privacy, setPrivacy] = useState('public');
+
+    const MAX_FILE_SIZE = 30 * 1024 * 1024; // 30MB in bytes
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -49,7 +51,7 @@ const CreatePost = ( { onClose } ) => {
 
         try {
             onClose();
-            await toast.promise(
+            let response = await toast.promise(
                 axiosInstance.post('posts', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -61,14 +63,28 @@ const CreatePost = ( { onClose } ) => {
                     error: 'Thêm bài viết thất bại 🤯'
                 }
             );
+            if(response.status === 200){
+                let post = response.data.data;
+                setPosts(prevPosts => [post, ...prevPosts])
+                window.scrollTo({ top: 0, behavior: 'smooth' }); 
+            }
         } catch (e) {
             console.log('Lỗi khi gửi file:', e);
         }
     };
 
+    const validateFileSize = (file) => {
+        if (file.size > MAX_FILE_SIZE) {
+            toast.error('Kích thước file không được vượt quá 30MB');
+            return false;
+        }
+        return true;
+    };
+
     const handleMediaChange = (e) => {
         const files = Array.from(e.target.files);
-        setMediaFiles(prev => [...prev, ...files]);
+        const validFiles = files.filter(validateFileSize);
+        setMediaFiles(prev => [...prev, ...validFiles]);
     };
 
     const handleRemoveMedia = (index) => {
@@ -85,6 +101,24 @@ const CreatePost = ( { onClose } ) => {
 
     const handleEmojiClose = () => {
         setAnchorEl(null);
+    };
+
+    const handlePaste = async (e) => {
+        const items = e.clipboardData.items;
+        const files = [];
+        
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                const file = items[i].getAsFile();
+                if (validateFileSize(file)) {
+                    files.push(file);
+                }
+            }
+        }
+        
+        if (files.length > 0) {
+            setMediaFiles(prev => [...prev, ...files]);
+        }
     };
 
     return (
@@ -143,6 +177,7 @@ const CreatePost = ( { onClose } ) => {
                     placeholder="Bạn đang nghĩ gì?"
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
+                    onPaste={handlePaste}
                     variant="outlined"
                     sx={{
                         '& .MuiOutlinedInput-root': {

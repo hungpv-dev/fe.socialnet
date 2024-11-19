@@ -61,7 +61,10 @@ const useAuth = () => {
   };
 
   const logout = () => {
-    logoutService();
+    const access_token = localStorage.getItem('access_token');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    logoutService(access_token);
   };
 
   const register = () => {
