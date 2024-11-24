@@ -8,7 +8,7 @@ import GlobalImageViewer from "./components/GlobalImageViewer";
 const App = () => {
   const auth = useAuth();
   // const [checkLogin, setCheckLogin] = useState(false);
-  // const [isReady, setIsReady] = useState(false);
+  const [isReady, setIsReady] = useState(true);
   const checkAdmin = true;
   const checkLogin = true;
   

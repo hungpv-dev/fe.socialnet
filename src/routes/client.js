@@ -90,7 +90,7 @@ const privateRouters = [
     },
     // trang ca nhan
     {
-        path: "/frofile", component: Canhan
+        path: "/profile/:id", component: Canhan
     },
    
     {

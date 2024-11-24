@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import React from 'react';
+import axiosInstance from "@/axios";
 
 import { 
   Box,
@@ -35,13 +36,39 @@ import Introduction from './Introduction';
 import Friends from './Friends';
 import Photos from './Photos';
 import Videos from './Videos';
+import { useParams } from "react-router-dom";
 
 const Canhan = () => {
+  const [userData, setUserData] = useState(null);
+  const [posts, setPosts] = useState([]);
   const [openStoryDialog, setOpenStoryDialog] = useState(false);
   const [openAvatarDialog, setOpenAvatarDialog] = useState(false);
   const [openCoverDialog, setOpenCoverDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [activeTab, setActiveTab] = useState('posts');
+  const { id } = useParams();
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axiosInstance.get(`/user/${id}`);
+        setUserData(response.data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    const fetchPosts = async () => {
+      try {
+        const response = await axiosInstance.get(`/user/${id}/posts`);
+        setPosts(response.data);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      }
+    };
+
+    fetchUserData();
+    fetchPosts();
+  }, []);
 
   const handleOpenStoryDialog = () => {
     setOpenStoryDialog(true);
@@ -75,10 +102,32 @@ const Canhan = () => {
     setOpenEditDialog(false);
   };
 
+  const handleUpdateProfile = async (profileData) => {
+    try {
+      await axiosInstance.put('/user/profile', profileData);
+      // Refresh user data after update
+      const response = await axiosInstance.get('/user/profile');
+      setUserData(response.data);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    }
+  };
+
+  const handleCreatePost = async (postData) => {
+    try {
+      await axiosInstance.post('/user/posts', postData);
+      // Refresh posts after creating new one
+      const response = await axiosInstance.get('/user/posts');
+      setPosts(response.data);
+    } catch (error) {
+      console.error('Error creating post:', error);
+    }
+  };
+
   const renderContent = () => {
     switch(activeTab) {
       case 'about':
-        return <Introduction />;
+        return <Introduction userData={userData} />;
       case 'friends':
         return <Friends />;
       case 'photos':
@@ -92,7 +141,7 @@ const Canhan = () => {
             <Card sx={{ mb: 3 }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Avatar sx={{ mr: 2 }} />
+                  <Avatar sx={{ mr: 2 }} src={userData?.avatar} />
                   <Button fullWidth variant="outlined" sx={{ borderRadius: 20 }}>
                     Bạn đang nghĩ gì?
                   </Button>
@@ -102,48 +151,13 @@ const Canhan = () => {
               </CardContent>
             </Card>
 
-            {[1,2].map((post) => (
-              <Card key={post} sx={{ mb: 3 }}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Avatar sx={{ mr: 2 }} />
-                    <Box>
-                      <Typography variant="subtitle1" fontWeight="bold">Anh Thư</Typography>
-                      <Typography variant="caption">31 tháng 5</Typography>
-                    </Box>
-                  </Box>
-                  <Typography sx={{ mb: 2 }}>
-                    {post === 1 ? 'Living for yourself, not for anyone else' : 'Tips tạo dáng khi ngồi cho các nàng :)))'}
-                  </Typography>
-                  <Grid container spacing={1} sx={{ mb: 2 }}>
-                    {[1,2,3].map((img) => (
-                      <Grid item xs={4} key={img}>
-                        <img
-                          src="https://via.placeholder.com/300x400"
-                          alt=""
-                          style={{ width: '100%', height: 200, objectFit: 'cover' }}
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                    <Typography variant="body2">Anh Thư và 2 người khác</Typography>
-                    <Typography variant="body2">{post === 1 ? '6' : '10'}</Typography>
-                  </Box>
-                  <Divider sx={{ mb: 2 }} />
-                  <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
-                    <Button startIcon={<ThumbUp />}>Thích</Button>
-                    <Button startIcon={<Comment />}>Bình luận</Button>
-                  </Box>
-                </CardContent>
-              </Card>
-            ))}
           </>
         );
     }
   };
 
   return (
+    
     <Box sx={{ bgcolor: 'background.default', height: '100vh', overflowY: 'auto' }}>
       <Container maxWidth="lg" sx={{ pt: 0 }}>
         <Box sx={{ position: 'relative' }}>
@@ -151,7 +165,7 @@ const Canhan = () => {
           <Card sx={{ mb: 2, pt: 0 }}>
             <CardMedia
               component="img"
-              image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSM8MyajtJunf-jP0Hz_C1qvwE3pBTI-jR36A&s"
+              image={userData?.cover_image || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSM8MyajtJunf-jP0Hz_C1qvwE3pBTI-jR36A&s"}
               alt="Cover"
               onClick={handleOpenCoverDialog}
               sx={{ 
@@ -197,7 +211,7 @@ const Canhan = () => {
                   Chọn ảnh bìa mới
                 </Button>
                 <img 
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSM8MyajtJunf-jP0Hz_C1qvwE3pBTI-jR36A&s"
+                  src={userData?.cover_image || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSM8MyajtJunf-jP0Hz_C1qvwE3pBTI-jR36A&s"}
                   alt="Cover"
                   style={{ width: '100%', maxHeight: '70vh', objectFit: 'contain' }}
                 />
@@ -215,7 +229,7 @@ const Canhan = () => {
           <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 4, mt: -6 }}>
             <Box sx={{ position: 'relative' }}>
               <Avatar
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiyrpSorxQ9z2cYsy0ueHGseMCrnOYizDKbQ&s"
+                src={userData?.avatar || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiyrpSorxQ9z2cYsy0ueHGseMCrnOYizDKbQ&s"}
                 sx={{ width: 138, height: 138, border: 3, borderColor: 'background.paper', cursor: 'pointer' }}
                 onClick={handleOpenAvatarDialog}
               />
@@ -233,7 +247,7 @@ const Canhan = () => {
               </IconButton>
             </Box>
             <Box sx={{ ml: 3, flex: 1 }}>
-              <Typography variant="h4" fontWeight="bold">User</Typography>
+              <Typography variant="h4" fontWeight="bold">{userData?.name || 'User'}</Typography>
               <Box sx={{ mt: 2 }}>
                 <Button 
                   variant="contained" 
@@ -277,6 +291,7 @@ const Canhan = () => {
                   label="Tên hiển thị"
                   variant="outlined"
                   sx={{ mb: 2 }}
+                  defaultValue={userData?.name}
                 />
                 <TextField
                   fullWidth
@@ -285,24 +300,28 @@ const Canhan = () => {
                   rows={4}
                   variant="outlined"
                   sx={{ mb: 2 }}
+                  defaultValue={userData?.bio}
                 />
                 <TextField
                   fullWidth
                   label="Trường học"
                   variant="outlined"
                   sx={{ mb: 2 }}
+                  defaultValue={userData?.school}
                 />
                 <TextField
                   fullWidth
                   label="Nơi sống"
                   variant="outlined"
                   sx={{ mb: 2 }}
+                  defaultValue={userData?.location}
                 />
                 <TextField
                   fullWidth
                   label="Instagram"
                   variant="outlined"
                   sx={{ mb: 2 }}
+                  defaultValue={userData?.instagram}
                 />
               </Box>
             </DialogContent>
@@ -443,22 +462,22 @@ const Canhan = () => {
                   
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <School sx={{ mr: 1 }} />
-                    <Typography>Cao đẳng FPT PolyTechnic</Typography>
+                    <Typography>{userData?.school || 'Cao đẳng FPT PolyTechnic'}</Typography>
                   </Box>
 
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <LocationOn sx={{ mr: 1 }} />
-                    <Typography>Đến từ Thanh Thủy - Phú Thọ</Typography>
+                    <Typography>{userData?.location || 'Đến từ Thanh Thủy - Phú Thọ'}</Typography>
                   </Box>
 
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <RssFeed sx={{ mr: 1 }} />
-                    <Typography>Có 200 người theo dõi</Typography>
+                    <Typography>Có {userData?.followers_count || 0} người theo dõi</Typography>
                   </Box>
 
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <Instagram sx={{ mr: 1 }} />
-                    <Typography color="primary">pathuw__</Typography>
+                    <Typography color="primary">{userData?.instagram || 'pathuw__'}</Typography>
                   </Box>
 
                   <Button fullWidth variant="outlined">
@@ -471,10 +490,10 @@ const Canhan = () => {
                 <CardContent>
                   <Typography variant="h6" gutterBottom>Ảnh</Typography>
                   <Grid container spacing={1}>
-                    {[1,2,3,4,5,6].map((item) => (
-                      <Grid item xs={4} key={item}>
+                    {userData?.photos?.slice(0, 6).map((photo, index) => (
+                      <Grid item xs={4} key={index}>
                         <img 
-                          src="https://via.placeholder.com/100"
+                          src={photo.url}
                           alt=""
                           style={{ width: '100%', height: 100, objectFit: 'cover' }}
                         />
