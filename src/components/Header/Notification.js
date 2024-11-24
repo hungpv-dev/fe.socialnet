@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Box, Typography, Avatar, List, ListItem, ListItemAvatar, ListItemText, IconButton, Menu, MenuItem, CircularProgress } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
@@ -9,7 +9,7 @@ import axiosInstance from '@/axios';
 import { setNotifications } from "@/actions/notification";
 import { useNavigate } from 'react-router-dom';
 
-const Notification = ({ onClose }) => {
+const Notification = ({ onClose,seenAll, unseenCount, setUnseenCount }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const notifications = useSelector(state => state.notifications);
@@ -45,8 +45,11 @@ const Notification = ({ onClose }) => {
     }, [notifications, hasMore, loading, dispatch]);
 
     useEffect(() => {
-        fetchNotifications();
-    }, []); // Chỉ chạy lần đầu
+        if(unseenCount !== 0){
+            seenAll();
+            setUnseenCount(0)
+        }
+    }, [unseenCount]);
 
     // Kiểm tra cuộn đến cuối
     const handleScroll = useCallback((event) => {
@@ -84,18 +87,34 @@ const Notification = ({ onClose }) => {
         }
     };
 
-    const getNotificationContent = (notification) => notification.data.message || "Thông báo.";
+    const getNotificationContent = (notification) => notification.data?.message || "Thông báo.";
     const getNotificationLink = (notification) => {
         switch (notification.type) {
             case 'App\\Notifications\\CreatePost':
-                const postId = notification.post?.id || notification.data?.post?.id;
-                return `/post/${postId}`;
+            case 'App\\Notifications\\Comment\\CommentPostNotification':
+                const postId = notification.data?.post_id;
+                return `/posts/${postId}`;
             default:
                 return '/';
         }
     };
-    const getAvatarUrl = (notification) => notification.user?.avatar || notification.data?.user?.avatar;
+    const getAvatarUrl = (notification) => notification.data?.avatar || notification.data?.data?.avatar;
     const getUserName = (notification) => notification.user?.name || notification.data?.user?.name;
+    
+    const formatTime = (dateString) => {
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) {
+                return 'Không xác định';
+            }
+            return formatDistanceToNow(date, {
+                addSuffix: true,
+                locale: vi,
+            });
+        } catch (error) {
+            return 'Không xác định';
+        }
+    };
 
     return (
         <Box 
@@ -148,10 +167,7 @@ const Notification = ({ onClose }) => {
                             </ListItemAvatar>
                             <ListItemText
                                 primary={<span dangerouslySetInnerHTML={{ __html: getNotificationContent(notification) }} />}
-                                secondary={formatDistanceToNow(new Date(notification.created_at), {
-                                    addSuffix: true,
-                                    locale: vi,
-                                })}
+                                secondary={formatTime(notification.created_at)}
                                 primaryTypographyProps={{ variant: 'body1', sx: { fontSize: '0.9rem', lineHeight: 1.4 } }}
                                 secondaryTypographyProps={{ sx: { fontSize: '0.8rem' } }}
                             />
@@ -184,7 +200,7 @@ const Notification = ({ onClose }) => {
                 </Box>
             )}
 
-            {!loading && !hasMore && (
+            {!loading && !hasMore && notifications.length > 0 && (
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2 }}>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                         Không còn thông báo cũ hơn

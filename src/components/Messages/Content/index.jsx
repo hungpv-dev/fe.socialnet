@@ -214,7 +214,6 @@ function Content() {
   }, [handlePaste]);
 
   if (isLoadingMessages) {
-    console.log('loading');
     return <PageLoading />;
   }
   if (!room) {
@@ -325,7 +324,6 @@ function Content() {
               <h5 className='m-0 mb-1 fs-6'>{room.name}</h5>
               <p className='m-0'>
                 <GetTimeOffline listUser={room.users} />
-
               </p>
             </div>
           </div>

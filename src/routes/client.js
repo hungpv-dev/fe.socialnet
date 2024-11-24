@@ -35,6 +35,8 @@ import trangAnh from "../pages/Client/TrangCaNhan/trangAnh";
 import trangGioiThieu from "../pages/Client/TrangCaNhan/trangGioiThieu";
 
 import FriendRequest from '../pages/Client/FriendRequestsPage/FriendRequestsPage';
+import PostDetail from "@/components/Posts/PostDetail";
+import VerifyCode from "@/pages/VerifyCode";
 // Router không cần đăng nhập vẫn vô được
 const pulicRouter = [
     {
@@ -44,12 +46,14 @@ const pulicRouter = [
         path: "/register", component: Register
     },
     {
-        path: "/forgot", component: ForgotPassword
+        path: "/forgot-password", component: ForgotPassword
     },
     {
         path: "/repassword", component: Repassword
     },
-
+    {
+        path: "/verify-code", component: VerifyCode
+    }
 ]
 
 
@@ -66,6 +70,11 @@ const privateRouters = [
     },
     {
         path: "/messages/:id", component: Messages, layout: LayoutMessages
+    },
+
+    // Chi tiết bài viết
+    {
+        path: "/posts/:id", component: PostDetail
     },
 
     // cài đặt 
