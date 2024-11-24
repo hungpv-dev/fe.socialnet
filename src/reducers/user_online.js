@@ -1,4 +1,4 @@
-export const userOnline = (state = {}, action) => {
+export const userOnline = (state = [], action) => {
     switch (action.type) {
       case 'SET_USER_ONLINE':
         return action.payload;

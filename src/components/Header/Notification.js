@@ -93,6 +93,7 @@ const Notification = ({ onClose,seenAll, unseenCount, setUnseenCount }) => {
             case 'App\\Notifications\\CreatePost':
             case 'App\\Notifications\\Comment\\CommentPostNotification':
             case 'App\\Notifications\\Post\\EmotionNotification':
+            case 'App\\Notifications\\Comment\\RepCommentNotification':
                 const postId = notification.data?.post_id;
                 return `/posts/${postId}`;
             default:

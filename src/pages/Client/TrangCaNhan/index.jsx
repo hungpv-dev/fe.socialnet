@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import React from 'react';
 import axiosInstance from "@/axios";
+import { toast } from 'react-toastify';
 
 import { 
   Box,
@@ -19,7 +20,11 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField
+  TextField,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio
 } from '@mui/material';
 import {
   PhotoCamera,
@@ -28,8 +33,6 @@ import {
   LocationOn,
   RssFeed,
   Instagram,
-  ThumbUp,
-  Comment,
   Close
 } from '@mui/icons-material';
 import Introduction from './Introduction';
@@ -39,36 +42,148 @@ import Videos from './Videos';
 import { useParams } from "react-router-dom";
 
 const Canhan = () => {
-  const [userData, setUserData] = useState(null);
+  const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [openStoryDialog, setOpenStoryDialog] = useState(false);
   const [openAvatarDialog, setOpenAvatarDialog] = useState(false);
   const [openCoverDialog, setOpenCoverDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [activeTab, setActiveTab] = useState('posts');
+  const [selectedAvatar, setSelectedAvatar] = useState(null);
+  const [selectedCover, setSelectedCover] = useState(null);
+  const [avatarCaption, setAvatarCaption] = useState('');
+  const [coverCaption, setCoverCaption] = useState('');
+  const [avatarPrivacy, setAvatarPrivacy] = useState('public');
+  const [coverPrivacy, setCoverPrivacy] = useState('public');
   const { id } = useParams();
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await axiosInstance.get(`/user/${id}`);
-        setUserData(response.data);
+        setUser(response.data);
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     };
+    fetchUserData();
+  }, []);
 
-    const fetchPosts = async () => {
-      try {
-        const response = await axiosInstance.get(`/user/${id}/posts`);
-        setPosts(response.data);
-      } catch (error) {
-        console.error('Error fetching posts:', error);
+  useEffect(() => {
+    const handleGlobalPaste = (e) => {
+      if (!openAvatarDialog && !openCoverDialog) return;
+      
+      const items = e.clipboardData.items;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          const blob = items[i].getAsFile();
+          if (openAvatarDialog) {
+            setSelectedAvatar(blob);
+          } else {
+            setSelectedCover(blob);
+          }
+          break;
+        }
       }
     };
 
-    fetchUserData();
-    fetchPosts();
-  }, []);
+    document.addEventListener('paste', handleGlobalPaste);
+    return () => {
+      document.removeEventListener('paste', handleGlobalPaste);
+    };
+  }, [openAvatarDialog, openCoverDialog]);
+
+  const handleAvatarChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        toast.error('Vui lòng chọn file ảnh hợp lệ!');
+        return;
+      }
+      setSelectedAvatar(file);
+    }
+  };
+
+  const handleCoverChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        toast.error('Vui lòng chọn file ảnh hợp lệ!');
+        return;
+      }
+      setSelectedCover(file);
+    }
+  };
+
+  const handleSaveAvatar = async () => {
+    try {
+      if (!selectedAvatar) {
+        toast.warning('Vui lòng tải lên ảnh đại diện!');
+        return;
+      }
+
+      if (!selectedAvatar.type.startsWith('image/')) {
+        toast.error('Định dạng không hợp lệ!');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('avatar', selectedAvatar);
+      formData.append('content', avatarCaption);
+      formData.append('status', avatarPrivacy);
+
+      const response = await axiosInstance.post('/user/avatar/update', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.status === 200) {
+        const userResponse = await axiosInstance.get(`/user/${id}`);
+        setUser(userResponse.data);
+        setOpenAvatarDialog(false);
+        setSelectedAvatar(null);
+        setAvatarCaption('');
+        toast.success('Cập nhật ảnh đại diện thành công!');
+      }
+
+    } catch (error) {
+      console.error('Error updating avatar:', error);
+      toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật ảnh đại diện');
+    }
+  };
+
+  const handleSaveCover = async () => {
+    try {
+      if (!selectedCover) {
+        toast.warning('Vui lòng tải lên ảnh bìa!');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('background', selectedCover);
+      formData.append('content', coverCaption);
+      formData.append('status', coverPrivacy);
+
+      const response = await axiosInstance.post('/user/background/update', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.status === 200) {
+        const userResponse = await axiosInstance.get(`/user/${id}`);
+        setUser(userResponse.data);
+        setOpenCoverDialog(false);
+        setSelectedCover(null);
+        setCoverCaption('');
+        toast.success('Cập nhật ảnh bìa thành công!');
+      }
+    } catch (error) {
+      console.error('Error updating cover:', error);
+      toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật ảnh bìa');
+    }
+  };
 
   const handleOpenStoryDialog = () => {
     setOpenStoryDialog(true);
@@ -84,6 +199,8 @@ const Canhan = () => {
 
   const handleCloseAvatarDialog = () => {
     setOpenAvatarDialog(false);
+    setSelectedAvatar(null);
+    setAvatarCaption('');
   };
 
   const handleOpenCoverDialog = () => {
@@ -92,6 +209,8 @@ const Canhan = () => {
 
   const handleCloseCoverDialog = () => {
     setOpenCoverDialog(false);
+    setSelectedCover(null);
+    setCoverCaption('');
   };
 
   const handleOpenEditDialog = () => {
@@ -107,7 +226,7 @@ const Canhan = () => {
       await axiosInstance.put('/user/profile', profileData);
       // Refresh user data after update
       const response = await axiosInstance.get('/user/profile');
-      setUserData(response.data);
+      setUser(response.data);
     } catch (error) {
       console.error('Error updating profile:', error);
     }
@@ -127,7 +246,7 @@ const Canhan = () => {
   const renderContent = () => {
     switch(activeTab) {
       case 'about':
-        return <Introduction userData={userData} />;
+        return <Introduction userData={user} />;
       case 'friends':
         return <Friends />;
       case 'photos':
@@ -141,7 +260,7 @@ const Canhan = () => {
             <Card sx={{ mb: 3 }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Avatar sx={{ mr: 2 }} src={userData?.avatar} />
+                  <Avatar sx={{ mr: 2 }} src={user?.avatar} />
                   <Button fullWidth variant="outlined" sx={{ borderRadius: 20 }}>
                     Bạn đang nghĩ gì?
                   </Button>
@@ -155,7 +274,6 @@ const Canhan = () => {
         );
     }
   };
-
   return (
     
     <Box sx={{ bgcolor: 'background.default', height: '100vh', overflowY: 'auto' }}>
@@ -165,7 +283,7 @@ const Canhan = () => {
           <Card sx={{ mb: 2, pt: 0 }}>
             <CardMedia
               component="img"
-              image={userData?.cover_image || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSM8MyajtJunf-jP0Hz_C1qvwE3pBTI-jR36A&s"}
+              image={user?.cover_avatar || '/cover_default.png'}
               alt="Cover"
               onClick={handleOpenCoverDialog}
               sx={{ 
@@ -202,24 +320,66 @@ const Canhan = () => {
             </DialogTitle>
             <DialogContent dividers>
               <Box sx={{ mt: 2 }}>
-                <Button
-                  variant="outlined"
-                  startIcon={<PhotoCamera />}
+                <TextField
                   fullWidth
+                  multiline
+                  rows={4}
+                  placeholder="Hãy viết gì đó về ảnh bìa..."
+                  variant="outlined"
+                  value={coverCaption}
+                  onChange={(e) => setCoverCaption(e.target.value)}
                   sx={{ mb: 2 }}
-                >
-                  Chọn ảnh bìa mới
-                </Button>
-                <img 
-                  src={userData?.cover_image || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSM8MyajtJunf-jP0Hz_C1qvwE3pBTI-jR36A&s"}
-                  alt="Cover"
-                  style={{ width: '100%', maxHeight: '70vh', objectFit: 'contain' }}
                 />
+                <input
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  id="cover-upload"
+                  type="file"
+                  onChange={handleCoverChange}
+                />
+                <label htmlFor="cover-upload">
+                  <Button
+                    variant="outlined"
+                    startIcon={<PhotoCamera />}
+                    fullWidth
+                    sx={{ mb: 2 }}
+                    component="span"
+                  >
+                    Chọn ảnh
+                  </Button>
+                </label>
+                <Typography variant="body2" color="textSecondary" align="center" sx={{ mb: 2 }}>
+                  Hoặc dán ảnh trực tiếp (Ctrl+V)
+                </Typography>
+                <FormControl component="fieldset" sx={{ mb: 2 }}>
+                  <RadioGroup
+                    row
+                    value={coverPrivacy}
+                    onChange={(e) => setCoverPrivacy(e.target.value)}
+                  >
+                    <FormControlLabel value="public" control={<Radio />} label="Công khai" />
+                    <FormControlLabel value="friend" control={<Radio />} label="Bạn bè" />
+                    <FormControlLabel value="private" control={<Radio />} label="Chỉ mình tôi" />
+                  </RadioGroup>
+                </FormControl>
+                {selectedCover && (
+                  <Box sx={{ mt: 2, textAlign: 'center' }}>
+                    <img
+                      src={URL.createObjectURL(selectedCover)}
+                      alt="Preview"
+                      style={{ maxWidth: '100%', maxHeight: '300px' }}
+                    />
+                  </Box>
+                )}
               </Box>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleCloseCoverDialog}>Hủy</Button>
-              <Button variant="contained" color="primary">
+              <Button 
+                variant="contained" 
+                color="primary"
+                onClick={handleSaveCover}
+              >
                 Lưu thay đổi
               </Button>
             </DialogActions>
@@ -229,7 +389,7 @@ const Canhan = () => {
           <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 4, mt: -6 }}>
             <Box sx={{ position: 'relative' }}>
               <Avatar
-                src={userData?.avatar || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiyrpSorxQ9z2cYsy0ueHGseMCrnOYizDKbQ&s"}
+                src={user?.avatar || "/user_default.png"}
                 sx={{ width: 138, height: 138, border: 3, borderColor: 'background.paper', cursor: 'pointer' }}
                 onClick={handleOpenAvatarDialog}
               />
@@ -247,7 +407,7 @@ const Canhan = () => {
               </IconButton>
             </Box>
             <Box sx={{ ml: 3, flex: 1 }}>
-              <Typography variant="h4" fontWeight="bold">{userData?.name || 'User'}</Typography>
+              <Typography variant="h4" fontWeight="bold">{user?.name || 'User'}</Typography>
               <Box sx={{ mt: 2 }}>
                 <Button 
                   variant="contained" 
@@ -291,7 +451,7 @@ const Canhan = () => {
                   label="Tên hiển thị"
                   variant="outlined"
                   sx={{ mb: 2 }}
-                  defaultValue={userData?.name}
+                  defaultValue={user?.name}
                 />
                 <TextField
                   fullWidth
@@ -300,28 +460,28 @@ const Canhan = () => {
                   rows={4}
                   variant="outlined"
                   sx={{ mb: 2 }}
-                  defaultValue={userData?.bio}
+                  defaultValue={user?.bio}
                 />
                 <TextField
                   fullWidth
                   label="Trường học"
                   variant="outlined"
                   sx={{ mb: 2 }}
-                  defaultValue={userData?.school}
+                  defaultValue={user?.school}
                 />
                 <TextField
                   fullWidth
                   label="Nơi sống"
                   variant="outlined"
                   sx={{ mb: 2 }}
-                  defaultValue={userData?.location}
+                  defaultValue={user?.location}
                 />
                 <TextField
                   fullWidth
                   label="Instagram"
                   variant="outlined"
                   sx={{ mb: 2 }}
-                  defaultValue={userData?.instagram}
+                  defaultValue={user?.instagram}
                 />
               </Box>
             </DialogContent>
@@ -351,19 +511,66 @@ const Canhan = () => {
             </DialogTitle>
             <DialogContent dividers>
               <Box sx={{ mt: 2 }}>
-                <Button
-                  variant="outlined"
-                  startIcon={<PhotoCamera />}
+                <TextField
                   fullWidth
+                  multiline
+                  rows={4}
+                  placeholder="Hãy viết gì đó về ảnh đại diện..."
+                  variant="outlined"
+                  value={avatarCaption}
+                  onChange={(e) => setAvatarCaption(e.target.value)}
                   sx={{ mb: 2 }}
-                >
-                  Chọn ảnh
-                </Button>
+                />
+                <input
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  id="avatar-upload"
+                  type="file"
+                  onChange={handleAvatarChange}
+                />
+                <label htmlFor="avatar-upload">
+                  <Button
+                    variant="outlined"
+                    startIcon={<PhotoCamera />}
+                    fullWidth
+                    sx={{ mb: 2 }}
+                    component="span"
+                  >
+                    Chọn ảnh
+                  </Button>
+                </label>
+                <Typography variant="body2" color="textSecondary" align="center" sx={{ mb: 2 }}>
+                  Hoặc dán ảnh trực tiếp (Ctrl+V)
+                </Typography>
+                <FormControl component="fieldset" sx={{ mb: 2 }}>
+                  <RadioGroup
+                    row
+                    value={avatarPrivacy}
+                    onChange={(e) => setAvatarPrivacy(e.target.value)}
+                  >
+                    <FormControlLabel value="public" control={<Radio />} label="Công khai" />
+                    <FormControlLabel value="friend" control={<Radio />} label="Bạn bè" />
+                    <FormControlLabel value="private" control={<Radio />} label="Chỉ mình tôi" />
+                  </RadioGroup>
+                </FormControl>
+                {selectedAvatar && (
+                  <Box sx={{ mt: 2, textAlign: 'center' }}>
+                    <img
+                      src={URL.createObjectURL(selectedAvatar)}
+                      alt="Preview"
+                      style={{ maxWidth: '100%', maxHeight: '300px' }}
+                    />
+                  </Box>
+                )}
               </Box>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleCloseAvatarDialog}>Hủy</Button>
-              <Button variant="contained" color="primary">
+              <Button 
+                variant="contained" 
+                color="primary"
+                onClick={handleSaveAvatar}
+              >
                 Lưu thay đổi
               </Button>
             </DialogActions>
@@ -462,22 +669,22 @@ const Canhan = () => {
                   
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <School sx={{ mr: 1 }} />
-                    <Typography>{userData?.school || 'Cao đẳng FPT PolyTechnic'}</Typography>
+                    <Typography>{user?.school || 'Cao đẳng FPT PolyTechnic'}</Typography>
                   </Box>
 
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <LocationOn sx={{ mr: 1 }} />
-                    <Typography>{userData?.location || 'Đến từ Thanh Thủy - Phú Thọ'}</Typography>
+                    <Typography>{user?.location || 'Đến từ Thanh Thủy - Phú Thọ'}</Typography>
                   </Box>
 
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <RssFeed sx={{ mr: 1 }} />
-                    <Typography>Có {userData?.followers_count || 0} người theo dõi</Typography>
+                    <Typography>Có {user?.followers_count || 0} người theo dõi</Typography>
                   </Box>
 
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <Instagram sx={{ mr: 1 }} />
-                    <Typography color="primary">{userData?.instagram || 'pathuw__'}</Typography>
+                    <Typography color="primary">{user?.instagram || 'pathuw__'}</Typography>
                   </Box>
 
                   <Button fullWidth variant="outlined">
@@ -490,7 +697,7 @@ const Canhan = () => {
                 <CardContent>
                   <Typography variant="h6" gutterBottom>Ảnh</Typography>
                   <Grid container spacing={1}>
-                    {userData?.photos?.slice(0, 6).map((photo, index) => (
+                    {user?.photos?.slice(0, 6).map((photo, index) => (
                       <Grid item xs={4} key={index}>
                         <img 
                           src={photo.url}
