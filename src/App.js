@@ -7,20 +7,18 @@ import GlobalImageViewer from "./components/GlobalImageViewer";
 
 const App = () => {
   const auth = useAuth();
-  // const [checkLogin, setCheckLogin] = useState(false);
-  const [isReady, setIsReady] = useState(true);
-  const checkAdmin = true;
-  const checkLogin = true;
+  const [checkLogin, setCheckLogin] = useState(false);
+  const [checkAdmin, setCheckAdmin] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   
-  // useEffect(() => {
-  //   const checkLoginStatus = async () => {
-  //     const isLoggedIn = await auth.checkLogin();
-  //     setCheckLogin(isLoggedIn);
-  //     setIsReady(true);
-  //   };
-  //   checkLoginStatus();
-  // }, [auth]);
-  // if (!isReady) return null;
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const isLoggedIn = await auth.checkLogin();
+      setCheckLogin(isLoggedIn);
+      setIsReady(true);
+    };
+    checkLoginStatus();
+  }, [auth]);
 
   if (!isReady) return null;
   

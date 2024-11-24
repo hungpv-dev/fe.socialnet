@@ -80,7 +80,6 @@ function Header({ unseenCount, setUnseenCount }) {
   const user = useSelector((state) => state.user);
   const notifications = useSelector((state) => state.notifications);
 
-
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -216,7 +215,7 @@ function Header({ unseenCount, setUnseenCount }) {
             <MenuItem
               onClick={handleCloseUserMenu}
               component={Link}
-              to="/profile"
+              to={`/profile/${user.id}`}
             >
               <Avatar
                 src={user?.avatar || "/user_default.png"}
