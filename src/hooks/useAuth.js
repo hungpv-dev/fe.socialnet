@@ -28,7 +28,7 @@ const useAuth = () => {
         return true;
       }
     } catch (err) {
-      console.log(err);
+      return err.status;
     }
   };
 
@@ -67,8 +67,13 @@ const useAuth = () => {
     logoutService(access_token);
   };
 
-  const register = () => {
-    registerService();
+  const register = async (email, name, password, cPassword) => {
+   return await registerService(
+      email,
+      name,
+      password,
+      cPassword
+    );
   };
 
   const logout_from_other_driver = () => {

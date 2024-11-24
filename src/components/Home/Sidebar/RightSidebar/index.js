@@ -1,10 +1,10 @@
 import { Box, Typography, Divider, Avatar, Button, List, ListItem, ListItemAvatar, ListItemText, Paper, Badge } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import classNames from "classnames/bind";
-import styles from "./RightSidebar.module.scss";
-
-const cx = classNames.bind(styles);
+import { useEffect, useState } from 'react';
+import axiosInstance from '@/axios';
+import { useSelector } from 'react-redux';
+import useChatRoom from '@/hooks/useChatRoom';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -36,23 +36,43 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 }));
 
 function RightSidebar() {
+    const navigate = useNavigate();
+    const chatRoom = useChatRoom();
+    const [friendIds, setFriendIds] = useState([]);
+    const [onlineFriends, setOnlineFriends] = useState([]);
+    const users = useSelector(state => state.user_online);
+
+    useEffect(() => {
+        const getFriendIds = async () => {
+            try {
+                const response = await axiosInstance.get('friend-ids');
+                setFriendIds(response.data);
+            } catch (error) {
+                console.error('Lỗi khi lấy danh sách ID bạn bè:', error);
+            }
+        };
+        getFriendIds();
+    }, []);
+
+    useEffect(() => {
+        const filteredFriends = users.filter(user => friendIds.includes(user.id));
+        setOnlineFriends(filteredFriends);
+    }, [friendIds, users]);
+
+    const handleUserClick = async (userId) => {
+        try {
+            const response = await chatRoom.createPrivateRoom(userId);
+            if (response?.data) {
+                const room = response.data.data;
+                navigate(`/messages/${room.chat_room_id}`);
+            }
+        } catch (error) {
+            console.error('Lỗi khi tạo phòng chat:', error);
+        }
+    };
+
     return (
         <Box component="aside" sx={{ width: 360, p: 2, bgcolor: 'background.paper' }}>
-            {/* <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
-                Được tài trợ
-            </Typography>
-
-            <Paper elevation={0} sx={{ p: 2, mb: 2, '&:hover': { bgcolor: 'action.hover' } }}>
-                <Link to="https://www.facebook.com/" style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Box component="img" 
-                            src="https://scontent.fhan14-1.fna.fbcdn.net/v/t45.1600-4/455023410_120210911267640561_7071954057481782306_n.png"
-                            sx={{ width: 120, height: 120, borderRadius: 1, objectFit: 'cover' }}
-                        />
-                        <Typography sx={{ color: 'text.primary', fontWeight: 500 }}>Facebook</Typography>
-                    </Box>
-                </Link>
-            </Paper> */}
 
             <Divider sx={{ my: 2 }} />
 
@@ -114,9 +134,10 @@ function RightSidebar() {
             </Typography>
 
             <List disablePadding>
-                {[1, 2, 3, 4, 5].map((item) => (
+                {onlineFriends.map((user) => (
                     <ListItem 
-                        key={item} 
+                        key={user.id} 
+                        onClick={() => handleUserClick(user.id)}
                         sx={{ 
                             px: 1, 
                             py: 0.5,
@@ -131,11 +152,11 @@ function RightSidebar() {
                                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                                 variant="dot"
                             >
-                                <Avatar src={`https://i.pravatar.cc/150?img=${item}`} />
+                                <Avatar src={`${user.avatar}`} />
                             </StyledBadge>
                         </ListItemAvatar>
                         <ListItemText 
-                            primary={`Người dùng ${item}`}
+                            primary={`${user.name}`}
                             sx={{ '& .MuiTypography-root': { fontWeight: 500 } }}
                         />
                     </ListItem>
