@@ -17,7 +17,7 @@ import { Close, Send } from '@mui/icons-material';
 import Image from '@mui/icons-material/Image';
 import { useSelector } from 'react-redux';
 
-const CommentDialog = ({ open, onClose, post, setPosts }) => {
+const CommentDialog = ({ open, onClose, post, setPosts, redirectDetail=false }) => {
     const [newComment, setNewComment] = useState('');
     const [selectedImage, setSelectedImage] = useState(null);
     const [previewImage, setPreviewImage] = useState(null);
@@ -250,6 +250,7 @@ const CommentDialog = ({ open, onClose, post, setPosts }) => {
                     hideCommentButton={true} 
                     setPosts={setPosts}
                     onShareSuccess={onClose}
+                    redirectDetail={redirectDetail}
                 />
             </Box>
 

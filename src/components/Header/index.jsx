@@ -71,14 +71,15 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-function Header() {
+function Header({ unseenCount, setUnseenCount }) {
   const auth = useAuth();
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // Use dispatch hook
+  const dispatch = useDispatch();
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElNotif, setAnchorElNotif] = useState(null);
   const user = useSelector((state) => state.user);
   const notifications = useSelector((state) => state.notifications);
+
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -88,32 +89,25 @@ function Header() {
     setAnchorElUser(null);
   };
 
-  const [unseenCount, setUnseenCount] = useState(0);
 
-  useEffect(() => {
-    const count = notifications.filter(
-      (notification) => !notification.is_seen
-    ).length;
-    setUnseenCount(count > 9 ? "9+" : count);
-  }, [notifications]);
+  async function seenAll(){
+    try {
+      await axiosInstance.post("/notifications/seen");
+    } catch (error) {}
+  }
 
   const handleOpenNotifMenu = async (event) => {
     setAnchorElNotif(event.currentTarget);
     setUnseenCount(0);
-    try {
-      await axiosInstance.post("/notifications/seen");
-    } catch (error) {
-      // console.error("Lỗi khi gọi API đánh dấu thông báo đã xem:", error);
-    }
+    seenAll()
   };
 
   const handleCloseNotifMenu = () => {
-    // Mark all notifications as seen and update the Redux state
     const updatedNotifications = notifications.map(notification => ({
       ...notification,
       is_seen: true,
     }));
-    dispatch(setNotifications(updatedNotifications)); // Dispatch the updated notifications
+    dispatch(setNotifications(updatedNotifications));
     setAnchorElNotif(null);
   };
 
@@ -126,8 +120,6 @@ function Header() {
     }
     handleCloseUserMenu();
   };
-
-  const unreadCount = notifications.filter(notification => !notification.read_at).length;
 
   return (
     <AppBar position="fixed" sx={{ bgcolor: "white", color: "black" }}>
@@ -191,7 +183,7 @@ function Header() {
           <Tooltip title="Thông báo">
             <IconButton onClick={handleOpenNotifMenu}>
               <Badge badgeContent={unseenCount} color="error">
-                <Notifications notifications={notifications} />
+                <Notifications />
               </Badge>
             </IconButton>
           </Tooltip>
@@ -201,7 +193,11 @@ function Header() {
             onClose={handleCloseNotifMenu}
             sx={{ mt: "45px" }}
           >
-            <Notification onClose={handleCloseNotifMenu} />
+            <Notification
+              seenAll={seenAll}
+              unseenCount={unseenCount}
+              setUnseenCount={setUnseenCount}
+              onClose={handleCloseNotifMenu} />
           </Menu>
           <Tooltip title="Tài khoản">
             <IconButton onClick={handleOpenUserMenu}>
