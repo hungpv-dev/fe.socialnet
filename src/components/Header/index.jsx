@@ -1,4 +1,4 @@
-import axiosInstance from "@/axios";
+import notificationService from "@/services/notificationService";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -31,6 +31,7 @@ import Notification from "./Notification";
 import useAuth from "@/hooks/useAuth";
 import { toast } from "react-toastify";
 import { setNotifications } from "@/actions/notification";
+import { useLocation } from "react-router-dom";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -80,6 +81,16 @@ function Header() {
   const user = useSelector((state) => state.user);
   const notifications = useSelector((state) => state.notifications);
 
+  const location = useLocation();
+  const isNotificationsPage = location.pathname === "/notifications";
+  const isFriendsPage = [
+    "/friends",
+    "/friends/request",
+    "/friends/request/sent",
+    "/friends/suggestions",
+  ].includes(location.pathname);
+  const isHomePage = location.pathname === "/";
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -101,7 +112,7 @@ function Header() {
     setAnchorElNotif(event.currentTarget);
     setUnseenCount(0);
     try {
-      await axiosInstance.post("/notifications/seen");
+      await notificationService.markAllAsSeen();
     } catch (error) {
       // console.error("Lỗi khi gọi API đánh dấu thông báo đã xem:", error);
     }
@@ -109,7 +120,7 @@ function Header() {
 
   const handleCloseNotifMenu = () => {
     // Mark all notifications as seen and update the Redux state
-    const updatedNotifications = notifications.map(notification => ({
+    const updatedNotifications = notifications.map((notification) => ({
       ...notification,
       is_seen: true,
     }));
@@ -118,16 +129,18 @@ function Header() {
   };
 
   const handleLogout = async () => {
-    try{
+    try {
       await auth.logout();
-      navigate('/login');
-    }catch(e){
-      toast.error('Đã xảy ra lỗi, vui lòng thử lại sau')
+      navigate("/login");
+    } catch (e) {
+      toast.error("Đã xảy ra lỗi, vui lòng thử lại sau");
     }
     handleCloseUserMenu();
   };
 
-  const unreadCount = notifications.filter(notification => !notification.read_at).length;
+  const unreadCount = notifications.filter(
+    (notification) => !notification.read_at
+  ).length;
 
   return (
     <AppBar position="fixed" sx={{ bgcolor: "white", color: "black" }}>
@@ -158,12 +171,24 @@ function Header() {
           }}
         >
           <Tooltip title="Trang chủ">
-            <IconButton component={Link} to="/" sx={{ color: "#1976d2" }}>
+            <IconButton
+              component={Link}
+              to="/"
+              sx={{
+                color: isHomePage && "#1976d2",
+              }}
+            >
               <Home />
             </IconButton>
           </Tooltip>
           <Tooltip title="Bạn bè">
-            <IconButton component={Link} to="/friends">
+            <IconButton
+              component={Link}
+              to="/friends"
+              sx={{
+                color: isFriendsPage && "#1976d2",
+              }}
+            >
               <People />
             </IconButton>
           </Tooltip>
@@ -189,20 +214,31 @@ function Header() {
             </IconButton>
           </Tooltip>
           <Tooltip title="Thông báo">
-            <IconButton onClick={handleOpenNotifMenu}>
-              <Badge badgeContent={unseenCount} color="error">
-                <Notifications notifications={notifications} />
+            <IconButton
+              onClick={handleOpenNotifMenu}
+              component={Link}
+              sx={{
+                color: isNotificationsPage && "#1976d2", // Active nếu đang ở trang thông báo
+              }}
+            >
+              <Badge
+                badgeContent={isNotificationsPage ? 0 : unseenCount} // Ẩn số lượng nếu đang ở trang thông báo
+                color="error"
+              >
+                <Notifications />
               </Badge>
             </IconButton>
           </Tooltip>
-          <Menu
-            anchorEl={anchorElNotif}
-            open={Boolean(anchorElNotif)}
-            onClose={handleCloseNotifMenu}
-            sx={{ mt: "45px" }}
-          >
-            <Notification onClose={handleCloseNotifMenu} />
-          </Menu>
+          {!isNotificationsPage && (
+            <Menu
+              anchorEl={anchorElNotif}
+              open={Boolean(anchorElNotif)}
+              onClose={handleCloseNotifMenu}
+              sx={{ mt: "45px" }}
+            >
+              <Notification onClose={handleCloseNotifMenu} />
+            </Menu>
+          )}
           <Tooltip title="Tài khoản">
             <IconButton onClick={handleOpenUserMenu}>
               <Avatar

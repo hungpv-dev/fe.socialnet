@@ -34,7 +34,7 @@ import trangAnh from "../pages/Client/TrangCaNhan/trangAnh";
 // import trangBanBe from "../pages/Client/TrangCaNhan/trangbanbe";
 import trangGioiThieu from "../pages/Client/TrangCaNhan/trangGioiThieu";
 
-import FriendRequest from '../pages/Client/FriendRequestsPage/FriendRequestsPage';
+import FriendPage from '../pages/Client/FriendPage/FriendPage';
 // Router không cần đăng nhập vẫn vô được
 const pulicRouter = [
     {
@@ -117,7 +117,16 @@ const privateRouters = [
         path: "/new", component: New
     },
     {
-        path: "/friends", component: FriendRequest
+        path: "/friends", component: FriendPage
+    },
+    {
+        path: "/friends/request", component: FriendPage
+    },
+    {
+        path: "/friends/request/sent", component: FriendPage
+    },
+    {
+        path: "/friends/suggestions", component: FriendPage
     },
 
 ];

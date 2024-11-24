@@ -1,14 +1,15 @@
-#content{
+#content {
   margin-top: calc(100vh - 60px);
 }
-/* Cấu trúc phần tử .tt */
+
+/* Bo góc cho phần tử .tt */
 .tt {
   font-size: 19px;
   font-weight: 500;
   background-color: #0065E0;
   width: 90px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: 10px; /* Bo góc */
   line-height: 200%;
 }
 
@@ -21,7 +22,7 @@
   color: #000;
 }
 
-/* Cấu trúc phần tử .cha */
+/* Bo góc cho phần tử .cha */
 .cha {
   position: relative;
   font-weight: 500;
@@ -32,7 +33,7 @@
   width: 99px;
   height: 39px;
   line-height: 150%;
-  border-radius: 10px;
+  border-radius: 10px; /* Bo góc */
   margin-left: 30px;
 }
 
@@ -48,51 +49,22 @@
   color: #000000;
 }
 
-/* Cấu trúc phần tử show-all-button */
+/* Bo góc cho .show-all-button */
 .show-all-button {
   position: relative;
   font-size: var(--font-size-xl);
   color: var(--color-black);
   margin-left: 250px;
+  border-radius: 10px; /* Bo góc */
 }
 
-.col-md-10 {
-  cursor: pointer;
-  border: 0;
-  padding: var(--padding-sm) 27px var(--padding-4xs);
-  background-color: var(--color-gainsboro-100);
-  flex: 1;
-  border-radius: 10px;
-  align-items: flex-start;
-  margin-top: 30px;
-}
-
-.col-md-10:hover {
-  background-color: #bfbfbf;
-}
-
-/* Cấu trúc show-all-button-wrapper */
-.show-all-button-wrapper {
-  width: 500px;
-  flex-direction: row;
-  justify-content: flex-start;
-}
-
-.footer,
-.show-all-button-wrapper {
-  display: flex;
-  align-items: flex-start;
-  box-sizing: border-box;
-  max-width: 100%;
-}
-
-/* Cấu trúc phần tử .rectangle-parent */
+/* Bo góc cho phần tử .rectangle-parent */
 .rectangle-parent {
   margin-bottom: 20px;
   height: 400px; /* Chiều cao của phần tử */
   max-height: 100%; /* Cho phép nội dung mở rộng tối đa */
   width: 760px;
-  border-radius: var(--br-mini);
+  border-radius: 10px; /* Bo góc */
   background-color: var(--color-white);
   flex-direction: column;
   justify-content: flex-start;
@@ -106,7 +78,7 @@
   overflow-x: hidden; /* Ẩn cuộn ngang nếu không cần */
 }
 
-/* Kiểm tra cấu trúc alert */
+/* Cấu trúc phần tử thông báo */
 .alert .col-md-3 {
   background-color: #E5E5E5;
 }

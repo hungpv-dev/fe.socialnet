@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Box, Typography, Avatar, List, ListItem, ListItemAvatar, ListItemText, IconButton, Menu, MenuItem, CircularProgress } from '@mui/material';
+import {
+    Box, Typography, Avatar, List, ListItem, ListItemAvatar, ListItemText, IconButton, Menu, MenuItem, CircularProgress,
+} from '@mui/material';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useSelector, useDispatch } from 'react-redux';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import axiosInstance from '@/axios';
+import notificationService from '@/services/notificationService';
 import { setNotifications } from "@/actions/notification";
 import { useNavigate } from 'react-router-dom';
 
@@ -23,9 +25,7 @@ const Notification = ({ onClose }) => {
 
         setLoading(true);
         try {
-            const response = await axiosInstance.get('/notifications', {
-                params: { index: notifications.length },
-            });
+            const response = await notificationService.getNotifications(notifications.length);
 
             const newNotifications = response.data.filter(notification =>
                 !notifications.some(existingNotification => existingNotification.id === notification.id)
@@ -46,7 +46,7 @@ const Notification = ({ onClose }) => {
 
     useEffect(() => {
         fetchNotifications();
-    }, []); // Chỉ chạy lần đầu
+    }, []);
 
     // Kiểm tra cuộn đến cuối
     const handleScroll = useCallback((event) => {
@@ -66,7 +66,7 @@ const Notification = ({ onClose }) => {
     const handleOpenNotification = () => {
         handleCloseMenu();
         navigate('/notifications');
-    }
+    };
 
     const handleMarkAllAsRead = async () => {
         handleCloseMenu();
@@ -78,7 +78,7 @@ const Notification = ({ onClose }) => {
         dispatch(setNotifications(updatedNotifications));
 
         try {
-            await axiosInstance.post("/notifications/read/all");
+            await notificationService.markAllAsRead();
         } catch (error) {
             // console.error("Error marking all as read:", error);
         }
@@ -98,7 +98,7 @@ const Notification = ({ onClose }) => {
     const getUserName = (notification) => notification.user?.name || notification.data?.user?.name;
 
     return (
-        <Box 
+        <Box
             sx={{
                 width: 360,
                 maxHeight: 500,
@@ -121,7 +121,7 @@ const Notification = ({ onClose }) => {
                 </IconButton>
                 <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
                     <MenuItem onClick={handleMarkAllAsRead}>Đánh dấu tất cả là đã đọc</MenuItem>
-                    <MenuItem onClick={handleOpenNotification}>Xem thông báo</MenuItem>
+                    <MenuItem onClick={handleOpenNotification}>Xem tất cả thông báo</MenuItem>
                 </Menu>
             </Typography>
 
@@ -170,11 +170,13 @@ const Notification = ({ onClose }) => {
                         </ListItem>
                     ))
                 ) : (
-                    <Box sx={{ p: 3, textAlign: 'center' }}>
-                        <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>
-                            Không có thông báo mới
-                        </Typography>
-                    </Box>
+                    !loading && (
+                        <Box sx={{ p: 3, textAlign: 'center' }}>
+                            <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>
+                                Không có thông báo mới
+                            </Typography>
+                        </Box>
+                    )
                 )}
             </List>
 
@@ -184,7 +186,7 @@ const Notification = ({ onClose }) => {
                 </Box>
             )}
 
-            {!loading && !hasMore && (
+            {!loading && !hasMore && notifications.length !== 0 && (
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2 }}>
                     <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                         Không còn thông báo cũ hơn

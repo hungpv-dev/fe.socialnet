@@ -11,20 +11,7 @@
       font-size: 20px;
       font-weight: bold;
       margin: 0;
-    }
-
-    .view-all-button {
-      display: inline-block;
-      padding: 5px 10px;
       color: black;
-      text-decoration: none;
-      border-radius: 4px;
-      font-weight: lighter;
-      font-size: small;
-
-      &:hover {
-        background-color: #d8dfe6;
-      }
     }
   }
 
@@ -46,11 +33,11 @@
     padding-bottom: 10px;
 
     .avatar {
-      width: 100%; /* Chiếm hết chiều rộng */
-      height: 210px; /* Chiều cao ảnh */
-      object-fit: cover; /* Đảm bảo ảnh không bị méo */
-      border-top-left-radius: 8px; /* Làm tròn góc trên trái */
-      border-top-right-radius: 8px; /* Làm tròn góc trên phải */
+      width: 100%;
+      height: 210px;
+      object-fit: cover;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
     }
 
     .info {
@@ -70,10 +57,17 @@
 
     .actions {
       display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* Căn giữa nội dung */
       gap: 10px;
       margin-top: 10px;
+      width: 100%;
+      /* Ensure buttons take up full width of the card */
 
       button {
+        width: 90%;
+        /* Căn chỉnh với chiều rộng 90% */
         padding: 5px 10px;
         border: none;
         border-radius: 4px;
@@ -82,10 +76,30 @@
         &.accept {
           background-color: #007bff;
           color: #fff;
+
+          &.loading {
+            opacity: 0.5;
+          }
+
+          &.accepted {
+            background-color: #007bff91;
+            color: #fff;
+            pointer-events: none;
+          }
         }
 
         &.decline {
           background-color: #ccc;
+
+          &.disabled {
+            display: none;
+          }
+
+          &.decline-rejected {
+            margin-top: 45px;
+            background-color: #cccccc78;
+            pointer-events: none;
+          }
         }
       }
     }
