@@ -104,18 +104,9 @@ const privateRouters = [
     },
     // trang ca nhan
     {
-        path: "/profile", component: Canhan
+        path: "/profile/:id", component: Canhan
     },
-    {
-        path: "/trangAnh", component: trangAnh
-    },
-    // {
-    //     path: "/trangBanBe", component: trangBanBe
-    // },
-    {
-        path: "/trangGioiThieu", component: trangGioiThieu
-    },
-
+   
     {
         path: "/search", component: Search
     },

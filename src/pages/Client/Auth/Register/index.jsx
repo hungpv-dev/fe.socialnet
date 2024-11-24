@@ -276,6 +276,6 @@ const Register = () => {
       </Container>
     </Box>
   );
-}
+};
 
 export default Register;

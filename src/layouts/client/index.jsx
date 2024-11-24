@@ -106,6 +106,7 @@ function LayoutClient({ children }) {
                 setUnseenCount={setUnseenCount}
             className={cx("header")} />
             <div className={cx("content")}>
+            <Header className={cx("header")} />
                 {children}
             </div>
             <ToastContainer />
