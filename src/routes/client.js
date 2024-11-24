@@ -31,6 +31,7 @@ import Search from "../pages/Client/Search";
 import Notification from "../pages/Client/Notification";
 import New from "../pages/Client/New";
 
+import FriendPage from '../pages/Client/FriendPage/FriendPage';
 import FriendRequest from '../pages/Client/FriendRequestsPage/FriendRequestsPage';
 import PostDetail from "@/components/Posts/PostDetail";
 import VerifyCode from "@/pages/VerifyCode";
@@ -114,7 +115,16 @@ const privateRouters = [
         path: "/new", component: New
     },
     {
-        path: "/friends", component: FriendRequest
+        path: "/friends", component: FriendPage
+    },
+    {
+        path: "/friends/request", component: FriendPage
+    },
+    {
+        path: "/friends/request/sent", component: FriendPage
+    },
+    {
+        path: "/friends/suggestions", component: FriendPage
     },
 
 ];

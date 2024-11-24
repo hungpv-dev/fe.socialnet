@@ -1,4 +1,4 @@
-import axiosInstance from "@/axios";
+import notificationService from "@/services/notificationService";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -31,6 +31,7 @@ import Notification from "./Notification";
 import useAuth from "@/hooks/useAuth";
 import { toast } from "react-toastify";
 import { setNotifications } from "@/actions/notification";
+import { useLocation } from "react-router-dom";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -80,6 +81,16 @@ function Header({ unseenCount, setUnseenCount }) {
   const user = useSelector((state) => state.user);
   const notifications = useSelector((state) => state.notifications);
 
+  const location = useLocation();
+  const isNotificationsPage = location.pathname === "/notifications";
+  const isFriendsPage = [
+    "/friends",
+    "/friends/request",
+    "/friends/request/sent",
+    "/friends/suggestions",
+  ].includes(location.pathname);
+  const isHomePage = location.pathname === "/";
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -111,11 +122,11 @@ function Header({ unseenCount, setUnseenCount }) {
   };
 
   const handleLogout = async () => {
-    try{
+    try {
       await auth.logout();
-      navigate('/login');
-    }catch(e){
-      toast.error('Đã xảy ra lỗi, vui lòng thử lại sau')
+      navigate("/login");
+    } catch (e) {
+      toast.error("Đã xảy ra lỗi, vui lòng thử lại sau");
     }
     handleCloseUserMenu();
   };
@@ -149,12 +160,24 @@ function Header({ unseenCount, setUnseenCount }) {
           }}
         >
           <Tooltip title="Trang chủ">
-            <IconButton component={Link} to="/" sx={{ color: "#1976d2" }}>
+            <IconButton
+              component={Link}
+              to="/"
+              sx={{
+                color: isHomePage && "#1976d2",
+              }}
+            >
               <Home />
             </IconButton>
           </Tooltip>
           <Tooltip title="Bạn bè">
-            <IconButton component={Link} to="/friends">
+            <IconButton
+              component={Link}
+              to="/friends"
+              sx={{
+                color: isFriendsPage && "#1976d2",
+              }}
+            >
               <People />
             </IconButton>
           </Tooltip>

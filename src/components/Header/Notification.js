@@ -5,7 +5,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useSelector, useDispatch } from 'react-redux';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import axiosInstance from '@/axios';
+import notificationService from '@/services/notificationService';
 import { setNotifications } from "@/actions/notification";
 import { useNavigate } from 'react-router-dom';
 
@@ -23,9 +23,7 @@ const Notification = ({ onClose,seenAll, unseenCount, setUnseenCount }) => {
 
         setLoading(true);
         try {
-            const response = await axiosInstance.get('/notifications', {
-                params: { index: notifications.length },
-            });
+            const response = await notificationService.getNotifications(notifications.length);
 
             const newNotifications = response.data.filter(notification =>
                 !notifications.some(existingNotification => existingNotification.id === notification.id)
@@ -69,7 +67,7 @@ const Notification = ({ onClose,seenAll, unseenCount, setUnseenCount }) => {
     const handleOpenNotification = () => {
         handleCloseMenu();
         navigate('/notifications');
-    }
+    };
 
     const handleMarkAllAsRead = async () => {
         handleCloseMenu();
@@ -81,7 +79,7 @@ const Notification = ({ onClose,seenAll, unseenCount, setUnseenCount }) => {
         dispatch(setNotifications(updatedNotifications));
 
         try {
-            await axiosInstance.post("/notifications/read/all");
+            await notificationService.markAllAsRead();
         } catch (error) {
             // console.error("Error marking all as read:", error);
         }
@@ -119,7 +117,7 @@ const Notification = ({ onClose,seenAll, unseenCount, setUnseenCount }) => {
     };
 
     return (
-        <Box 
+        <Box
             sx={{
                 width: 360,
                 maxHeight: 500,
@@ -142,7 +140,7 @@ const Notification = ({ onClose,seenAll, unseenCount, setUnseenCount }) => {
                 </IconButton>
                 <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
                     <MenuItem onClick={handleMarkAllAsRead}>Đánh dấu tất cả là đã đọc</MenuItem>
-                    <MenuItem onClick={handleOpenNotification}>Xem thông báo</MenuItem>
+                    <MenuItem onClick={handleOpenNotification}>Xem tất cả thông báo</MenuItem>
                 </Menu>
             </Typography>
 
@@ -188,11 +186,13 @@ const Notification = ({ onClose,seenAll, unseenCount, setUnseenCount }) => {
                         </ListItem>
                     ))
                 ) : (
-                    <Box sx={{ p: 3, textAlign: 'center' }}>
-                        <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>
-                            Không có thông báo mới
-                        </Typography>
-                    </Box>
+                    !loading && (
+                        <Box sx={{ p: 3, textAlign: 'center' }}>
+                            <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>
+                                Không có thông báo mới
+                            </Typography>
+                        </Box>
+                    )
                 )}
             </List>
 
