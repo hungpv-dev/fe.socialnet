@@ -3,7 +3,7 @@ import styles from "./Content.module.scss";
 import Posts from "@/components/Posts/Posts";
 import { Dialog, Button, Avatar, Typography, CircularProgress, Box } from "@mui/material";
 import CreatePost from "@/components/Posts/CreatePost";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Stories from "@/components/Stories/Stories";
 import { useSelector } from "react-redux";
 import axiosInstance from "@/axios";
@@ -15,17 +15,25 @@ function Content() {
   const [posts, setPosts] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
+  const loadingRef = useRef(false);
 
   const fetchPosts = async () => {
-    if (loading) return;
+    if (loadingRef.current) return;
     
     try {
       setLoading(true);
+      loadingRef.current = true;
       const excludeIds = posts.map(post => post.id).join(',');
       const response = await axiosInstance.get(`posts?ids=${excludeIds}`);
       const newPosts = response.data;
       
-      setPosts(prevPosts => [...prevPosts, ...newPosts]);
+      setPosts(prevPosts => {
+        // Lọc bỏ các bài viết trùng lặp
+        const uniquePosts = newPosts.filter(newPost => 
+          !prevPosts.some(existingPost => existingPost.id === newPost.id)
+        );
+        return [...prevPosts, ...uniquePosts];
+      });
 
       if (newPosts.length < 5) {
         setHasMore(false);
@@ -34,6 +42,10 @@ function Content() {
       console.error("Lỗi khi tải bài viết:", error);
     } finally {
       setLoading(false);
+      // Đặt timeout để tránh gọi API liên tục
+      setTimeout(() => {
+        loadingRef.current = false;
+      }, 500);
     }
   };
 
@@ -45,7 +57,7 @@ function Content() {
     const element = e.target;
     const { scrollHeight, scrollTop, clientHeight } = element;
     
-    if (scrollTop + clientHeight >= scrollHeight - 1000 && !loading && hasMore) {
+    if (scrollTop + clientHeight >= scrollHeight - 1000 && !loading && hasMore && !loadingRef.current) {
       fetchPosts();
     }
   };
