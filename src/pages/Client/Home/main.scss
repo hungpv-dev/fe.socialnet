@@ -1,10 +1,84 @@
-.home{
+.home {
     width: 100%;
-    height: 1000px;
+    min-height: 100vh;
     display: flex;
-    gap: 120px;
-    background-color: var(--bg-color);
-    .quick-chat{
+    background-color: #fff;
+    padding-top: 56px; // Để tránh bị header che mất
+    justify-content: center;
+
+    > *:first-child {
+        position: fixed;
+        left: 0;
+        top: 56px;
+        height: calc(100vh - 56px);
+        overflow-y: auto;
+        background-color: #fff;
+        width: 360px;
+        
+        &::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        &::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        &::-webkit-scrollbar-thumb {
+            background: #bbb;
+            border-radius: 4px;
+        }
+    }
+
+    > *:last-child {
+        position: fixed; 
+        right: 0;
+        top: 56px;
+        height: calc(100vh - 56px);
+        overflow-y: auto;
+        background-color: #fff;
+        width: 360px;
+        
+        &::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        &::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        &::-webkit-scrollbar-thumb {
+            background: #bbb;
+            border-radius: 4px;
+        }
+    }
+
+    > *:nth-child(2) {
+        margin: 0 380px; // Giảm margin để phù hợp với sidebar rộng hơn
+        max-width: 700px; // Thu nhỏ content lại
+        flex: 1;
+        overflow-y: auto;
+        background-color: #fff;
+        
+        &::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        &::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        &::-webkit-scrollbar-thumb {
+            background: #bbb;
+            border-radius: 4px;
+            
+            &:hover {
+                background: #999;
+            }
+        }
+    }
+
+    .quick-chat {
         position: absolute;
     }
 }

@@ -9,14 +9,18 @@ import {
   Paper,
   styled,
   Alert,
-  CircularProgress
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import axiosInstance from '@/axios';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
-  display: 'flex', 
-  flexDirection: 'column',
+  display: 'flex',
+  flexDirection: 'column', 
   alignItems: 'center',
   gap: theme.spacing(2),
   maxWidth: 396,
@@ -29,7 +33,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 const StyledForm = styled('form')(({ theme }) => ({
   width: '100%',
   display: 'flex',
-  flexDirection: 'column', 
+  flexDirection: 'column',
   gap: theme.spacing(2.5)
 }));
 
@@ -60,7 +64,7 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 const SubmitButton = styled(Button)(({ theme }) => ({
   backgroundColor: '#1877f2',
   padding: '12px 16px',
-  borderRadius: '8px', 
+  borderRadius: '8px',
   fontSize: '20px',
   fontWeight: 'bold',
   textTransform: 'none',
@@ -71,37 +75,74 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   }
 }));
 
-function ForgotPassword() {
+function VerifyCode() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [resetError, setResetError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
+    if (!code) {
+      setError('Vui lòng nhập mã xác nhận');
+      setLoading(false);
+      return;
+    }
+
+    const email = localStorage.getItem('reset_email');
     if (!email) {
-      setError('Vui lòng nhập email');
+      setError('Không tìm thấy email, vui lòng thử lại');
       setLoading(false);
       return;
     }
 
     try {
-      const response = await axiosInstance.post(`password/forgot`, {
-        email: email
+      const response = await axiosInstance.post('/password/check/token', {
+        email: email,
+        otp: code
       });
 
       if (response.status === 200) {
-        localStorage.setItem('reset_email', email);
-      } else {
-        throw new Error(response.data.message);
+        setOpenDialog(true);
       }
-      navigate('/verify-code');
     } catch (err) {
-      setError('Có lỗi xảy ra, vui lòng thử lại sau');
-      setLoading(false);
+      if (err.response?.status === 400) {
+        setError('Mã xác nhận không chính xác hoặc đã hết hạn');
+      } else {
+        setError('Có lỗi xảy ra, vui lòng thử lại sau');
+      }
+    }
+    setLoading(false);
+  };
+
+  const handleResetPassword = async () => {
+    setResetError('');
+    const email = localStorage.getItem('reset_email');
+
+    try {
+      const response = await axiosInstance.post('/password/reset', {
+        email: email,
+        new_password: newPassword,
+        c_new_password: confirmPassword
+      });
+
+      if (response.status === 200) {
+        localStorage.removeItem('reset_email');
+        navigate('/login');
+      }
+    } catch (err) {
+      if (err.response?.status === 400) {
+        setResetError('Mật khẩu không hợp lệ hoặc không khớp');
+      } else {
+        setResetError('Có lỗi xảy ra, vui lòng thử lại sau');
+      }
     }
   };
 
@@ -131,7 +172,18 @@ function ForgotPassword() {
               mb: 3
             }}
           >
-            Quên mật khẩu
+            Xác nhận mã
+          </Typography>
+
+          <Typography
+            variant="body1"
+            sx={{
+              color: '#65676b',
+              textAlign: 'center',
+              mb: 2
+            }}
+          >
+            Vui lòng nhập mã xác nhận đã được gửi đến email của bạn
           </Typography>
 
           <StyledForm onSubmit={handleSubmit}>
@@ -150,12 +202,12 @@ function ForgotPassword() {
             <Box>
               <StyledTextField
                 fullWidth
-                type="email"
-                placeholder="Nhập email của bạn"
+                type="text"
+                placeholder="Nhập mã xác nhận"
                 size="small"
                 variant="outlined"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
                 autoComplete="off"
               />
             </Box>
@@ -168,7 +220,7 @@ function ForgotPassword() {
               disabled={loading}
               sx={{ mt: 1 }}
             >
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Gửi mã xác nhận'}
+              {loading ? <CircularProgress size={24} color="inherit" /> : 'Xác nhận'}
             </SubmitButton>
 
             <Box sx={{
@@ -193,9 +245,43 @@ function ForgotPassword() {
             </Box>
           </StyledForm>
         </StyledPaper>
+
+        <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+          <DialogTitle>Đặt lại mật khẩu</DialogTitle>
+          <DialogContent>
+            {resetError && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {resetError}
+              </Alert>
+            )}
+            <StyledTextField
+              autoFocus
+              margin="dense"
+              label="Mật khẩu mới"
+              type="password"
+              fullWidth
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+            <StyledTextField
+              margin="dense"
+              label="Xác nhận mật khẩu mới"
+              type="password"
+              fullWidth
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenDialog(false)}>Hủy</Button>
+            <Button onClick={handleResetPassword} variant="contained">
+              Xác nhận
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Container>
     </Box>
   );
 }
 
-export default ForgotPassword;
+export default VerifyCode;

@@ -1,61 +1,169 @@
-import classNames from "classnames/bind";
-import styles from "./RightSidebar.module.scss";
-import Chat from "./Chat"
-import { Link } from 'react-router-dom';
+import { Box, Typography, Divider, Avatar, Button, List, ListItem, ListItemAvatar, ListItemText, Paper, Badge } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+import { styled } from '@mui/material/styles';
+import { useEffect, useState } from 'react';
+import axiosInstance from '@/axios';
+import { useSelector } from 'react-redux';
+import useChatRoom from '@/hooks/useChatRoom';
 
-// Trong component của bạn
-function YourComponent() {
-    return (
-        <Link to="/all" style={{ textDecoration: 'none', color: 'blue' }}>
-            Xem tất cả
-        </Link>
-    );
-}
-
-
-const cx = classNames.bind(styles);
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      animation: 'ripple 1.2s infinite ease-in-out',
+      border: '1px solid currentColor',
+      content: '""',
+    },
+  },
+  '@keyframes ripple': {
+    '0%': {
+      transform: 'scale(.8)',
+      opacity: 1,
+    },
+    '100%': {
+      transform: 'scale(2.4)',
+      opacity: 0,
+    },
+  },
+}));
 
 function RightSidebar() {
-    return <aside className={cx('right-sidebar')}>
-        Được tài trợ
-        <hr></hr>
-        <div className={cx('request-friend')}>
-            <div className={cx('header-section')}>
-                Lời mời kết bạn
-                <Link to={'/'} className={cx('btn_friend')}>Xem tất cả</Link>
-                {/* <span>Xem tất cả</span> */}
-            </div>
-            <Link to="/" className={cx('link')}>
-                <div className={cx('body-section')}>
-                    <div>
-                        <img src="/user_default.png" alt="Avatar" />
-                    </div>
-                    <div>
-                        <div className={cx('top')}>
-                            <section>
-                                <span>Đinh Quang Hiến</span>
-                                <span>2 giờ</span>
-                            </section>
-                            <section>
+    const navigate = useNavigate();
+    const chatRoom = useChatRoom();
+    const [friendIds, setFriendIds] = useState([]);
+    const [onlineFriends, setOnlineFriends] = useState([]);
+    const users = useSelector(state => state.user_online);
+
+    useEffect(() => {
+        const getFriendIds = async () => {
+            try {
+                const response = await axiosInstance.get('friend-ids');
+                setFriendIds(response.data);
+            } catch (error) {
+                console.error('Lỗi khi lấy danh sách ID bạn bè:', error);
+            }
+        };
+        getFriendIds();
+    }, []);
+
+    useEffect(() => {
+        const filteredFriends = users.filter(user => friendIds.includes(user.id));
+        setOnlineFriends(filteredFriends);
+    }, [friendIds, users]);
+
+    const handleUserClick = async (userId) => {
+        try {
+            const response = await chatRoom.createPrivateRoom(userId);
+            if (response?.data) {
+                const room = response.data.data;
+                navigate(`/messages/${room.chat_room_id}`);
+            }
+        } catch (error) {
+            console.error('Lỗi khi tạo phòng chat:', error);
+        }
+    };
+
+    return (
+        <Box component="aside" sx={{ width: 360, p: 2, bgcolor: 'background.paper' }}>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Box sx={{ mb: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                        Lời mời kết bạn
+                    </Typography>
+                    <Link to="/" style={{ textDecoration: 'none' }}>
+                        <Typography color="primary" sx={{ fontWeight: 500, '&:hover': { textDecoration: 'underline' } }}>
+                            Xem tất cả
+                        </Typography>
+                    </Link>
+                </Box>
+
+                <Paper elevation={0} sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Avatar src="/user_default.png" sx={{ width: 60, height: 60 }} />
+                        <Box sx={{ flex: 1 }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                                Đinh Quang Hiến
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                                 6 bạn chung
-                            </section>
-                        </div>
-                        {/* <div className={cx('bottom')}>
-                            <div className={cx('btn btn-primary')}>Xác nhận</div>
-                            <div className={cx('btn btn-secondary')}>Xóa</div>
-                        </div> */}
-                    </div>
-                </div>
-            </Link>
-        </div>
-        <hr></hr>
-        Người liên hệ
-        <Chat avatar={<img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s40x40&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=yAx7GqcuuqUQ7kNvgFe2_fS&_nc_ht=scontent.fhan15-1.fna&oh=00_AYDp6tPWH9pQe5gGNlRY2O6iX4pkKq0LNIFKI4der17R8A&oe=66CDBFAA" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-        <Chat avatar={<img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s40x40&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=yAx7GqcuuqUQ7kNvgFe2_fS&_nc_ht=scontent.fhan15-1.fna&oh=00_AYDp6tPWH9pQe5gGNlRY2O6iX4pkKq0LNIFKI4der17R8A&oe=66CDBFAA" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-        <Chat avatar={<img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s40x40&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=yAx7GqcuuqUQ7kNvgFe2_fS&_nc_ht=scontent.fhan15-1.fna&oh=00_AYDp6tPWH9pQe5gGNlRY2O6iX4pkKq0LNIFKI4der17R8A&oe=66CDBFAA" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-        <Chat avatar={<img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s40x40&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=yAx7GqcuuqUQ7kNvgFe2_fS&_nc_ht=scontent.fhan15-1.fna&oh=00_AYDp6tPWH9pQe5gGNlRY2O6iX4pkKq0LNIFKI4der17R8A&oe=66CDBFAA" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-        <Chat avatar={<img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s40x40&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=yAx7GqcuuqUQ7kNvgFe2_fS&_nc_ht=scontent.fhan15-1.fna&oh=00_AYDp6tPWH9pQe5gGNlRY2O6iX4pkKq0LNIFKI4der17R8A&oe=66CDBFAA" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-    </aside>;
+                            </Typography>
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                <Button 
+                                    variant="contained" 
+                                    size="small" 
+                                    sx={{ 
+                                        textTransform: 'none',
+                                        fontWeight: 500,
+                                        bgcolor: 'primary.main'
+                                    }}
+                                >
+                                    Xác nhận
+                                </Button>
+                                <Button 
+                                    variant="outlined" 
+                                    size="small"
+                                    sx={{ 
+                                        textTransform: 'none',
+                                        fontWeight: 500,
+                                        color: 'text.primary'
+                                    }}
+                                >
+                                    Xóa
+                                </Button>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Paper>
+            </Box>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+                Người liên hệ
+            </Typography>
+
+            <List disablePadding>
+                {onlineFriends.map((user) => (
+                    <ListItem 
+                        key={user.id} 
+                        onClick={() => handleUserClick(user.id)}
+                        sx={{ 
+                            px: 1, 
+                            py: 0.5,
+                            borderRadius: 1,
+                            '&:hover': { bgcolor: 'action.hover' },
+                            cursor: 'pointer'
+                        }}
+                    >
+                        <ListItemAvatar>
+                            <StyledBadge
+                                overlap="circular"
+                                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                variant="dot"
+                            >
+                                <Avatar src={`${user.avatar}`} />
+                            </StyledBadge>
+                        </ListItemAvatar>
+                        <ListItemText 
+                            primary={`${user.name}`}
+                            sx={{ '& .MuiTypography-root': { fontWeight: 500 } }}
+                        />
+                    </ListItem>
+                ))}
+            </List>
+        </Box>
+    );
 }
 
 export default RightSidebar;

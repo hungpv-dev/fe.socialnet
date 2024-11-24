@@ -1,9 +1,10 @@
-import classNames from 'classnames/bind';
-import { Link } from 'react-router-dom';
-import { LoadingButton } from '@mui/lab';
-import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
-import SendIcon from '@mui/icons-material/Send';
+import classNames from "classnames/bind";
+import { Link } from "react-router-dom";
+import { LoadingButton } from "@mui/lab";
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+import SendIcon from "@mui/icons-material/Send";
 import styles from "./main.scss";
+
 import CallIcon from '@mui/icons-material/Call';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import InfoIcon from '@mui/icons-material/Info';
@@ -13,6 +14,7 @@ import { useParams } from 'react-router-dom';
 import echo from '@/components/EchoComponent';
 import WarningIcon from '@mui/icons-material/Warning';
 import { sendMessage, showRoomAvatar } from '@/components/MessageComponent';
+
 import {
   create as createMessage,
 } from '@/services/messageService.js';
@@ -28,6 +30,7 @@ import { Drawer, LinearProgress } from '@mui/material';
 import { GetTimeOffline } from '@/components/UserStatusComponent';
 import ChatInfo from '../ChatInfoComponent';
 import BlockUser from '../ChatInfo/BlockUser';
+
 
 const cx = classNames.bind(styles);
 
@@ -58,9 +61,10 @@ function Content() {
   const outs = room?.outs ?? [];
   const isOut = outs?.includes('user_'+user.id);
 
-  const [inputText, setInputText] = useState('');
+  const [inputText, setInputText] = useState("");
   const [replyContent, setReplyContent] = useState(null);
   const [openBlockConfirm, setOpenBlockConfirm] = useState(false);
+
 
   const [messages, setMessages] = useState([]);
   const [maxMessage, setMaxMessage] = useState(0);
@@ -210,7 +214,6 @@ function Content() {
   }, [handlePaste]);
 
   if (isLoadingMessages) {
-    console.log('loading');
     return <PageLoading />;
   }
   if (!room) {
@@ -230,14 +233,16 @@ function Content() {
 
   const handleImageChange = (event) => {
     const files = Array.from(event.target.files);
-    const imageURLs = files.map(file => URL.createObjectURL(file));
-    setViewSelectImages(prevImages => [...prevImages, ...imageURLs]);
-    setSelectImages(prevFiles => [...prevFiles, ...files]);
+    const imageURLs = files.map((file) => URL.createObjectURL(file));
+    setViewSelectImages((prevImages) => [...prevImages, ...imageURLs]);
+    setSelectImages((prevFiles) => [...prevFiles, ...files]);
   };
 
   const handleRemoveImage = (index) => {
-    setViewSelectImages(prevImages => prevImages.filter((_, i) => i !== index));
-    setSelectImages(prevFiles => prevFiles.filter((_, i) => i !== index));
+    setViewSelectImages((prevImages) =>
+      prevImages.filter((_, i) => i !== index)
+    );
+    setSelectImages((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
   function handleReply(message) {
@@ -323,6 +328,7 @@ function Content() {
             </div>
           </div>
         </div>
+
         <div className={cx('list-settings')}>
           <Stack direction="row" spacing={1}>
             {!isOut && (

@@ -1,78 +1,177 @@
+import { Box, Typography, Divider, Avatar, Button, List, ListItem, ListItemAvatar, ListItemText, Paper, Badge } from '@mui/material';
+import { Link } from 'react-router-dom';
+import { styled } from '@mui/material/styles';
 import classNames from "classnames/bind";
 import styles from "./RightSidebar.module.scss";
-import Chat from "./Chat"
-import Banner from "./Banner"
-import { Link } from 'react-router-dom';
-
-// Trong component của bạn
-function YourComponent() {
-    return (
-        <Link to="/all" style={{ textDecoration: 'none', color: 'blue' }}>
-            Xem tất cả
-        </Link>
-    );
-}
-
 
 const cx = classNames.bind(styles);
 
-function RightSidebar() {
-    return <aside className={cx('right-sidebar')}>
-        Được tài trợ
-        <Banner
-            image="https://scontent.fhan14-1.fna.fbcdn.net/v/t45.1600-4/455023410_120210911267640561_7071954057481782306_n.png?stp=cp0_dst-jpg_fr_q90_spS444&_nc_cat=1&ccb=1-7&_nc_sid=c02adf&_nc_eui2=AeHOgDAfj1y8tUT2C2EGWg7R1TxVZiuWBbvVPFVmK5YFu0URXpVxKWGphfIHTOUGzyBem6VDmxFwvW7S3Q3PYh5f&_nc_ohc=OPYxsZGkDE0Q7kNvgEHmPMd&_nc_ht=scontent.fhan14-1.fna&_nc_gid=A5AnA65_iCNwEYylrH0UqLQ&oh=00_AYAEXr3kovHuJVOMB-jbwyHFO9ZuKYIDieVY3nqxUCXzpg&oe=66E0A0EF"
-            name="Facebook"
-            link="https://www.facebook.com/"
-        />
-        <Banner
-            image="https://scontent.fhan14-1.fna.fbcdn.net/v/t45.1600-4/455023410_120210911267640561_7071954057481782306_n.png?stp=cp0_dst-jpg_fr_q90_spS444&_nc_cat=1&ccb=1-7&_nc_sid=c02adf&_nc_eui2=AeHOgDAfj1y8tUT2C2EGWg7R1TxVZiuWBbvVPFVmK5YFu0URXpVxKWGphfIHTOUGzyBem6VDmxFwvW7S3Q3PYh5f&_nc_ohc=OPYxsZGkDE0Q7kNvgEHmPMd&_nc_ht=scontent.fhan14-1.fna&_nc_gid=A5AnA65_iCNwEYylrH0UqLQ&oh=00_AYAEXr3kovHuJVOMB-jbwyHFO9ZuKYIDieVY3nqxUCXzpg&oe=66E0A0EF"
-            name="Facebook"
-            link="https://www.facebook.com/"
-        />
-        <hr></hr>
-        <div className={cx('request-friend')}>
-            <div className={cx('header-section')}>
-                Lời mời kết bạn
-                <Link to={'/'} className={cx('btn_friend')}>Xem tất cả</Link>
-            </div>
-            <Link to="/" className={cx('link')}>
-                <div className={cx('body-section')}>
-                    <div className={cx('left')}>
-                        <img src="/user_default.png" alt="Avatar" />
-                    </div>
-                    <div className={cx('right')}>
-                        <div className={cx('top')}>
-                            <section>
-                                <span>Đinh Quang Hiến</span>
-                                <span>2 giờ</span>
-                            </section>
-                            <section>
-                                6 bạn chung
-                            </section>
-                        </div>
-                        <div className={cx('bottom')}>
-                            <div className={cx('btn btn-primary')}>Xác nhận</div>
-                            <div className={cx('btn btn-secondary')}>Xóa</div>
-                        </div>
-                    </div>
-                </div>
-            </Link>
-        </div>
-        <hr></hr>
-        Người liên hệ
-        <Chat avatar={<img src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s80x80&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=Cnlin-hWJG8Q7kNvgE14cYF&_nc_ht=scontent.fhan14-5.fna&oh=00_AYAuzbHKd8ccjb8oOrQ7k8e2wC6KOybkVXtZ-KgE8dGvJg&oe=66DFC42A" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-        <Chat avatar={<img src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s80x80&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=Cnlin-hWJG8Q7kNvgE14cYF&_nc_ht=scontent.fhan14-5.fna&oh=00_AYAuzbHKd8ccjb8oOrQ7k8e2wC6KOybkVXtZ-KgE8dGvJg&oe=66DFC42A" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-        <Chat avatar={<img src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s80x80&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=Cnlin-hWJG8Q7kNvgE14cYF&_nc_ht=scontent.fhan14-5.fna&oh=00_AYAuzbHKd8ccjb8oOrQ7k8e2wC6KOybkVXtZ-KgE8dGvJg&oe=66DFC42A" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-        <Chat avatar={<img src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s80x80&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=Cnlin-hWJG8Q7kNvgE14cYF&_nc_ht=scontent.fhan14-5.fna&oh=00_AYAuzbHKd8ccjb8oOrQ7k8e2wC6KOybkVXtZ-KgE8dGvJg&oe=66DFC42A" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-        <Chat avatar={<img src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s80x80&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=Cnlin-hWJG8Q7kNvgE14cYF&_nc_ht=scontent.fhan14-5.fna&oh=00_AYAuzbHKd8ccjb8oOrQ7k8e2wC6KOybkVXtZ-KgE8dGvJg&oe=66DFC42A" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-        <hr></hr>
-        Nhóm chat
-        <Chat avatar={<img src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s80x80&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=Cnlin-hWJG8Q7kNvgE14cYF&_nc_ht=scontent.fhan14-5.fna&oh=00_AYAuzbHKd8ccjb8oOrQ7k8e2wC6KOybkVXtZ-KgE8dGvJg&oe=66DFC42A" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-        <Chat avatar={<img src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s80x80&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=Cnlin-hWJG8Q7kNvgE14cYF&_nc_ht=scontent.fhan14-5.fna&oh=00_AYAuzbHKd8ccjb8oOrQ7k8e2wC6KOybkVXtZ-KgE8dGvJg&oe=66DFC42A" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-        <Chat avatar={<img src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s80x80&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=Cnlin-hWJG8Q7kNvgE14cYF&_nc_ht=scontent.fhan14-5.fna&oh=00_AYAuzbHKd8ccjb8oOrQ7k8e2wC6KOybkVXtZ-KgE8dGvJg&oe=66DFC42A" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
-        <Chat avatar={<img src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg?stp=cp6_dst-jpg_s80x80&_nc_cat=109&ccb=1-7&_nc_sid=0ecb9b&_nc_ohc=Cnlin-hWJG8Q7kNvgE14cYF&_nc_ht=scontent.fhan14-5.fna&oh=00_AYAuzbHKd8ccjb8oOrQ7k8e2wC6KOybkVXtZ-KgE8dGvJg&oe=66DFC42A" alt="Home Icon" style={{ width: '100%', height: '100%' }} />} name="Home" />
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      animation: 'ripple 1.2s infinite ease-in-out',
+      border: '1px solid currentColor',
+      content: '""',
+    },
+  },
+  '@keyframes ripple': {
+    '0%': {
+      transform: 'scale(.8)',
+      opacity: 1,
+    },
+    '100%': {
+      transform: 'scale(2.4)',
+      opacity: 0,
+    },
+  },
+}));
 
-    </aside>;
+function RightSidebar() {
+    return (
+        <Box component="aside" sx={{ width: 360, p: 2, bgcolor: 'background.paper' }}>
+            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+                Được tài trợ
+            </Typography>
+
+            <Paper elevation={0} sx={{ p: 2, mb: 2, '&:hover': { bgcolor: 'action.hover' } }}>
+                <Link to="https://www.facebook.com/" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box component="img" 
+                            src="https://scontent.fhan14-1.fna.fbcdn.net/v/t45.1600-4/455023410_120210911267640561_7071954057481782306_n.png"
+                            sx={{ width: 120, height: 120, borderRadius: 1, objectFit: 'cover' }}
+                        />
+                        <Typography sx={{ color: 'text.primary', fontWeight: 500 }}>Facebook</Typography>
+                    </Box>
+                </Link>
+            </Paper>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Box sx={{ mb: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                        Lời mời kết bạn
+                    </Typography>
+                    <Link to="/" style={{ textDecoration: 'none' }}>
+                        <Typography color="primary" sx={{ fontWeight: 500, '&:hover': { textDecoration: 'underline' } }}>
+                            Xem tất cả
+                        </Typography>
+                    </Link>
+                </Box>
+
+                <Paper elevation={0} sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Avatar src="/user_default.png" sx={{ width: 60, height: 60 }} />
+                        <Box sx={{ flex: 1 }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                                Đinh Quang Hiến
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                                6 bạn chung
+                            </Typography>
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                <Button 
+                                    variant="contained" 
+                                    size="small" 
+                                    sx={{ 
+                                        textTransform: 'none',
+                                        fontWeight: 500,
+                                        bgcolor: 'primary.main'
+                                    }}
+                                >
+                                    Xác nhận
+                                </Button>
+                                <Button 
+                                    variant="outlined" 
+                                    size="small"
+                                    sx={{ 
+                                        textTransform: 'none',
+                                        fontWeight: 500,
+                                        color: 'text.primary'
+                                    }}
+                                >
+                                    Xóa
+                                </Button>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Paper>
+            </Box>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+                Người liên hệ
+            </Typography>
+
+            <List disablePadding>
+                {[1, 2, 3, 4, 5].map((item) => (
+                    <ListItem 
+                        key={item} 
+                        sx={{ 
+                            px: 1, 
+                            py: 0.5,
+                            borderRadius: 1,
+                            '&:hover': { bgcolor: 'action.hover' },
+                            cursor: 'pointer'
+                        }}
+                    >
+                        <ListItemAvatar>
+                            <StyledBadge
+                                overlap="circular"
+                                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                variant="dot"
+                            >
+                                <Avatar src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg" />
+                            </StyledBadge>
+                        </ListItemAvatar>
+                        <ListItemText 
+                            primary="Nguyễn Văn A" 
+                            sx={{ '& .MuiTypography-root': { fontWeight: 500 } }}
+                        />
+                    </ListItem>
+                ))}
+            </List>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+                Nhóm chat
+            </Typography>
+
+            <List disablePadding>
+                {[1, 2, 3, 4].map((item) => (
+                    <ListItem 
+                        key={item} 
+                        sx={{ 
+                            px: 1,
+                            py: 0.5,
+                            borderRadius: 1,
+                            '&:hover': { bgcolor: 'action.hover' },
+                            cursor: 'pointer'
+                        }}
+                    >
+                        <ListItemAvatar>
+                            <Avatar src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-1/434652629_1573500140102284_8608022593889115644_n.jpg" />
+                        </ListItemAvatar>
+                        <ListItemText 
+                            primary="Nhóm A" 
+                            sx={{ '& .MuiTypography-root': { fontWeight: 500 } }}
+                        />
+                    </ListItem>
+                ))}
+            </List>
+        </Box>
+    );
 }
 
 export default RightSidebar;

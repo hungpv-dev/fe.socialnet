@@ -1,5 +1,116 @@
 .home-content {
-    flex: var(--layout-middle);
-    margin-top: 60px;
-    background-color: aqua;
+  flex: var(--layout-middle);
+  margin-top: 60px;
+  background-color: rgb(255, 255, 255);
+  height: calc(100vh - 60px); // Chiều cao bằng viewport trừ đi margin-top
+  overflow-y: auto; // Cho phép cuộn dọc
+  padding: 20px;
+  padding-bottom: 50px;
+}
+/* Giả sử bạn có lớp cơ bản cho danh sách story */
+.story-list {
+  display: flex;
+  flex-direction: row; /* Sắp xếp theo hàng ngang */
+  overflow-x: auto; /* Cho phép cuộn ngang nếu có nhiều story */
+  padding: 10px;
+  gap: 10px;
+  white-space: nowrap; /* Ngăn các mục bị xuống dòng */
+}
+
+.story-item {
+  flex: 0 0 auto; /* Ngăn không cho các mục co lại */
+  width: 100px; /* Điều chỉnh độ rộng theo thiết kế của bạn */
+  height: 180px; /* Điều chỉnh chiều cao nếu cần */
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.story-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-wrapper {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-top: 10px;
+  border: 2px solid #3b5998; /* Màu viền cho ảnh đại diện */
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  background-color: #ccc; /* Màu nền tạm */
+  object-fit: cover;
+}
+
+.story-footer {
+  margin-top: auto;
+  padding: 5px;
+  text-align: center;
+}
+
+.story-text {
+  font-size: 14px;
+  color: #333;
+}
+/* .create-story class */
+.create-story .story-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 140px;
+  height: 250px;
+  position: relative;
+  border-radius: 10px;
+  background-color: #f0f2f5; /* Màu nền nhẹ cho phần Tạo tin */
+  cursor: pointer;
+}
+
+.create-story-placeholder {
+  display: flex;
+  align-items: center;
+  margin-top: 170px;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #007bff; /* Màu nền của hình tròn */
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.add-icon {
+  font-size: 24px;
+  color: #fff; /* Màu của dấu cộng */
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.story-footer {
+  text-align: center;
+  margin-top: auto;
+}
+
+.story-text {
+  font-size: 14px;
+  color: #333;
+}
+.story-item {
+  border: 2px solid transparent; /* Khung mặc định trong suốt */
+  border-radius: 10px; /* Góc bo tròn cho các story */
+  overflow: hidden;
+}
+
+.story-item:not(.create-story) {
+  border-color: #d3d3d3; /* Màu xám cho khung của các story khác */
 }

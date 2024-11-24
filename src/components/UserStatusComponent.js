@@ -3,13 +3,15 @@ import { formatDateToNow } from './FormatDate';
 import axiosInstance from '@/axios';
 
 function isOnline(users,list){
-  let time_offline = new Date().toISOString();
+  // let time_offline = new Date().toISOString();
+  let time_offline = null;
   let u = null;
   list.forEach(item => {
     let user = users.find(u => u.id === item.id);
-    // && user.is_online === 1
+    if (!time_offline || new Date(item.time_offline) > new Date(time_offline)) {
+      time_offline = item.time_offline;
+    }
     if(user){
-      time_offline = user.time_offline;
       u = user;
     }
   })

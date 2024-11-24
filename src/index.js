@@ -9,6 +9,7 @@ import rootReducer from './reducers';
 import { Provider } from 'react-redux';
 import echo from './components/EchoComponent';
 import { setUserOnline } from './actions/user';
+import axiosInstance from './axios';
 const store = createStore(rootReducer);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -21,6 +22,7 @@ root.render(
     </BrowserRouter>
   </Provider>
 );
+
 
 echo.join('user-online')
   .here((users) => {
@@ -35,8 +37,15 @@ echo.join('user-online')
     const currentUsers = store.getState().user_online;
     const updatedUsers = currentUsers.filter(currentUser => currentUser.id !== user.id);
     store.dispatch(setUserOnline(updatedUsers));
+    const userCu = store.getState().user;
+    if (userCu && user.id) {
+      axiosInstance.post('change-status', {
+        user_id: user.id,
+        is_online: 0
+      });
+    }    
   })
   .listen('UserStatusUpdated', (e) => {
-    console.log('Trạng thái người dùng được cập nhật:', e);
+    // console.log('Trạng thái người dùng được cập nhật:', e);
   });
 reportWebVitals();
