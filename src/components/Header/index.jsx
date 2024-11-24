@@ -32,6 +32,7 @@ import useAuth from "@/hooks/useAuth";
 import { toast } from "react-toastify";
 import { setNotifications } from "@/actions/notification";
 import { useLocation } from "react-router-dom";
+import axiosInstance from "@/axios";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
