@@ -2,15 +2,19 @@
   display: flex;
   background-color: #f0f2f5;
   .sidebar {
-    position: fixed; /* Sidebar cố định */
+    position: fixed;
+    /* Sidebar cố định */
     left: 0;
-    top: 60px; /* Tương ứng với margin-top của toàn trang */
+    top: 60px;
+    /* Tương ứng với margin-top của toàn trang */
     width: 300px;
-    height: calc(100vh - 60px); /* Chiều cao sidebar chiếm phần còn lại của màn hình */
+    height: calc(100vh - 60px);
+    /* Chiều cao sidebar chiếm phần còn lại của màn hình */
     background: #fff;
     padding: 15px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow-y: auto; /* Thêm scroll nếu sidebar có quá nhiều nội dung */
+    overflow-y: auto;
+    /* Thêm scroll nếu sidebar có quá nhiều nội dung */
 
     ul {
       list-style: none;
@@ -36,12 +40,25 @@
 
   .content {
     flex: 1;
-    margin-left: 300px; /* Dịch sang phải để tránh đè lên sidebar */
+    margin-left: 300px;
+    /* Dịch sang phải để tránh đè lên sidebar */
     padding: 20px;
     padding-bottom: 60px;
     // border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow-y: auto; /* Kích hoạt cuộn dọc */
-    height: 100vh; /* Đặt chiều cao để cuộn theo trang */
+    overflow-y: auto;
+    /* Kích hoạt cuộn dọc */
+    height: 100vh;
+
+    /* Đặt chiều cao để cuộn theo trang */
+    .centered {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 30px; // hoặc tùy chỉnh chiều cao phù hợp
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
   }
 }

@@ -32,6 +32,12 @@
     padding: 0;
     padding-bottom: 10px;
 
+    .avatar-link,
+    .name-link {
+      text-decoration: none;
+      color: inherit;
+    }
+
     .avatar {
       width: 100%;
       height: 210px;
@@ -43,6 +49,12 @@
     .info {
       text-align: center;
       margin-top: 10px;
+
+      .avatar-link:hover,
+      .name-link:hover {
+        opacity: 1;
+        text-decoration: underline;
+      }
 
       h3 {
         margin: 5px 0;
@@ -81,6 +93,10 @@
             opacity: 0.5;
           }
 
+          &.added,
+          &.adding,
+          &.accepting,
+          &.accepted,
           &.accepted {
             background-color: #007bff91;
             color: #fff;
@@ -95,7 +111,10 @@
             display: none;
           }
 
-          &.decline-rejected {
+          &.removing,
+          &.removed,
+          &.unfriending,
+          &.unfriended &.decline-rejected {
             margin-top: 45px;
             background-color: #cccccc78;
             pointer-events: none;

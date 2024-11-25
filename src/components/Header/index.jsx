@@ -1,4 +1,4 @@
-import notificationService from "@/services/notificationService";
+import markAllAsSeen from "@/services/notificationService";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -103,7 +103,7 @@ function Header({ unseenCount, setUnseenCount }) {
 
   async function seenAll(){
     try {
-      await axiosInstance.post("/notifications/seen");
+      await markAllAsSeen();
     } catch (error) {}
   }
 
