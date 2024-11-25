@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import classNames from "classnames/bind";
 import styles from "./Friend.module.scss";
 import { deleteFriendRequest } from "@/services/friendRequestService";
@@ -61,13 +62,17 @@ const FriendRequestSent = ({ sents, removeStates, setRemoveStates }) => {
 
           return (
             <div key={id} className={cx("request-card")}>
-              <img
-                src={request.receiver?.avatar || "/user_default.png"}
-                alt={request.receiver?.name || "Người dùng"}
-                className={cx("avatar")}
-              />
+              <Link to={`/profile/${id}`} className={cx("avatar-link")}>
+                <img
+                  src={request.receiver?.avatar || "/user_default.png"}
+                  alt={request.receiver?.name || "Người dùng"}
+                  className={cx("avatar")}
+                />
+              </Link>
               <div className={cx("info")}>
-                <h3>{request.receiver?.name || "Người dùng"}</h3>
+                <Link to={`/profile/${id}`} className={cx("name-link")}>
+                  <h3>{request.receiver?.name || "Người dùng"}</h3>
+                </Link>
                 {request.mutualFriends > 0 ? (
                   <p>{request.mutualFriends} bạn chung</p>
                 ) : (
@@ -85,7 +90,7 @@ const FriendRequestSent = ({ sents, removeStates, setRemoveStates }) => {
                 }
                 <button
                   onClick={() => unfriend(id)}
-                  className={cx("decline")}
+                  className={cx("decline", { removing, removed })}
                   disabled={removing || removed}
                 >
                   {removing ? "Đang gỡ..." : removed ? "Đã gỡ" : "Gỡ"}

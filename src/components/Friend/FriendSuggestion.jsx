@@ -1,46 +1,50 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import classNames from "classnames/bind";
-import { deleteFriend } from "@/services/friendService";
+import { Link } from "react-router-dom";
+import { addFriendRequest } from "@/services/friendRequestService";
 import styles from "./Friend.module.scss";
 
 const cx = classNames.bind(styles);
 
-const FriendAll = ({ friends, unfriendingStates, setUnfriendingStates }) => {
+const FriendSuggestion = ({
+  suggestion,
+  suggestionStates,
+  setSuggestionStates,
+}) => {
   // const [unfriendingStates, setUnfriendingStates] = useState({});
 
-  const handleUnfriend = async (id) => {
-    setUnfriendingStates((prevStates) => ({
+  const handleAddfriend = async (id) => {
+    setSuggestionStates((prevStates) => ({
       ...prevStates,
-      [id]: { unfriending: true },
+      [id]: { adding: true },
     }));
 
     try {
-      const res = await deleteFriend(id);
+      const res = await addFriendRequest(id);
 
       if (res && res.status === 200) {
-        setUnfriendingStates((prevStates) => ({
+        setSuggestionStates((prevStates) => ({
           ...prevStates,
-          [id]: { unfriended: true, unfriending: false },
+          [id]: { added: true, adding: false },
         }));
       } else {
-        setUnfriendingStates((prevStates) => ({
+        setSuggestionStates((prevStates) => ({
           ...prevStates,
-          [id]: { unfriending: false, unfriended: false },
+          [id]: { adding: false, added: false },
         }));
       }
     } catch (error) {
-      console.error("Error unfriending:", error);
-      setUnfriendingStates((prevStates) => ({
+      console.error("Error adding:", error);
+      setSuggestionStates((prevStates) => ({
         ...prevStates,
-        [id]: { unfriending: false, unfriended: false },
+        [id]: { adding: false, added: false },
       }));
     }
   };
 
-  const uniqueFriends = friends.reduce((acc, friend) => {
-    if (!acc.some((existingFriends) => existingFriends.id === friend.id)) {
-      acc.push(friend);
+  const uniqueSuggestion = suggestion.reduce((acc, sugg) => {
+    if (!acc.some((existingSuggestion) => existingSuggestion.id === sugg.id)) {
+      acc.push(sugg);
     }
     return acc;
   }, []);
@@ -48,12 +52,12 @@ const FriendAll = ({ friends, unfriendingStates, setUnfriendingStates }) => {
   return (
     <div className={cx("friend-requests")}>
       <div className={cx("header")}>
-        <h2>Danh sách bạn bè</h2>
+        <h2>Danh sách gợi ý bạn bè</h2>
       </div>
       <div className={cx("request-list")}>
-        {uniqueFriends.map((friend) => {
+        {uniqueSuggestion.map((friend) => {
           const { id } = friend;
-          const { unfriending, unfriended } = unfriendingStates[id] || {};
+          const { adding, added } = suggestionStates[id] || {};
 
           return (
             <div key={id} className={cx("request-card")}>
@@ -76,21 +80,17 @@ const FriendAll = ({ friends, unfriendingStates, setUnfriendingStates }) => {
               </div>
               <div className={cx("actions")}>
                 <button
-                  onClick={() => console.log(`Nhắn tin với ${friend.name}`)}
-                  className={cx("accept")}
+                  onClick={() => handleAddfriend(id)}
+                  className={cx("accept", { added, adding })}
+                  disabled={adding || added}
                 >
-                  Nhắn tin
+                  {adding ? "Đang thêm..." : added ? "Đã thêm" : "Thêm bạn bè"}
                 </button>
                 <button
-                  onClick={() => handleUnfriend(id)}
-                  className={cx("decline", { unfriending, unfriended })}
-                  disabled={unfriending || unfriended}
+                  onClick={() => console.log(`Nhắn tin với ${friend.name}`)}
+                  className={cx("decline")}
                 >
-                  {unfriending
-                    ? "Đang hủy..."
-                    : unfriended
-                    ? "Đã hủy"
-                    : "Hủy bạn bè"}
+                  Nhắn tin
                 </button>
               </div>
             </div>
@@ -101,4 +101,4 @@ const FriendAll = ({ friends, unfriendingStates, setUnfriendingStates }) => {
   );
 };
 
-export default FriendAll;
+export default FriendSuggestion;

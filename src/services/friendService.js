@@ -8,6 +8,6 @@ export const deleteFriend = async (id) => {
     return await axiosInstance.post('/friend/remove', { id_account: id, _method: "DELETE" } );
 }
 
-export const getSuggestFriend = async () => {
-    return await axiosInstance.get('/friend/suggest');
+export const getSuggestFriend = async (page) => {
+    return await axiosInstance.get('/friend/suggest', {params: {page: page}});
 }
