@@ -30,11 +30,10 @@ import PasswordAndSecurity from "../pages/Client/Settings/PasswordAndSecurity";
 import Search from "../pages/Client/Search";
 import Notification from "../pages/Client/Notification";
 import New from "../pages/Client/New";
-import trangAnh from "../pages/Client/TrangCaNhan/trangAnh";
-// import trangBanBe from "../pages/Client/TrangCaNhan/trangbanbe";
-import trangGioiThieu from "../pages/Client/TrangCaNhan/trangGioiThieu";
 
 import FriendPage from '../pages/Client/FriendPage/FriendPage';
+import PostDetail from "@/components/Posts/PostDetail";
+import VerifyCode from "@/pages/VerifyCode";
 // Router không cần đăng nhập vẫn vô được
 const pulicRouter = [
     {
@@ -44,12 +43,14 @@ const pulicRouter = [
         path: "/register", component: Register
     },
     {
-        path: "/forgot", component: ForgotPassword
+        path: "/forgot-password", component: ForgotPassword
     },
     {
         path: "/repassword", component: Repassword
     },
-
+    {
+        path: "/verify-code", component: VerifyCode
+    }
 ]
 
 
@@ -66,6 +67,11 @@ const privateRouters = [
     },
     {
         path: "/messages/:id", component: Messages, layout: LayoutMessages
+    },
+
+    // Chi tiết bài viết
+    {
+        path: "/posts/:id", component: PostDetail
     },
 
     // cài đặt 
@@ -95,18 +101,9 @@ const privateRouters = [
     },
     // trang ca nhan
     {
-        path: "/profile", component: Canhan
+        path: "/profile/:id", component: Canhan
     },
-    {
-        path: "/trangAnh", component: trangAnh
-    },
-    // {
-    //     path: "/trangBanBe", component: trangBanBe
-    // },
-    {
-        path: "/trangGioiThieu", component: trangGioiThieu
-    },
-
+   
     {
         path: "/search", component: Search
     },

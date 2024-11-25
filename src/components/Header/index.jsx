@@ -1,4 +1,4 @@
-import notificationService from "@/services/notificationService";
+import markAllAsSeen from "@/services/notificationService";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -72,10 +72,10 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-function Header() {
+function Header({ unseenCount, setUnseenCount }) {
   const auth = useAuth();
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // Use dispatch hook
+  const dispatch = useDispatch();
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElNotif, setAnchorElNotif] = useState(null);
   const user = useSelector((state) => state.user);
@@ -99,32 +99,25 @@ function Header() {
     setAnchorElUser(null);
   };
 
-  const [unseenCount, setUnseenCount] = useState(0);
 
-  useEffect(() => {
-    const count = notifications.filter(
-      (notification) => !notification.is_seen
-    ).length;
-    setUnseenCount(count > 9 ? "9+" : count);
-  }, [notifications]);
+  async function seenAll(){
+    try {
+      await markAllAsSeen();
+    } catch (error) {}
+  }
 
   const handleOpenNotifMenu = async (event) => {
     setAnchorElNotif(event.currentTarget);
     setUnseenCount(0);
-    try {
-      await notificationService.markAllAsSeen();
-    } catch (error) {
-      // console.error("Lỗi khi gọi API đánh dấu thông báo đã xem:", error);
-    }
+    seenAll()
   };
 
   const handleCloseNotifMenu = () => {
-    // Mark all notifications as seen and update the Redux state
-    const updatedNotifications = notifications.map((notification) => ({
+    const updatedNotifications = notifications.map(notification => ({
       ...notification,
       is_seen: true,
     }));
-    dispatch(setNotifications(updatedNotifications)); // Dispatch the updated notifications
+    dispatch(setNotifications(updatedNotifications));
     setAnchorElNotif(null);
   };
 
@@ -137,10 +130,6 @@ function Header() {
     }
     handleCloseUserMenu();
   };
-
-  const unreadCount = notifications.filter(
-    (notification) => !notification.read_at
-  ).length;
 
   return (
     <AppBar position="fixed" sx={{ bgcolor: "white", color: "black" }}>
@@ -214,31 +203,24 @@ function Header() {
             </IconButton>
           </Tooltip>
           <Tooltip title="Thông báo">
-            <IconButton
-              onClick={handleOpenNotifMenu}
-              component={Link}
-              sx={{
-                color: isNotificationsPage && "#1976d2", // Active nếu đang ở trang thông báo
-              }}
-            >
-              <Badge
-                badgeContent={isNotificationsPage ? 0 : unseenCount} // Ẩn số lượng nếu đang ở trang thông báo
-                color="error"
-              >
+            <IconButton onClick={handleOpenNotifMenu}>
+              <Badge badgeContent={unseenCount} color="error">
                 <Notifications />
               </Badge>
             </IconButton>
           </Tooltip>
-          {!isNotificationsPage && (
-            <Menu
-              anchorEl={anchorElNotif}
-              open={Boolean(anchorElNotif)}
-              onClose={handleCloseNotifMenu}
-              sx={{ mt: "45px" }}
-            >
-              <Notification onClose={handleCloseNotifMenu} />
-            </Menu>
-          )}
+          <Menu
+            anchorEl={anchorElNotif}
+            open={Boolean(anchorElNotif)}
+            onClose={handleCloseNotifMenu}
+            sx={{ mt: "45px" }}
+          >
+            <Notification
+              seenAll={seenAll}
+              unseenCount={unseenCount}
+              setUnseenCount={setUnseenCount}
+              onClose={handleCloseNotifMenu} />
+          </Menu>
           <Tooltip title="Tài khoản">
             <IconButton onClick={handleOpenUserMenu}>
               <Avatar
@@ -256,7 +238,7 @@ function Header() {
             <MenuItem
               onClick={handleCloseUserMenu}
               component={Link}
-              to="/profile"
+              to={`/profile/${user.id}`}
             >
               <Avatar
                 src={user?.avatar || "/user_default.png"}

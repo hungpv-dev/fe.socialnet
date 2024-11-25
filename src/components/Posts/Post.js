@@ -40,8 +40,10 @@ import { toast } from 'react-toastify';
 import axiosInstance from '@/axios';
 import CommentDialog from './CommentDialog.js';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-const Post = ({ setPosts, post, hideCommentButton, onShareSuccess }) => {
+const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetail = false }) => {
+    const navigate = useNavigate();
     const user = useSelector(state => state.user)
     const [anchorEl, setAnchorEl] = useState(null);
     const [liked, setLiked] = useState(post.user_emotion ? true : false);
@@ -88,12 +90,16 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess }) => {
             });
             
             if (response.status === 200) {
-                let post = response.data.data;
-                setPosts(prevPosts => [post, ...prevPosts])
-                toast.success('Đã chia sẻ bài viết');
-                handleShareClose();
-                if (onShareSuccess) {
-                    onShareSuccess();
+                if(redirectDetail){
+                    navigate(`/posts/${response.data.data.id}`);
+                }else{
+                    let post = response.data.data;
+                    setPosts(prevPosts => [post, ...prevPosts])
+                    toast.success('Đã chia sẻ bài viết');
+                    handleShareClose();
+                    if (onShareSuccess) {
+                        onShareSuccess();
+                    }
                 }
             }
         } catch (error) {
@@ -514,6 +520,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess }) => {
                 onClose={handleCommentClose}
                 post={post}
                 setPosts={setPosts}
+                redirectDetail={redirectDetail}
             />
         </Card>
     );

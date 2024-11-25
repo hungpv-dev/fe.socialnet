@@ -544,7 +544,7 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
                   onClick={handleViewersClick}
                 >
                   <VisibilityOutlined />
-                  <Typography>{currentStory.user_count || 0} người xem</Typography>
+                  <Typography>{currentStory?.user_count || 0} người xem</Typography>
                 </Box>
               )}
 

@@ -212,11 +212,7 @@ const FriendPage = () => {
     loadingRequest,
     loadingSent,
     loadingSuggestion,
-  ]);
-
-  console.log(suggestion);
-  
-  
+  ]);  
 
   const navItems = [
     {
