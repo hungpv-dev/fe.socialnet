@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import classNames from "classnames/bind";
+import { Link } from "react-router-dom";
 import {
   acceptFriendRequest,
   rejectFriendRequest,
@@ -71,7 +72,11 @@ const FriendRequests = ({ requests, requestStates, setRequestStates }) => {
 
   // Lọc các requests để tránh trùng lặp id
   const uniqueRequests = requests.reduce((acc, request) => {
-    if (!acc.some(existingRequest => existingRequest.sender.id === request.sender.id)) {
+    if (
+      !acc.some(
+        (existingRequest) => existingRequest.sender.id === request.sender.id
+      )
+    ) {
       acc.push(request);
     }
     return acc;
@@ -90,15 +95,17 @@ const FriendRequests = ({ requests, requestStates, setRequestStates }) => {
 
           return (
             <div key={id} className={cx("request-card")}>
-              <img
-                src={request.sender?.avatar || "/user_default.png"}
-                alt={request.sender?.name || "Người dùng"}
-                className={cx("avatar")}
-              />
+              <Link to={`/profile/${id}`} className={cx("avatar-link")}>
+                <img
+                  src={request.sender?.avatar || "/user_default.png"}
+                  alt={request.sender?.name || "Người dùng"}
+                  className={cx("avatar")}
+                />
+              </Link>
               <div className={cx("info")}>
-                <h3>
-                  {request.sender?.name || "Người dùng"} {id} {id} {id}
-                </h3>
+                <Link to={`/profile/${id}`} className={cx("name-link")}>
+                  <h3>{request.sender?.name || "Người dùng"}</h3>
+                </Link>
                 {request.mutualFriends > 0 ? (
                   <p>{request.mutualFriends} bạn chung</p>
                 ) : (
