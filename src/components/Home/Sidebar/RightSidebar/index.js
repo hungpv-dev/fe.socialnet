@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import axiosInstance from '@/axios';
 import { useSelector } from 'react-redux';
 import useChatRoom from '@/hooks/useChatRoom';
+import { formatDateToNow } from '@/components/FormatDate';
+import useFriend from '@/hooks/useFriend';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -41,6 +43,17 @@ function RightSidebar() {
     const [friendIds, setFriendIds] = useState([]);
     const [onlineFriends, setOnlineFriends] = useState([]);
     const users = useSelector(state => state.user_online);
+    const friendApi = useFriend();
+    const [friendRequests, setFriendRequests] = useState([]);
+
+    const getFriendRequests = async () => {
+        try {
+            const response = await axiosInstance.get('friend/request/all?take=3&index=0');
+            setFriendRequests(response.data);
+        } catch (error) {
+            console.error('Lỗi khi lấy danh sách lời mời kết bạn:', error);
+        }
+    };
 
     useEffect(() => {
         const getFriendIds = async () => {
@@ -51,6 +64,7 @@ function RightSidebar() {
                 console.error('Lỗi khi lấy danh sách ID bạn bè:', error);
             }
         };
+        getFriendRequests();
         getFriendIds();
     }, []);
 
@@ -71,61 +85,92 @@ function RightSidebar() {
         }
     };
 
+    const handleAcceptFriend = async (userId) => {
+        await friendApi.accept(userId);
+        getFriendRequests();
+    };
+
+    const handleRejectFriend = async (userId) => {
+        await friendApi.reject(userId);
+        getFriendRequests();
+    };
+
     return (
         <Box component="aside" sx={{ width: 360, p: 2, bgcolor: 'background.paper' }}>
 
             <Divider sx={{ my: 2 }} />
 
-            <Box sx={{ mb: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                        Lời mời kết bạn
-                    </Typography>
-                    <Link to="/" style={{ textDecoration: 'none' }}>
-                        <Typography color="primary" sx={{ fontWeight: 500, '&:hover': { textDecoration: 'underline' } }}>
-                            Xem tất cả
+            {Array.isArray(friendRequests) && friendRequests.length > 0 && (
+                <Box sx={{ mb: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                            Lời mời kết bạn
                         </Typography>
-                    </Link>
-                </Box>
-
-                <Paper elevation={0} sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                        <Avatar src="/user_default.png" sx={{ width: 60, height: 60 }} />
-                        <Box sx={{ flex: 1 }}>
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                                Đinh Quang Hiến
+                        <Link to="/friends/request" style={{ textDecoration: 'none' }}>
+                            <Typography color="primary" sx={{ fontWeight: 500, '&:hover': { textDecoration: 'underline' } }}>
+                                Xem tất cả
                             </Typography>
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                                6 bạn chung
-                            </Typography>
-                            <Box sx={{ display: 'flex', gap: 1 }}>
-                                <Button 
-                                    variant="contained" 
-                                    size="small" 
-                                    sx={{ 
-                                        textTransform: 'none',
-                                        fontWeight: 500,
-                                        bgcolor: 'primary.main'
-                                    }}
-                                >
-                                    Xác nhận
-                                </Button>
-                                <Button 
-                                    variant="outlined" 
-                                    size="small"
-                                    sx={{ 
-                                        textTransform: 'none',
-                                        fontWeight: 500,
-                                        color: 'text.primary'
-                                    }}
-                                >
-                                    Xóa
-                                </Button>
-                            </Box>
-                        </Box>
+                        </Link>
                     </Box>
-                </Paper>
-            </Box>
+                     
+                    {friendRequests.map((request) => (
+                        <Paper key={request.id} elevation={0} sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
+                            <Box sx={{ display: 'flex', gap: 2 }}>
+                                <Avatar 
+                                    src={request.sender.avatar || "/user_default.png"} 
+                                    sx={{ width: 60, height: 60, cursor: 'pointer' }}
+                                    onClick={() => navigate(`/profile/${request.sender.id}`)}
+                                />
+                                <Box sx={{ flex: 1 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                                        <Typography 
+                                            variant="subtitle2" 
+                                            sx={{ 
+                                                fontWeight: 600, 
+                                                color: 'text.primary',
+                                                cursor: 'pointer',
+                                                '&:hover': { textDecoration: 'underline' }
+                                            }}
+                                            onClick={() => navigate(`/profile/${request.sender.id}`)}
+                                        >
+                                            {request.sender.name}
+                                        </Typography>
+                                    </Box>
+                                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                                        {request.mutualFriends} bạn chung • {formatDateToNow(request.created_at)}
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                        <Button 
+                                            variant="contained" 
+                                            size="small" 
+                                            sx={{ 
+                                                textTransform: 'none',
+                                                fontWeight: 500,
+                                                bgcolor: 'primary.main'
+                                            }}
+                                            onClick={() => handleAcceptFriend(request.sender.id)}
+                                        >
+                                            Xác nhận
+                                        </Button>
+                                        <Button 
+                                            variant="outlined" 
+                                            size="small"
+                                            sx={{ 
+                                                textTransform: 'none',
+                                                fontWeight: 500,
+                                                color: 'text.primary'
+                                            }}
+                                            onClick={() => handleRejectFriend(request.sender.id)}
+                                        >
+                                            Xóa
+                                        </Button>
+                                    </Box>
+                                </Box>
+                            </Box>
+                        </Paper>
+                    ))}
+                </Box>
+            )}
 
             <Divider sx={{ my: 2 }} />
 
@@ -134,7 +179,7 @@ function RightSidebar() {
             </Typography>
 
             <List disablePadding>
-                {onlineFriends.map((user) => (
+                {Array.isArray(onlineFriends) && onlineFriends.map((user) => (
                     <ListItem 
                         key={user.id} 
                         onClick={() => handleUserClick(user.id)}

@@ -182,20 +182,10 @@ function Header({ unseenCount, setUnseenCount }) {
               <People />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Nhóm">
-            <IconButton component={Link} to="/">
-              <Groups />
-            </IconButton>
-          </Tooltip>
         </Box>
 
         {/* Right section */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Tooltip title="Menu">
-            <IconButton>
-              <Apps />
-            </IconButton>
-          </Tooltip>
           <Tooltip title="SocialChat">
             <IconButton component={Link} to="/messages">
               <Badge badgeContent={4} color="error">
@@ -246,10 +236,6 @@ function Header({ unseenCount, setUnseenCount }) {
                 sx={{ width: 24, height: 24, mr: 1 }}
               />
               <Typography>{user?.name || "Trang cá nhân"}</Typography>
-            </MenuItem>
-            <MenuItem onClick={handleCloseUserMenu}>
-              <Settings sx={{ mr: 1 }} />
-              <Typography>Cài đặt</Typography>
             </MenuItem>
             <MenuItem onClick={handleLogout}>
               <Logout sx={{ mr: 1 }} />

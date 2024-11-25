@@ -95,13 +95,13 @@ const Stories = () => {
                 />
 
                 {/* Danh sách stories */}
-                {/* {stories.map((story, index) => (
+                {stories.map((story, index) => (
                     <Story 
                         key={story.id} 
                         story={story} 
                         onClick={() => setSelectedStory(index)}
                     />
-                ))} */}
+                ))}
 
                 <StoryViewer 
                     open={selectedStory !== null}

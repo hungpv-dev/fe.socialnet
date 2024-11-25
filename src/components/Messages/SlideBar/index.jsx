@@ -6,10 +6,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { PupupCreateGroupChat } from '@/components/PopupComponent';
-import { Avatar, Badge, CircularProgress } from '@mui/material';
+import { Avatar, Badge, CircularProgress, IconButton } from '@mui/material';
 import useChatRoom from '@/hooks/useChatRoom';
 import { setRooms } from '@/actions/rooms';
 import { debounce } from 'lodash';
+import { ArrowBack } from '@mui/icons-material';
 const cx = classNames.bind(styles);
 
 function SlideBar() {
@@ -143,10 +144,13 @@ function SlideBar() {
     <aside id='sliderbar' ref={sliderbarRef} className={cx("slidebar")}>
       <div className='nav-top'>
         <header className='d-flex justify-content-between align-items-center'>
-          <div className='title'>
-            <Link to="/">
-              <h3 className='fw-bold'>Đoạn chat</h3>
+          <div className='title d-flex align-items-center'>
+            <Link to="/" className='me-2'>
+              <IconButton>
+                <ArrowBack />
+              </IconButton>
             </Link>
+            <h4 className='fw-bold mb-0'>Đoạn chat</h4>
           </div>
           <button
             ref={buttonToggle}

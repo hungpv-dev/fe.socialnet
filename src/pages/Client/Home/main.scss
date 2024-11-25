@@ -3,7 +3,7 @@
     min-height: 100vh;
     display: flex;
     background-color: #fff;
-    padding-top: 56px; // Để tránh bị header che mất
+    padding-top: 0;
     justify-content: center;
 
     > *:first-child {
