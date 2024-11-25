@@ -1,23 +1,42 @@
 * {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    text-decoration: none;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  text-decoration: none;
 }
-#root{
-    width: 100vw;
+#root {
+  width: 100vw;
 }
 html {
-    font-size: 1rem;
-    text-decoration: none;
-    scroll-behavior: smooth;
-    font-family: 'Times New Roman', Times, serif;
-    background-color: var(--bg-color);
+  font-size: 1rem;
+  text-decoration: none;
+  scroll-behavior: smooth;
+  font-family: "Times New Roman", Times, serif;
+  background-color: var(--bg-color);
+}
+.content-scrollable {
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border-radius: 4px;
+
+    &:hover {
+      background: #999;
+    }
+  }
 }
 
 // desktop
 // @media screen and (min-width: 1080px) and (max-width: 1920px) {
-    
+
 // }
 
 // // ipad pro
@@ -25,7 +44,7 @@ html {
 //     html {
 //         font-size: 13px;
 //     }
-// }   
+// }
 
 // // tablet
 // @media screen and (min-width: 767px) and  (max-width: 1023px) {
@@ -33,7 +52,6 @@ html {
 //         font-size: 13px;
 //     }
 // }
-
 
 // //smart phone
 // @media screen and (min-width: 472px) and (max-width: 766px) {

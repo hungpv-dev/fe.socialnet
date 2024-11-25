@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import React from 'react';
 import axiosInstance from "@/axios";
 import { toast } from 'react-toastify';
+import { useNavigate } from "react-router-dom";
 
 import { 
   Box,
@@ -24,7 +25,11 @@ import {
   FormControl,
   RadioGroup,
   FormControlLabel,
-  Radio
+  Radio,
+  DialogContentText,
+  Select,
+  MenuItem,
+  InputLabel
 } from '@mui/material';
 import {
   PhotoCamera,
@@ -32,19 +37,27 @@ import {
   School,
   LocationOn,
   RssFeed,
-  Instagram,
-  Close
+  Close,
+  PersonAdd,
+  Message,
+  Phone,
+  Wc,
+  Cake,
+  Favorite
 } from '@mui/icons-material';
 import Introduction from './Introduction';
 import Friends from './Friends';
 import Photos from './Photos';
 import Videos from './Videos';
 import { useParams } from "react-router-dom";
+import useChatRoom from "@/hooks/useChatRoom";
+import useFriend from "@/hooks/useFriend";
+import { useSelector } from "react-redux";
 
 const Canhan = () => {
+  const currentUser = useSelector(state => state.user);
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
-  const [openStoryDialog, setOpenStoryDialog] = useState(false);
   const [openAvatarDialog, setOpenAvatarDialog] = useState(false);
   const [openCoverDialog, setOpenCoverDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -56,6 +69,36 @@ const Canhan = () => {
   const [avatarPrivacy, setAvatarPrivacy] = useState('public');
   const [coverPrivacy, setCoverPrivacy] = useState('public');
   const { id } = useParams();
+  const navigate = useNavigate();
+  const chatRoom = useChatRoom();
+  const friendApi = useFriend();
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [selectedFriendId, setSelectedFriendId] = useState(null);
+
+  // Form state for profile editing
+  const [editForm, setEditForm] = useState({
+    name: '',
+    address: '',
+    hometown: '',
+    phone: '',
+    gender: '',
+    birthday: '',
+    relationship: ''
+  });
+
+  useEffect(() => {
+    if (user) {
+      setEditForm({
+        name: user.name || '',
+        address: user.address || '',
+        hometown: user.hometown || '',
+        phone: user.phone || '',
+        gender: user.gender || '',
+        birthday: user.birthday || '',
+        relationship: user.relationship || ''
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -67,7 +110,7 @@ const Canhan = () => {
       }
     };
     fetchUserData();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const handleGlobalPaste = (e) => {
@@ -139,8 +182,7 @@ const Canhan = () => {
       });
 
       if (response.status === 200) {
-        const userResponse = await axiosInstance.get(`/user/${id}`);
-        setUser(userResponse.data);
+        await reUser();
         setOpenAvatarDialog(false);
         setSelectedAvatar(null);
         setAvatarCaption('');
@@ -152,6 +194,34 @@ const Canhan = () => {
       toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật ảnh đại diện');
     }
   };
+
+  const handleSaveProfile = async () => {
+    try {
+      const response = await axiosInstance.put('/user/profile/update', editForm);
+      
+      if (response.status === 200) {
+        await reUser();
+        setOpenEditDialog(false);
+        toast.success('Cập nhật thông tin cá nhân thành công!');
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      if (error.response?.data?.errors) {
+        // Show validation errors
+        const errors = error.response.data.errors;
+        Object.keys(errors).forEach(key => {
+          toast.error(errors[key][0]);
+        });
+      } else {
+        toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật thông tin');
+      }
+    }
+  };
+
+  async function reUser(){
+    const userResponse = await axiosInstance.get(`/user/${id}`);
+    setUser(userResponse.data);
+  }
 
   const handleSaveCover = async () => {
     try {
@@ -184,16 +254,10 @@ const Canhan = () => {
       toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật ảnh bìa');
     }
   };
-
-  const handleOpenStoryDialog = () => {
-    setOpenStoryDialog(true);
-  };
-
-  const handleCloseStoryDialog = () => {
-    setOpenStoryDialog(false);
-  };
-
   const handleOpenAvatarDialog = () => {
+    if (currentUser.id !== user?.id) {
+      return;
+    }
     setOpenAvatarDialog(true);
   };
 
@@ -204,6 +268,9 @@ const Canhan = () => {
   };
 
   const handleOpenCoverDialog = () => {
+    if (currentUser.id !== user?.id) {
+      return;
+    }
     setOpenCoverDialog(true);
   };
 
@@ -214,6 +281,9 @@ const Canhan = () => {
   };
 
   const handleOpenEditDialog = () => {
+    if (currentUser.id !== user?.id) {
+      return;
+    }
     setOpenEditDialog(true);
   };
 
@@ -221,26 +291,66 @@ const Canhan = () => {
     setOpenEditDialog(false);
   };
 
-  const handleUpdateProfile = async (profileData) => {
+  const handleStartChat = async (userId) => {
     try {
-      await axiosInstance.put('/user/profile', profileData);
-      // Refresh user data after update
-      const response = await axiosInstance.get('/user/profile');
-      setUser(response.data);
+        const response = await chatRoom.createPrivateRoom(userId);
+        if (response?.data) {
+            const room = response.data.data;
+            navigate(`/messages/${room.chat_room_id}`);
+        }
     } catch (error) {
-      console.error('Error updating profile:', error);
+        console.error('Lỗi khi tạo phòng chat:', error);
     }
   };
 
-  const handleCreatePost = async (postData) => {
-    try {
-      await axiosInstance.post('/user/posts', postData);
-      // Refresh posts after creating new one
-      const response = await axiosInstance.get('/user/posts');
-      setPosts(response.data);
-    } catch (error) {
-      console.error('Error creating post:', error);
+  const handleAcceptFriend = async (userId) => {
+    await friendApi.accept(userId);
+    reUser();
+  };
+
+  const handleRejectFriend = async (userId) => {
+    await friendApi.reject(userId);
+    reUser();
+  };
+
+  const handleDeleteFriend = async (userId) => {
+    await friendApi.deleteFriend(userId);
+    reUser();
+  };
+
+  const handleDeleteFriendSuccess = async (userId) => {
+    await friendApi.deleteFriendSuccess(userId);
+    reUser();
+  };
+
+  const handleAddFriend = async (userId) => {
+    await friendApi.add(userId);
+    reUser();
+  };
+
+  const handleOpenConfirmDialog = (userId) => {
+    setSelectedFriendId(userId);
+    setOpenConfirmDialog(true);
+  };
+
+  const handleCloseConfirmDialog = () => {
+    setOpenConfirmDialog(false);
+    setSelectedFriendId(null);
+  };
+
+  const handleConfirmUnfriend = async () => {
+    if (selectedFriendId) {
+      await handleDeleteFriendSuccess(selectedFriendId);
+      handleCloseConfirmDialog();
     }
+  };
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const renderContent = () => {
@@ -248,7 +358,7 @@ const Canhan = () => {
       case 'about':
         return <Introduction userData={user} />;
       case 'friends':
-        return <Friends />;
+        return <Friends userData={user} />;
       case 'photos':
         return <Photos />;
       case 'videos':
@@ -269,13 +379,12 @@ const Canhan = () => {
                 <Button startIcon={<PhotoCamera />}>Ảnh/Video</Button>
               </CardContent>
             </Card>
-
           </>
         );
     }
   };
+
   return (
-    
     <Box sx={{ bgcolor: 'background.default', height: '100vh', overflowY: 'auto' }}>
       <Container maxWidth="lg" sx={{ pt: 0 }}>
         <Box sx={{ position: 'relative' }}>
@@ -287,19 +396,11 @@ const Canhan = () => {
               alt="Cover"
               onClick={handleOpenCoverDialog}
               sx={{ 
-                cursor: 'pointer',
+                cursor: currentUser.id === user?.id ? 'pointer' : 'default',
                 height: 400,
                 objectFit: 'cover'
               }}
             />
-            <Button
-              variant="contained"
-              startIcon={<PhotoCamera />}
-              sx={{ position: 'absolute', right: 32, bottom: 32, bgcolor: 'grey.300' }}
-              onClick={handleOpenCoverDialog}
-            >
-              Thêm ảnh bìa
-            </Button>
           </Card>
 
           {/* Cover Image Dialog */}
@@ -386,46 +487,118 @@ const Canhan = () => {
           </Dialog>
 
           {/* Profile Section */}
-          <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 4, mt: -6 }}>
-            <Box sx={{ position: 'relative' }}>
-              <Avatar
-                src={user?.avatar || "/user_default.png"}
-                sx={{ width: 138, height: 138, border: 3, borderColor: 'background.paper', cursor: 'pointer' }}
-                onClick={handleOpenAvatarDialog}
-              />
-              <IconButton
-                sx={{
-                  position: 'absolute',
-                  bottom: 0,
-                  right: 0,
-                  backgroundColor: 'white',
-                  '&:hover': { backgroundColor: 'grey.200' }
-                }}
-                onClick={handleOpenAvatarDialog}
-              >
-                <PhotoCamera />
-              </IconButton>
-            </Box>
-            <Box sx={{ ml: 3, flex: 1 }}>
-              <Typography variant="h4" fontWeight="bold">{user?.name || 'User'}</Typography>
-              <Box sx={{ mt: 2 }}>
-                <Button 
-                  variant="contained" 
-                  color="primary" 
-                  sx={{ mr: 2 }}
-                  onClick={handleOpenStoryDialog}
-                >
-                  + Thêm vào tin
-                </Button>
-                <Button 
-                  variant="contained" 
-                  startIcon={<Edit />} 
-                  color="inherit"
-                  onClick={handleOpenEditDialog}
-                >
-                  Chỉnh sửa trang cá nhân
-                </Button>
+          <Box sx={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', mb: 4, mt: -6 }}>
+            <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
+              <Box sx={{ position: 'relative' }}>
+                <Avatar
+                  src={user?.avatar || "/user_default.png"}
+                  sx={{ width: 138, height: 138, border: 3, borderColor: 'background.paper', cursor: currentUser.id === user?.id ? 'pointer' : 'default' }}
+                  onClick={handleOpenAvatarDialog}
+                />
+                {currentUser.id === user?.id && (
+                  <IconButton
+                    sx={{
+                      position: 'absolute',
+                      bottom: 0,
+                      right: 0,
+                      backgroundColor: 'white',
+                      '&:hover': { backgroundColor: 'grey.200' }
+                    }}
+                    onClick={handleOpenAvatarDialog}
+                  >
+                    <PhotoCamera />
+                  </IconButton>
+                )}
               </Box>
+              <Box sx={{ ml: 3 }}>
+                <Typography variant="h4" fontWeight="bold">{user?.name || 'User'}</Typography>
+                <Typography variant="body1" color="textSecondary" sx={{ mt: 1 }}>
+                  {user?.friend_counts} bạn bè · {user?.follower} người theo dõi
+                </Typography>
+                {user?.friend_commons && user.friend_commons.length > 0 && (
+                  <Typography variant="body2" color="textSecondary">
+                    {user.friend_commons.length} bạn chung
+                  </Typography>
+                )}
+              </Box>
+            </Box>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {user?.button?.includes('accept') && (
+                <Button 
+                  variant="contained" 
+                  color="primary"
+                  startIcon={<PersonAdd />}
+                  onClick={() => handleAcceptFriend(user.id)}
+                >
+                  Chấp nhận lời mời
+                </Button>
+              )}
+              
+              {user?.button?.includes('reject') && (
+                <Button 
+                  variant="outlined"
+                  color="error"
+                  onClick={() => handleRejectFriend(user.id)}
+                >
+                  Từ chối
+                </Button>
+              )}
+
+              {user?.button?.includes('delete') && (
+                <Button 
+                  variant="outlined"
+                  color="error"
+                  onClick={() => handleDeleteFriend(user.id)}
+                >
+                  Hủy kết bạn
+                </Button>
+              )}
+
+              {user?.button?.includes('friend') && (
+                <Button 
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => handleOpenConfirmDialog(user.id)}
+                >
+                  Bạn bè
+                </Button>
+              )}
+
+              {user?.button?.includes('add') && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<PersonAdd />}
+                  onClick={() => handleAddFriend(user.id)}
+                >
+                  Thêm bạn bè
+                </Button>
+              )}
+
+              {user?.button?.includes('chat') && (
+                <Button
+                  variant="contained"
+                  color="primary" 
+                  startIcon={<Message />}
+                  onClick={() => handleStartChat(user.id)}
+                >
+                  Nhắn tin
+                </Button>
+              )}
+
+              {currentUser.id === user?.id && (
+                <>
+                  <Button 
+                    variant="contained" 
+                    startIcon={<Edit />} 
+                    color="inherit"
+                    onClick={handleOpenEditDialog}
+                  >
+                    Chỉnh sửa trang cá nhân
+                  </Button>
+                </>
+              )}
             </Box>
           </Box>
 
@@ -449,45 +622,89 @@ const Canhan = () => {
                 <TextField
                   fullWidth
                   label="Tên hiển thị"
+                  name="name"
                   variant="outlined"
                   sx={{ mb: 2 }}
-                  defaultValue={user?.name}
+                  value={editForm.name}
+                  onChange={handleFormChange}
+                  required
                 />
                 <TextField
                   fullWidth
-                  label="Tiểu sử"
-                  multiline
-                  rows={4}
+                  label="Số điện thoại"
+                  name="phone"
                   variant="outlined"
                   sx={{ mb: 2 }}
-                  defaultValue={user?.bio}
+                  value={editForm.phone}
+                  onChange={handleFormChange}
+                />
+                <FormControl fullWidth sx={{ mb: 2 }}>
+                  <InputLabel>Giới tính</InputLabel>
+                  <Select
+                    name="gender"
+                    value={editForm.gender}
+                    onChange={handleFormChange}
+                    label="Giới tính"
+                  >
+                    <MenuItem value="male">Nam</MenuItem>
+                    <MenuItem value="female">Nữ</MenuItem>
+                    <MenuItem value="other">Khác</MenuItem>
+                  </Select>
+                </FormControl>
+                <TextField
+                  fullWidth
+                  label="Ngày sinh"
+                  name="birthday"
+                  type="date"
+                  variant="outlined"
+                  sx={{ mb: 2 }}
+                  value={editForm.birthday}
+                  onChange={handleFormChange}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+                <FormControl fullWidth sx={{ mb: 2 }}>
+                  <InputLabel>Tình trạng mối quan hệ</InputLabel>
+                  <Select
+                    name="relationship"
+                    value={editForm.relationship}
+                    onChange={handleFormChange}
+                    label="Tình trạng mối quan hệ"
+                  >
+                    <MenuItem value="single">Độc thân</MenuItem>
+                    <MenuItem value="married">Đã kết hôn</MenuItem>
+                    <MenuItem value="divorced">Đã ly hôn</MenuItem>
+                    <MenuItem value="widowed">Góa phụ/phu</MenuItem>
+                  </Select>
+                </FormControl>
+                <TextField
+                  fullWidth
+                  label="Địa chỉ hiện tại"
+                  name="address"
+                  variant="outlined"
+                  sx={{ mb: 2 }}
+                  value={editForm.address}
+                  onChange={handleFormChange}
                 />
                 <TextField
                   fullWidth
-                  label="Trường học"
+                  label="Quê quán"
+                  name="hometown"
                   variant="outlined"
                   sx={{ mb: 2 }}
-                  defaultValue={user?.school}
-                />
-                <TextField
-                  fullWidth
-                  label="Nơi sống"
-                  variant="outlined"
-                  sx={{ mb: 2 }}
-                  defaultValue={user?.location}
-                />
-                <TextField
-                  fullWidth
-                  label="Instagram"
-                  variant="outlined"
-                  sx={{ mb: 2 }}
-                  defaultValue={user?.instagram}
+                  value={editForm.hometown}
+                  onChange={handleFormChange}
                 />
               </Box>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleCloseEditDialog}>Hủy</Button>
-              <Button variant="contained" color="primary">
+              <Button 
+                variant="contained" 
+                color="primary"
+                onClick={handleSaveProfile}
+              >
                 Lưu thay đổi
               </Button>
             </DialogActions>
@@ -576,50 +793,6 @@ const Canhan = () => {
             </DialogActions>
           </Dialog>
 
-          {/* Story Dialog */}
-          <Dialog 
-            open={openStoryDialog} 
-            onClose={handleCloseStoryDialog}
-            maxWidth="sm"
-            fullWidth
-            scroll="paper"
-          >
-            <DialogTitle>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography variant="h6">Tạo tin</Typography>
-                <IconButton onClick={handleCloseStoryDialog}>
-                  <Close />
-                </IconButton>
-              </Box>
-            </DialogTitle>
-            <DialogContent dividers>
-              <Box sx={{ mt: 2 }}>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={4}
-                  placeholder="Hãy viết gì đó..."
-                  variant="outlined"
-                  sx={{ mb: 2 }}
-                />
-                <Button
-                  variant="outlined"
-                  startIcon={<PhotoCamera />}
-                  fullWidth
-                  sx={{ mb: 2 }}
-                >
-                  Thêm ảnh/video
-                </Button>
-              </Box>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseStoryDialog}>Hủy</Button>
-              <Button variant="contained" color="primary">
-                Đăng tin
-              </Button>
-            </DialogActions>
-          </Dialog>
-
           {/* Navigation */}
           <Paper sx={{ mb: 4 }}>
             <Box sx={{ display: 'flex', p: 2, overflowX: 'auto' }}>
@@ -663,33 +836,43 @@ const Canhan = () => {
               <Card sx={{ mb: 3 }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>Giới thiệu</Typography>
-                  <Button fullWidth variant="outlined" sx={{ mb: 2 }}>
-                    Thêm tiểu sử
-                  </Button>
-                  
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <School sx={{ mr: 1 }} />
-                    <Typography>{user?.school || 'Cao đẳng FPT PolyTechnic'}</Typography>
-                  </Box>
+                  {(user?.hometown || user?.address || user?.phone) ? (
+                    <>
+                      {user?.hometown && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                          <LocationOn sx={{ mr: 1 }} />
+                          <Typography>Quê quán: {user.hometown}</Typography>
+                        </Box>
+                      )}
 
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <LocationOn sx={{ mr: 1 }} />
-                    <Typography>{user?.location || 'Đến từ Thanh Thủy - Phú Thọ'}</Typography>
-                  </Box>
+                      {user?.address && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                          <LocationOn sx={{ mr: 1 }} />
+                          <Typography>Sống tại: {user.address}</Typography>
+                        </Box>
+                      )}
 
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <RssFeed sx={{ mr: 1 }} />
-                    <Typography>Có {user?.followers_count || 0} người theo dõi</Typography>
-                  </Box>
+                      {user?.phone && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                          <Phone sx={{ mr: 1 }} />
+                          <Typography>Điện thoại: {user.phone}</Typography>
+                        </Box>
+                      )}
+                    </>
+                  ) : (
+                    <Typography color="textSecondary" align="center" sx={{ my: 2 }}>
+                      Chưa có thông tin giới thiệu
+                    </Typography>
+                  )}
 
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Instagram sx={{ mr: 1 }} />
-                    <Typography color="primary">{user?.instagram || 'pathuw__'}</Typography>
-                  </Box>
-
-                  <Button fullWidth variant="outlined">
-                    Chỉnh sửa chi tiết
-                  </Button>
+                  {currentUser.id === user?.id && (
+                    <Button
+                      fullWidth variant="outlined"
+                      onClick={handleOpenEditDialog}
+                    >
+                      Chỉnh sửa chi tiết
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
 
@@ -697,7 +880,7 @@ const Canhan = () => {
                 <CardContent>
                   <Typography variant="h6" gutterBottom>Ảnh</Typography>
                   <Grid container spacing={1}>
-                    {user?.photos?.slice(0, 6).map((photo, index) => (
+                    {user?.photos && user.photos.slice(0, 6).map((photo, index) => (
                       <Grid item xs={4} key={index}>
                         <img 
                           src={photo.url}
@@ -713,12 +896,31 @@ const Canhan = () => {
             </Grid>
 
             {/* Right Column */}
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12} md={8} style={{ 
+              marginBottom: '100px'
+             }}>
               {renderContent()}
             </Grid>
           </Grid>
         </Box>
       </Container>
+      <Dialog
+        open={openConfirmDialog}
+        onClose={handleCloseConfirmDialog}
+      >
+        <DialogTitle>Hủy kết bạn</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có chắc chắn muốn hủy kết bạn với người này không?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmDialog}>Hủy</Button>
+          <Button onClick={handleConfirmUnfriend} color="error" autoFocus>
+            Xác nhận
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

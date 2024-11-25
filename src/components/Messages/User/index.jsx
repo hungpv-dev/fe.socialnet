@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import { showRoomAvatar } from "@/components/MessageComponent";
 import { IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button } from '@mui/material';
-import { Delete, PersonOff, MoreVert, Warning } from '@mui/icons-material';
+import { Delete, PersonOff, MoreVert, Warning, Person } from '@mui/icons-material';
 import BlockUser from "../ChatInfo/BlockUser";
 import axiosInstance from '@/axios';
 import { useDispatch, useSelector } from "react-redux";
@@ -64,7 +64,7 @@ function User({ room, currentRooms = [] }) {
         {showRoomAvatar(room)}
       </Link>
       <Link to={`/messages/${room.chat_room_id}`} className="content">
-        <h5 className="m-0">{room.name}</h5>
+        <h6 className="m-0">{room.name}</h6>
         <p className={!room.last_message?.is_seen && !isOut ? "m-0 mt-1 text-dark" : "m-0"}>
           {!room.last_message ? 'Bắt đầu cuộc trò chuyện ngay?' : ((room.last_message.body.length > 20
             ? room.last_message.body.substring(0, 40) + '...'
@@ -108,12 +108,19 @@ function User({ room, currentRooms = [] }) {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        {/* <MenuItem>
-          <ListItemIcon>
-            <NotificationsOff fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Tắt thông báo</ListItemText>
-        </MenuItem> */}
+        {room.chat_room_type === 1 && (
+          <MenuItem 
+            onClick={() => {
+              navigate(`/profile/${room.users[0].id}`);
+              handleClose();
+            }}
+          >
+            <ListItemIcon>
+              <Person fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Xem trang cá nhân</ListItemText>
+          </MenuItem>
+        )}
 
         <MenuItem onClick={handleDeleteChat}>
           <ListItemIcon>
@@ -121,20 +128,6 @@ function User({ room, currentRooms = [] }) {
           </ListItemIcon>
           <ListItemText>Xóa đoạn chat</ListItemText>
         </MenuItem>
-
-        {/* <MenuItem>
-          <ListItemIcon>
-            <Person fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Xem trang cá nhân</ListItemText>
-        </MenuItem> */}
-
-        {/* <MenuItem>
-          <ListItemIcon>
-            <Archive fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Lưu trữ đoạn chat</ListItemText>
-        </MenuItem> */}
 
         {room.chat_room_type === 1 && (
           <MenuItem onClick={handleBlockUser}>
