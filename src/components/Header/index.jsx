@@ -1,4 +1,4 @@
-import markAllAsSeen from "@/services/notificationService";
+import notiService from "@/services/notificationService";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -92,6 +92,7 @@ function Header({ unseenCount, setUnseenCount }) {
   ].includes(location.pathname);
   const isHomePage = location.pathname === "/";
 
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -103,8 +104,10 @@ function Header({ unseenCount, setUnseenCount }) {
 
   async function seenAll(){
     try {
-      await markAllAsSeen();
-    } catch (error) {}
+      await notiService.markAllAsSeen();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const handleOpenNotifMenu = async (event) => {
