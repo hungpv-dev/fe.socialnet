@@ -1,0 +1,64 @@
+.search-results {
+    .result-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #e0e0e0;
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #ccc;
+            border-radius: 50%;
+            margin-right: 8px;
+
+            img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                object-fit: cover;
+            }
+        }
+
+        .info {
+            flex: 1;
+
+            .link,
+            h4 {
+                margin: 0;
+                font-size: 14px; // Cỡ chữ nhỏ hơn
+                color: black; // Màu chữ đen
+                text-decoration: none; // Loại bỏ gạch chân mặc định
+
+                // Hiệu ứng hover
+                &:hover {
+                    text-decoration: underline; // Gạch chân khi hover
+                }
+            }
+
+            p {
+                margin: 0;
+                font-size: 14px;
+                color: #555;
+            }
+
+            small {
+                font-size: 12px;
+                color: #888;
+            }
+        }
+
+        button {
+            padding: 8px 12px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #0056b3;
+            }
+        }
+    }
+}
