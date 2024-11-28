@@ -5,11 +5,11 @@ const getNotifications = async (index) => {
 };
 
 const markAllAsRead = async () => {
-    return axiosInstance.post('/notifications/read/all');
+    return await axiosInstance.post('/notifications/read/all');
 };
 
 const markAllAsSeen = async () => {
-    return axiosInstance.post("/notifications/seen");
+    return await axiosInstance.post("/notifications/seen");
 };
 
 export default {

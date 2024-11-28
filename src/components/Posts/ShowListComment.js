@@ -15,8 +15,10 @@ import { useSelector } from 'react-redux';
 import axiosInstance from '@/axios';
 import { toast } from 'react-toastify';
 import { formatDateToNow } from '@/components/FormatDate';
+import { useNavigate } from 'react-router-dom';
 
 const CommentItem = ({ comment, level = 0, deleteCommentChil, setDeleteCommentChil, commentChilde, setCommentChilde, onReply, onDelete, currentUser, post }) => {
+    const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const [showReplies, setShowReplies] = useState(false);
     const [replies, setReplies] = useState([]);
@@ -67,6 +69,12 @@ const CommentItem = ({ comment, level = 0, deleteCommentChil, setDeleteCommentCh
         } else {
             setShowReplies(!showReplies);
         }
+    };
+
+    const handleNameClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        navigate(`/profile/${comment.user.id}`);
     };
 
     useEffect(() => {
@@ -135,18 +143,39 @@ const CommentItem = ({ comment, level = 0, deleteCommentChil, setDeleteCommentCh
             <Box sx={{ display: 'flex', gap: 1.5 }}>
                 <Avatar
                     src={comment.user.avatar}
-                    sx={{ width: 32, height: 32 }}
+                    sx={{ 
+                        width: 32, 
+                        height: 32,
+                        cursor: 'pointer',
+                        '&:hover': {
+                            opacity: 0.8
+                        }
+                    }}
+                    onClick={handleNameClick}
                 />
                 <Box sx={{ flex: 1 }}>
                     <Box sx={{
                         bgcolor: '#f0f2f5',
                         p: 1.5,
-                        borderRadius: '18px',
+                        borderRadius: '18px', 
                         display: 'inline-block',
                         maxWidth: '100%',
                         boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
                     }}>
-                        <Typography variant="subtitle2" sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#050505', mb: 0.5 }}>
+                        <Typography 
+                            variant="subtitle2" 
+                            sx={{ 
+                                fontSize: '0.875rem', 
+                                fontWeight: 600, 
+                                color: '#050505', 
+                                mb: 0.5,
+                                cursor: 'pointer',
+                                '&:hover': {
+                                    textDecoration: 'underline'
+                                }
+                            }}
+                            onClick={handleNameClick}
+                        >
                             {comment.user.name}
                         </Typography>
                         <Typography variant="body2" sx={{ fontSize: '0.9375rem', color: '#050505', whiteSpace: 'pre-wrap', lineHeight: 1.3333 }}>

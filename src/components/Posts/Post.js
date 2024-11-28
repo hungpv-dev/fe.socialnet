@@ -163,6 +163,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
         }
     };
 
+
     const renderMedia = (data) => {
         if (!data || (!data.image?.length && !data.video?.length)) return null;
 
@@ -265,6 +266,16 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
         );
     };
 
+    const handleNameClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        navigate(`/profile/${post.user_id}`);
+    };
+
+    const handleTimeClick = (e) => {
+        e.preventDefault();
+        navigate(`/posts/${post.id}`);
+    };
 
     return (
         <Card sx={{
@@ -278,7 +289,8 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                     <Avatar
                         src={post.user.avatar}
                         alt={post.user.name}
-                        sx={{ width: 40, height: 40 }}
+                        sx={{ width: 40, height: 40, cursor: 'pointer' }}
+                        onClick={handleNameClick}
                     />
                 }
                 action={
@@ -306,11 +318,32 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                 }
                 title={
                     <Box>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                        <Typography 
+                            variant="subtitle1" 
+                            component="span"
+                            sx={{ 
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                '&:hover': {
+                                    textDecoration: 'underline'
+                                }
+                            }}
+                            onClick={handleNameClick}
+                        >
                             {post.user.name}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography 
+                                variant="body2" 
+                                color="text.secondary"
+                                sx={{ 
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                        textDecoration: 'underline'
+                                    }
+                                }}
+                                onClick={handleTimeClick}
+                            >
                                 {formatDistanceToNow(new Date(post.created_at), {
                                     addSuffix: true,
                                     locale: vi
