@@ -1,4 +1,4 @@
-import markAllAsSeen from "@/services/notificationService";
+import notiService from "@/services/notificationService";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -112,6 +112,7 @@ function Header({ unseenCount, setUnseenCount }) {
     }
   }, [query]);
 
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -122,8 +123,10 @@ function Header({ unseenCount, setUnseenCount }) {
 
   async function seenAll() {
     try {
-      await markAllAsSeen();
-    } catch (error) {}
+      await notiService.markAllAsSeen();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const handleOpenNotifMenu = async (event) => {
@@ -167,7 +170,8 @@ function Header({ unseenCount, setUnseenCount }) {
               placeholder="Tìm kiếm..."
               inputProps={{ "aria-label": "search" }}
               value={searchQuery} // Gán giá trị từ state
-              onChange={handleSearchChange} // Cập nhật giá trị khi thay đổi
+              onChange={
+              } // Cập nhật giá trị khi thay đổi
               onKeyDown={handleSearchKeyDown} // Kiểm tra phím Enter khi nhấn
             />
           </Search>

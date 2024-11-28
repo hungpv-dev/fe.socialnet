@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import React from 'react';
 import axiosInstance from "@/axios";
 import { toast } from 'react-toastify';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { 
   Box,
@@ -34,34 +34,27 @@ import {
 import {
   PhotoCamera,
   Edit,
-  School,
   LocationOn,
-  RssFeed,
   Close,
   PersonAdd,
   Message,
   Phone,
-  Wc,
-  Cake,
-  Favorite
 } from '@mui/icons-material';
 import Introduction from './Introduction';
 import Friends from './Friends';
 import Photos from './Photos';
-import Videos from './Videos';
 import { useParams } from "react-router-dom";
 import useChatRoom from "@/hooks/useChatRoom";
 import useFriend from "@/hooks/useFriend";
 import { useSelector } from "react-redux";
+import Posts from "./Posts";
 
 const Canhan = () => {
   const currentUser = useSelector(state => state.user);
   const [user, setUser] = useState(null);
-  const [posts, setPosts] = useState([]);
   const [openAvatarDialog, setOpenAvatarDialog] = useState(false);
   const [openCoverDialog, setOpenCoverDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [activeTab, setActiveTab] = useState('posts');
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const [selectedCover, setSelectedCover] = useState(null);
   const [avatarCaption, setAvatarCaption] = useState('');
@@ -74,6 +67,7 @@ const Canhan = () => {
   const friendApi = useFriend();
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [selectedFriendId, setSelectedFriendId] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // Form state for profile editing
   const [editForm, setEditForm] = useState({
@@ -85,6 +79,14 @@ const Canhan = () => {
     birthday: '',
     relationship: ''
   });
+
+  // Thay thế state activeTab bằng việc đọc từ URL
+  const activeTab = searchParams.get('tab') || 'posts';
+
+  // Thay đổi hàm setActiveTab
+  const handleTabChange = (tabName) => {
+    setSearchParams({ tab: tabName });
+  };
 
   useEffect(() => {
     if (user) {
@@ -360,27 +362,10 @@ const Canhan = () => {
       case 'friends':
         return <Friends userData={user} />;
       case 'photos':
-        return <Photos />;
-      case 'videos':
-        return <Videos />;
+        return <Photos userData={user} />;
       case 'posts':
       default:
-        return (
-          <>
-            <Card sx={{ mb: 3 }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Avatar sx={{ mr: 2 }} src={user?.avatar} />
-                  <Button fullWidth variant="outlined" sx={{ borderRadius: 20 }}>
-                    Bạn đang nghĩ gì?
-                  </Button>
-                </Box>
-                <Divider sx={{ my: 2 }} />
-                <Button startIcon={<PhotoCamera />}>Ảnh/Video</Button>
-              </CardContent>
-            </Card>
-          </>
-        );
+        return <Posts userData={user} />
     }
   };
 
@@ -798,33 +783,27 @@ const Canhan = () => {
             <Box sx={{ display: 'flex', p: 2, overflowX: 'auto' }}>
               <Button 
                 color={activeTab === 'posts' ? 'primary' : 'inherit'}
-                onClick={() => setActiveTab('posts')}
+                onClick={() => handleTabChange('posts')}
               >
                 Bài viết
               </Button>
               <Button
                 color={activeTab === 'about' ? 'primary' : 'inherit'}
-                onClick={() => setActiveTab('about')}
+                onClick={() => handleTabChange('about')}
               >
                 Giới thiệu
               </Button>
               <Button
                 color={activeTab === 'friends' ? 'primary' : 'inherit'}
-                onClick={() => setActiveTab('friends')}
+                onClick={() => handleTabChange('friends')}
               >
                 Bạn bè
               </Button>
               <Button
                 color={activeTab === 'photos' ? 'primary' : 'inherit'}
-                onClick={() => setActiveTab('photos')}
+                onClick={() => handleTabChange('photos')}
               >
                 Ảnh
-              </Button>
-              <Button
-                color={activeTab === 'videos' ? 'primary' : 'inherit'}
-                onClick={() => setActiveTab('videos')}
-              >
-                Video
               </Button>
             </Box>
           </Paper>
@@ -873,24 +852,6 @@ const Canhan = () => {
                       Chỉnh sửa chi tiết
                     </Button>
                   )}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>Ảnh</Typography>
-                  <Grid container spacing={1}>
-                    {user?.photos && user.photos.slice(0, 6).map((photo, index) => (
-                      <Grid item xs={4} key={index}>
-                        <img 
-                          src={photo.url}
-                          alt=""
-                          style={{ width: '100%', height: 100, objectFit: 'cover' }}
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
-                  <Button fullWidth sx={{ mt: 2 }}>Xem tất cả ảnh</Button>
                 </CardContent>
               </Card>
             </Grid>
