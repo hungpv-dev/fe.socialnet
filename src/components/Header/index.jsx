@@ -1,5 +1,5 @@
 import notiService from "@/services/notificationService";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   AppBar,
@@ -18,11 +18,8 @@ import {
   Search as SearchIcon,
   Home,
   People,
-  Groups,
-  Apps,
   Chat,
   Notifications,
-  Settings,
   Logout,
 } from "@mui/icons-material";
 import { styled, alpha } from "@mui/material/styles";
@@ -73,17 +70,17 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-function Header({ unseenCount, setUnseenCount }) {
+function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
   const auth = useAuth();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElNotif, setAnchorElNotif] = useState(null);
+  const [chatNone, setChatNone] = useState([]);
   const user = useSelector((state) => state.user);
   const notifications = useSelector((state) => state.notifications);
 
   const location = useLocation();
-  const isNotificationsPage = location.pathname === "/notifications";
   const isFriendsPage = [
     "/friends",
     "/friends/request",
@@ -110,6 +107,39 @@ function Header({ unseenCount, setUnseenCount }) {
     }
   }
 
+  const fetchChatNone = async () => {
+    try {
+      const response = await axiosInstance.get("/chat-room").then(res => res.data);
+      let data = []
+      response.data.forEach(item => {
+        if(item.last_message && !item.last_message.is_seen){
+          if(!item.outs?.includes('user_'+user.id) && !item.block?.includes('user_'+user.id)){
+            data.push({
+              id: item.chat_room_id,
+            })
+          }
+        }
+      });
+      setChatNone(data);
+    } catch (error) {
+      console.error("Lỗi khi lấy chatNone:", error);
+    }
+  };
+  useEffect(() => {
+    if(idRoomAdd > 0){
+      const exists = chatNone.some(item => item.id === idRoomAdd);
+      if(!exists) {
+        setChatNone(s => [...s, {id: idRoomAdd}]);
+      }
+    }
+    if (typeof setIdRoomAdd === 'function') {
+      setIdRoomAdd(0); 
+    }
+  }, [idRoomAdd, chatNone]);
+  
+  useEffect(() => {
+    fetchChatNone();
+  }, []);
   const handleOpenNotifMenu = async (event) => {
     setAnchorElNotif(event.currentTarget);
     setUnseenCount(0);
@@ -191,7 +221,7 @@ function Header({ unseenCount, setUnseenCount }) {
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <Tooltip title="SocialChat">
             <IconButton component={Link} to="/messages">
-              <Badge badgeContent={4} color="error">
+              <Badge badgeContent={chatNone.length} color="error">
                 <Chat />
               </Badge>
             </IconButton>

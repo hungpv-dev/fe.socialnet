@@ -33,6 +33,7 @@ import New from "../pages/Client/New";
 
 import FriendPage from '../pages/Client/FriendPage/FriendPage';
 import PostDetail from "@/components/Posts/PostDetail";
+import StoryDetail from "@/components/Stories/StoryDetail";
 import VerifyCode from "@/pages/VerifyCode";
 // Router không cần đăng nhập vẫn vô được
 const pulicRouter = [
@@ -72,6 +73,11 @@ const privateRouters = [
     // Chi tiết bài viết
     {
         path: "/posts/:id", component: PostDetail
+    },
+
+    // Chi tiết bài viết
+    {
+        path: "/story/:id", component: StoryDetail
     },
 
     // cài đặt 
