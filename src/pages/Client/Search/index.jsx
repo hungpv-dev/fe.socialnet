@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
-import className from "classnames/bind";
+import classNames from "classnames/bind";
 import styles from "./main.scss";
 import SearchResults from "@/components/Search/SearchResults";
 import axiosInstance from "@/axios";
+import CircularProgress from "@mui/material/CircularProgress";
+import axios from "axios";
+import { useLocation } from "react-router-dom";
 
-const cx = className.bind(styles);
+const cx = classNames.bind(styles);
 
 const Search = () => {
   const location = useLocation();
@@ -13,17 +15,26 @@ const Search = () => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
+  const [provinces, setProvinces] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState(""); // Tỉnh/Thành phố
+  const [selectedHometown, setSelectedHometown] = useState(""); // Quê quán
+  const [selectedGender, setSelectedGender] = useState(""); // Giới tính
   const query = new URLSearchParams(location.search).get("query");
   const loaderRef = useRef(null);
 
   // Hàm gọi API để lấy kết quả tìm kiếm
-  const fetchResults = async (page) => {
+  const fetchResults = async (page, filters = {}) => {
     try {
       setLoading(true);
       const response = await axiosInstance.post("/user/find", {
         name: query,
         page,
+        address: selectedProvince, // Tỉnh/Thành phố
+        hometown: selectedHometown, // Quê quán
+        gender: selectedGender, // Giới tính
       });
+      console.log(response);
+
       if (response.data.data.length === 0) {
         setHasMore(false);
       }
@@ -35,21 +46,47 @@ const Search = () => {
     }
   };
 
+  console.log(
+    `Tỉnh: ${selectedProvince}; Quê: ${selectedHometown}; Gender: ${selectedGender}`
+  );
+
+  // Hàm gọi API để lấy danh sách tỉnh thành
+  const fetchProvinces = async () => {
+    try {
+      const response = await axios.get("https://provinces.open-api.vn/api/"); // API để lấy danh sách tỉnh thành
+      setProvinces(response.data);
+    } catch (error) {
+      console.error("Error fetching provinces:", error);
+    }
+  };
+
   useEffect(() => {
-    if (query) {
-      setResults([]);
+    fetchProvinces(); // Gọi API khi component được mount
+  }, []);
+
+  useEffect(() => {
+    // Kiểm tra nếu có filter được chọn và query không rỗng
+    if (query || selectedProvince || selectedHometown || selectedGender) {
+      setResults([]); // Reset lại kết quả tìm kiếm
       setHasMore(true);
       setPage(1);
-      fetchResults(1);
+      fetchResults(1, {
+        address: selectedProvince,
+        hometown: selectedHometown,
+        gender: selectedGender,
+      });
     }
-  }, [query]);
+  }, [query, selectedProvince, selectedHometown, selectedGender]);
 
   // Hàm xử lý khi cuộn đến cuối
   const handleLoadMore = (entries) => {
     if (entries[0].isIntersecting && hasMore && !loading) {
       setPage((prevPage) => {
         const nextPage = prevPage + 1;
-        fetchResults(nextPage);
+        fetchResults(nextPage, {
+          province: selectedProvince,
+          gender: selectedGender,
+        });
         return nextPage;
       });
     }
@@ -69,6 +106,17 @@ const Search = () => {
     };
   }, [loaderRef, hasMore, loading]);
 
+  const handleFilterChange = (event, type) => {
+    const value = event.target.value;
+    if (type === "province") {
+      setSelectedProvince(value); // Lưu giá trị Tỉnh/Thành phố
+    } else if (type === "hometown") {
+      setSelectedHometown(value); // Lưu giá trị Quê quán
+    } else if (type === "gender") {
+      setSelectedGender(value); // Lưu giá trị Giới tính
+    }
+  };
+
   return (
     <div className={cx("search")}>
       <div className="sidebar">
@@ -77,16 +125,37 @@ const Search = () => {
           <li className="active">Mọi người</li>
         </ul>
         <div className="filters">
-          <select>
-            <option>Tỉnh/Thành phố</option>
+          <select
+            value={selectedProvince}
+            onChange={(e) => handleFilterChange(e, "province")}
+          >
+            <option value="">Tỉnh/Thành phố</option>
+            {provinces.map((province) => (
+              <option key={province.code} value={province.name}>
+                {province.name}
+              </option>
+            ))}
           </select>
-          <select>
-            <option>Quê quán</option>
+
+          <select
+            value={selectedHometown}
+            onChange={(e) => handleFilterChange(e, "hometown")}
+          >
+            <option value="">Quê quán</option>
+            {provinces.map((province) => (
+              <option key={province.code} value={province.name}>
+                {province.name}
+              </option>
+            ))}
           </select>
-          <select>
-            <option>Giới tính</option>
-            <option>Nam</option>
-            <option>Nữ</option>
+
+          <select
+            value={selectedGender}
+            onChange={(e) => handleFilterChange(e, "gender")}
+          >
+            <option value="">Giới tính</option>
+            <option value="male">Nam</option>
+            <option value="female">Nữ</option>
           </select>
         </div>
       </div>
@@ -95,9 +164,31 @@ const Search = () => {
       <SearchResults users={results} />
 
       {/* Phần "loader" để kích hoạt infinite scroll */}
-      {loading && <div style={{ marginLeft: "300px", height: "50px", textAlign: "center", marginBottom: "0px" }}>Đang tải...</div>}
-      {!loading && !hasMore && <div style={{ marginLeft: "300px", height: "50px", textAlign: "center", marginBottom: "0px" }}>Không còn kết quả.</div>}
-      <div ref={loaderRef} style={{ height: "10px", backgroundColor: "black" }}>...........</div>
+      {loading && (
+        <div
+          style={{
+            marginLeft: "300px",
+            height: "50px",
+            textAlign: "center",
+            marginBottom: "0px",
+          }}
+        >
+          <CircularProgress size={30} />
+        </div>
+      )}
+      {!loading && !hasMore && (
+        <div
+          style={{
+            marginLeft: "300px",
+            height: "50px",
+            textAlign: "center",
+            marginBottom: "0px",
+          }}
+        >
+          Không còn kết quả.
+        </div>
+      )}
+      <div ref={loaderRef} style={{ height: "10px" }}></div>
     </div>
   );
 };

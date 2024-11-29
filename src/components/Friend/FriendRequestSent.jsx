@@ -1,14 +1,37 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import classNames from "classnames/bind";
 import styles from "./Friend.module.scss";
 import { deleteFriendRequest } from "@/services/friendRequestService";
+import useChatRoom from "@/hooks/useChatRoom";
+import CircularProgress from "@mui/material/CircularProgress";
+
 const cx = classNames.bind(styles);
 
 const FriendRequestSent = ({ sents, removeStates, setRemoveStates }) => {
-  const sendMessage = (id) => {
-    console.log(`Redirecting to chat with user ${id}`);
-    // Thêm logic chuyển hướng đến trang nhắn tin
+  const chatRoom = useChatRoom();
+  const navigate = useNavigate();
+
+  // Trạng thái loading riêng cho nút nhắn tin
+  const [loadingStates, setLoadingStates] = useState({});
+
+  const handleStartChat = async (userId) => {
+    // Đặt trạng thái loading cho nút nhắn tin của user này
+    setLoadingStates((prev) => ({ ...prev, [userId]: true }));
+
+    try {
+      const response = await chatRoom.createPrivateRoom(userId);
+      if (response?.data) {
+        const room = response.data.data;
+        // Loại bỏ trạng thái loading và chuyển trang
+        setLoadingStates((prev) => ({ ...prev, [userId]: false }));
+        navigate(`/messages/${room.chat_room_id}`);
+      }
+    } catch (error) {
+      console.error("Lỗi khi tạo phòng chat:", error);
+      // Loại bỏ trạng thái loading khi có lỗi
+      setLoadingStates((prev) => ({ ...prev, [userId]: false }));
+    }
   };
 
   const unfriend = async (id) => {
@@ -40,7 +63,6 @@ const FriendRequestSent = ({ sents, removeStates, setRemoveStates }) => {
     }
   };
 
-  // Lọc các requests để tránh trùng lặp id
   const uniqueSents = sents.reduce((acc, sent) => {
     if (
       !acc.some((existingSent) => existingSent.receiver.id === sent.receiver.id)
@@ -59,6 +81,7 @@ const FriendRequestSent = ({ sents, removeStates, setRemoveStates }) => {
         {uniqueSents.map((request) => {
           const { id } = request.receiver;
           const { removed, removing } = removeStates[id] || {};
+          const isLoading = loadingStates[id]; // Lấy trạng thái loading của nút nhắn tin
 
           return (
             <div key={id} className={cx("request-card")}>
@@ -80,14 +103,14 @@ const FriendRequestSent = ({ sents, removeStates, setRemoveStates }) => {
                 )}
               </div>
               <div className={cx("actions")}>
-                {
-                  <button
-                    onClick={() => sendMessage(id)}
-                    className={cx("accept")}
-                  >
-                    Nhắn tin
-                  </button>
-                }
+                <button
+                  onClick={() => handleStartChat(id)}
+                  className={cx("accept")}
+                  disabled={isLoading} // Vô hiệu hóa nút trong khi đang loading
+                >
+                  {isLoading ? <CircularProgress size={15} /> : "Nhắn tin"}{" "}
+                  {/* Hiệu ứng loading */}
+                </button>
                 <button
                   onClick={() => unfriend(id)}
                   className={cx("decline", { removing, removed })}

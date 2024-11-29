@@ -91,6 +91,17 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
   ].includes(location.pathname);
   const isHomePage = location.pathname === "/";
 
+  useEffect(() => {
+    const query = new URLSearchParams(location.search).get("query");
+
+    // Kiểm tra nếu không có query trên đường dẫn, set giá trị searchQuery về null
+    if (query) {
+      setSearchQuery(query);
+    } else {
+      setSearchQuery(''); // Set về null nếu không có query
+    }
+  }, [location.search]); // Lắng nghe thay đổi của query trên đường dẫn
+
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
@@ -106,7 +117,6 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
       setSearchQuery(query);
     }
   }, [query]);
-
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -198,8 +208,7 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
               placeholder="Tìm kiếm..."
               inputProps={{ "aria-label": "search" }}
               value={searchQuery} // Gán giá trị từ state
-              onChange={
-              } // Cập nhật giá trị khi thay đổi
+              onChange={handleSearchChange} // Cập nhật giá trị khi thay đổi
               onKeyDown={handleSearchKeyDown} // Kiểm tra phím Enter khi nhấn
             />
           </Search>

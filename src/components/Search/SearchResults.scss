@@ -60,5 +60,30 @@
                 background-color: #0056b3;
             }
         }
+
+        .chat-button {
+            width: 100px;
+            height: 40px;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            &:disabled {
+                // background-color: #f0f0f0;
+                cursor: not-allowed;
+            }
+
+            .button-content {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .MuiCircularProgress-root {
+                color: #000;
+            }
+        }
+
     }
 }

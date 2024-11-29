@@ -1,15 +1,24 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom"; // Import Link từ react-router-dom
+import { Link, useNavigate } from "react-router-dom";
 import "./SearchResults.scss";
 import {
   addFriendRequest,
   deleteFriendRequest,
 } from "@/services/friendRequestService";
+import CircularProgress from "@mui/material/CircularProgress";
+import useChatRoom from "@/hooks/useChatRoom";
 
-// Giả sử addFriendRequest là một hàm API để gửi yêu cầu kết bạn
 const SearchResults = ({ users }) => {
   const [addStates, setAddStates] = useState({});
   const [removeStates, setRemoveStates] = useState({});
+  const [messageStates, setMessageStates] = useState({});
+  const chatRoom = useChatRoom();
+  const navigate = useNavigate();
+
+  // Lọc danh sách người dùng không bị trùng lặp dựa trên id
+  const uniqueUsers = [
+    ...new Map(users.map((user) => [user.id, user])).values(),
+  ];
 
   const handleAddfriend = async (id) => {
     setAddStates((prevStates) => ({
@@ -36,6 +45,31 @@ const SearchResults = ({ users }) => {
       setAddStates((prevStates) => ({
         ...prevStates,
         [id]: { adding: false, added: false },
+      }));
+    }
+  };
+
+  const handleStartChat = async (userId) => {
+    setMessageStates((prevStates) => ({
+      ...prevStates,
+      [userId]: { messaging: true },
+    }));
+
+    try {
+      const response = await chatRoom.createPrivateRoom(userId);
+      if (response?.data) {
+        const room = response.data.data;
+        setMessageStates((prevStates) => ({
+          ...prevStates,
+          [userId]: { messaging: false },
+        }));
+        navigate(`/messages/${room.chat_room_id}`);
+      }
+    } catch (error) {
+      console.error("Lỗi khi tạo phòng chat:", error);
+      setMessageStates((prevStates) => ({
+        ...prevStates,
+        [userId]: { messaging: false },
       }));
     }
   };
@@ -75,9 +109,10 @@ const SearchResults = ({ users }) => {
 
   return (
     <div className="search-results">
-      {users.map((user, index) => {
+      {uniqueUsers.map((user, index) => {
         const { adding, added } = addStates[user.id] || {};
         const { removing, removed } = removeStates[user.id] || {};
+        const { messaging } = messageStates[user.id] || {};
 
         return (
           <div key={index} className="result-item">
@@ -86,7 +121,9 @@ const SearchResults = ({ users }) => {
             </div>
             <div className="info">
               <h4>
-                <Link className="link" to={`/profile/${user.id}`}>{user.name}</Link>
+                <Link className="link" to={`/profile/${user.id}`}>
+                  {user.name}
+                </Link>
               </h4>
               <p>
                 {user.button.includes("friend") && "Bạn bè"}
@@ -112,7 +149,7 @@ const SearchResults = ({ users }) => {
                   </>
                 )}
 
-                {user.friend_counts && (
+                {user.friend_counts > 0 && (
                   <>
                     {(user.button.includes("friend") ||
                       user.address ||
@@ -131,17 +168,23 @@ const SearchResults = ({ users }) => {
                     Thêm bạn bè
                   </button>
                 )}
-                {adding && !added && <button>Đang thêm...</button>}
+                {adding && !added && <button style={{ cursor: 'not-allowed' }}>Đang thêm...</button>}
                 {!adding && added && !removing && (
                   <button onClick={() => handleRemoveFriend(user.id)}>
                     Hủy kết bạn
                   </button>
                 )}
-                {removing && <button>Đang hủy...</button>}
+                {removing && <button style={{ cursor: 'not-allowed' }}>Đang hủy...</button>}
               </>
             ) : (
-              <button onClick={() => console.log(`Nhắn tin với ${user.name}`)}>
-                Nhắn tin
+              <button
+                onClick={() => handleStartChat(user.id)}
+                disabled={messaging}
+                className="chat-button"
+              >
+                <div className="button-content">
+                  {messaging ? <CircularProgress size={15} /> : "Nhắn tin"}
+                </div>
               </button>
             )}
           </div>
