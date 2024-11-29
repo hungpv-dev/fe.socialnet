@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import classNames from "classnames/bind";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { addFriendRequest } from "@/services/friendRequestService";
 import styles from "./Friend.module.scss";
+import useChatRoom from "@/hooks/useChatRoom";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const cx = classNames.bind(styles);
 
@@ -11,7 +13,11 @@ const FriendSuggestion = ({
   suggestionStates,
   setSuggestionStates,
 }) => {
-  // const [unfriendingStates, setUnfriendingStates] = useState({});
+  const chatRoom = useChatRoom();
+  const navigate = useNavigate();
+
+  // Trạng thái loading riêng cho nút "Nhắn tin"
+  const [loadingStates, setLoadingStates] = useState({});
 
   const handleAddfriend = async (id) => {
     setSuggestionStates((prevStates) => ({
@@ -42,6 +48,25 @@ const FriendSuggestion = ({
     }
   };
 
+  const handleStartChat = async (userId) => {
+    // Đặt trạng thái loading cho nút nhắn tin của user này
+    setLoadingStates((prev) => ({ ...prev, [userId]: true }));
+
+    try {
+      const response = await chatRoom.createPrivateRoom(userId);
+      if (response?.data) {
+        const room = response.data.data;
+        // Loại bỏ trạng thái loading và chuyển trang
+        setLoadingStates((prev) => ({ ...prev, [userId]: false }));
+        navigate(`/messages/${room.chat_room_id}`);
+      }
+    } catch (error) {
+      console.error("Lỗi khi tạo phòng chat:", error);
+      // Loại bỏ trạng thái loading khi có lỗi
+      setLoadingStates((prev) => ({ ...prev, [userId]: false }));
+    }
+  };
+
   const uniqueSuggestion = suggestion.reduce((acc, sugg) => {
     if (!acc.some((existingSuggestion) => existingSuggestion.id === sugg.id)) {
       acc.push(sugg);
@@ -58,6 +83,7 @@ const FriendSuggestion = ({
         {uniqueSuggestion.map((friend) => {
           const { id } = friend;
           const { adding, added } = suggestionStates[id] || {};
+          const isLoading = loadingStates[id]; // Lấy trạng thái loading của nút nhắn tin
 
           return (
             <div key={id} className={cx("request-card")}>
@@ -87,10 +113,11 @@ const FriendSuggestion = ({
                   {adding ? "Đang thêm..." : added ? "Đã thêm" : "Thêm bạn bè"}
                 </button>
                 <button
-                  onClick={() => console.log(`Nhắn tin với ${friend.name}`)}
+                  onClick={() => handleStartChat(id)}
                   className={cx("decline")}
+                  disabled={isLoading} // Vô hiệu hóa nút trong khi đang loading
                 >
-                  Nhắn tin
+                  {isLoading ? <CircularProgress size={15} /> : "Nhắn tin"} {/* Hiệu ứng loading */}
                 </button>
               </div>
             </div>
