@@ -17,6 +17,7 @@ function LayoutClient({ children }) {
     const userId = useSelector(state => state.user.id);
     const [notis, setNotis] = useState([]);
     const [unseenCount, setUnseenCount] = useState(0);
+    const [idRoomAdd, setIdRoomAdd] = useState(0);
 
     useEffect(() => {
         const fetchNotifications = async () => {
@@ -53,7 +54,7 @@ function LayoutClient({ children }) {
                     let message = notification.notification;
                     let room_id = notification.room_id;
                     let time = notification.created_at;
-                    
+                    setIdRoomAdd(room_id)
                     // Kiểm tra xem thông báo đã hiển thị chưa để tránh hiển thị trùng lặp
                     const toastId = `message-${room_id}-${time}`;
                     if (!toast.isActive(toastId)) {
@@ -102,6 +103,8 @@ function LayoutClient({ children }) {
     return (
         <section className={cx("page")}>
             <Header
+                idRoomAdd={idRoomAdd}
+                setIdRoomAdd={setIdRoomAdd}
                 unseenCount={unseenCount}
                 setUnseenCount={setUnseenCount}
             className={cx("header")} />
