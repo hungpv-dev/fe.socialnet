@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import classNames from "classnames/bind";
 import { deleteFriend } from "@/services/friendService";
 import styles from "./Friend.module.scss";
+import useChatRoom from "@/hooks/useChatRoom";
 
 const cx = classNames.bind(styles);
 
 const FriendAll = ({ friends, unfriendingStates, setUnfriendingStates }) => {
   // const [unfriendingStates, setUnfriendingStates] = useState({});
+  const navigate = useNavigate();
+  const chatRoom = useChatRoom();
 
   const handleUnfriend = async (id) => {
     setUnfriendingStates((prevStates) => ({
@@ -35,6 +39,20 @@ const FriendAll = ({ friends, unfriendingStates, setUnfriendingStates }) => {
         ...prevStates,
         [id]: { unfriending: false, unfriended: false },
       }));
+    }
+  };
+
+  const handleStartChat = async (userId) => {
+    console.log(userId);
+    
+    try {
+      const response = await chatRoom.createPrivateRoom(userId);
+      if (response?.data) {
+        const room = response.data.data;
+        navigate(`/messages/${room.chat_room_id}`);
+      }
+    } catch (error) {
+      console.error("Lỗi khi tạo phòng chat:", error);
     }
   };
 
@@ -76,7 +94,7 @@ const FriendAll = ({ friends, unfriendingStates, setUnfriendingStates }) => {
               </div>
               <div className={cx("actions")}>
                 <button
-                  onClick={() => console.log(`Nhắn tin với ${friend.name}`)}
+                  onClick={() => handleStartChat(id)}
                   className={cx("accept")}
                 >
                   Nhắn tin

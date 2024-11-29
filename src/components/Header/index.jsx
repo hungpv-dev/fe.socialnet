@@ -34,10 +34,12 @@ import axiosInstance from "@/axios";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
+  // backgroundColor: alpha(theme.palette.common.white, 0.15),
+  // "&:hover": {
+  //   backgroundColor: alpha(theme.palette.common.white, 0.25),
+  // },
+  backgroundColor: "#F0F2F5",
+  borderRadius: "50px",
   marginRight: theme.spacing(2),
   marginLeft: 0,
   width: "100%",
@@ -89,6 +91,22 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
   ].includes(location.pathname);
   const isHomePage = location.pathname === "/";
 
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleSearchKeyDown = (event) => {
+    if (event.key === "Enter" && searchQuery.trim()) {
+      navigate(`/search?query=${searchQuery}`);
+    }
+  };
+
+  useEffect(() => {
+    if (query) {
+      setSearchQuery(query);
+    }
+  }, [query]);
+
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -98,8 +116,7 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
     setAnchorElUser(null);
   };
 
-
-  async function seenAll(){
+  async function seenAll() {
     try {
       await notiService.markAllAsSeen();
     } catch (error) {
@@ -143,11 +160,11 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
   const handleOpenNotifMenu = async (event) => {
     setAnchorElNotif(event.currentTarget);
     setUnseenCount(0);
-    seenAll()
+    seenAll();
   };
 
   const handleCloseNotifMenu = () => {
-    const updatedNotifications = notifications.map(notification => ({
+    const updatedNotifications = notifications.map((notification) => ({
       ...notification,
       is_seen: true,
     }));
@@ -180,6 +197,10 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
             <StyledInputBase
               placeholder="Tìm kiếm..."
               inputProps={{ "aria-label": "search" }}
+              value={searchQuery} // Gán giá trị từ state
+              onChange={
+              } // Cập nhật giá trị khi thay đổi
+              onKeyDown={handleSearchKeyDown} // Kiểm tra phím Enter khi nhấn
             />
           </Search>
         </Box>
@@ -243,7 +264,8 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
               seenAll={seenAll}
               unseenCount={unseenCount}
               setUnseenCount={setUnseenCount}
-              onClose={handleCloseNotifMenu} />
+              onClose={handleCloseNotifMenu}
+            />
           </Menu>
           <Tooltip title="Tài khoản">
             <IconButton onClick={handleOpenUserMenu}>

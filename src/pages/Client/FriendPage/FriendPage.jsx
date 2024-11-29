@@ -57,8 +57,8 @@ const FriendPage = () => {
 
     setLoadingFriend(true);
     try {
-      const data = await getListFriend(user.id, index);
-
+      const data = await getListFriend(user.id, index);;
+      
       if (data?.data?.length > 0) {
         setFriends((prev) => [...prev, ...data.data]);
       } else {
@@ -212,7 +212,7 @@ const FriendPage = () => {
     loadingRequest,
     loadingSent,
     loadingSuggestion,
-  ]);  
+  ]);
 
   const navItems = [
     {
@@ -311,7 +311,7 @@ const FriendPage = () => {
           <>
             {loadingFriend && (
               <div className={cx("centered")}>
-                <CircularProgress color="primary" size={24}/>
+                <CircularProgress color="inherit" size={24} />
               </div>
             )}
             {!hasMoreFriend && (
@@ -326,7 +326,7 @@ const FriendPage = () => {
           <>
             {loadingRequest && (
               <div className={cx("centered")}>
-                <CircularProgress color="primary" size={24}/>
+                <CircularProgress color="inherit" size={24} />
               </div>
             )}
             {!hasMoreRequest && (
@@ -339,7 +339,7 @@ const FriendPage = () => {
           <>
             {loadingSent && (
               <div className={cx("centered")}>
-                <CircularProgress color="primary" size={24}/>
+                <CircularProgress color="inherit" size={24} />
               </div>
             )}
             {!hasMoreSent && (
@@ -352,7 +352,7 @@ const FriendPage = () => {
           <>
             {loadingSuggestion && (
               <div className={cx("centered")}>
-                <CircularProgress color="primary" size={24}/>
+                <CircularProgress color="inherit" size={24} />
               </div>
             )}
             {!hasMoreSuggestion && (
