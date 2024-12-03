@@ -20,7 +20,6 @@ import useFriend from '@/hooks/useFriend';
 
 const Friends = ( { userData } ) => {
   const [friendsList, setFriendsList] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const navigate = useNavigate();
   const chatRoom = useChatRoom();
@@ -31,11 +30,15 @@ const Friends = ( { userData } ) => {
   useEffect(() => {
     const fetchFriends = async () => {
       try {
-        const response = await axiosInstance(`/friend/list/${userData.id}?page=${currentPage}&per_page=9`);
-        const { data, current_page, last_page } = response.data;
+        const response = await axiosInstance(`/friend/list/${userData.id}?index=${friendsList.length}`);
+        const data = response.data;
         
-        setFriendsList(prev => currentPage === 1 ? data : [...prev, ...data]);
-        setHasMore(current_page < last_page);
+        if(data.length === 0) {
+          setHasMore(false);
+          return;
+        }
+        
+        setFriendsList(prev => [...prev, ...data]);
       } catch (error) {
         console.error('Lỗi khi lấy danh sách bạn bè:', error);
       }
@@ -44,10 +47,25 @@ const Friends = ( { userData } ) => {
     if (userData?.id) {
       fetchFriends();
     }
-  }, [userData, currentPage]);
+  }, [userData]);
 
   const handleLoadMore = () => {
-    setCurrentPage(prev => prev + 1);
+    const fetchFriends = async () => {
+      try {
+        const response = await axiosInstance(`/friend/list/${userData.id}?index=${friendsList.length}`);
+        const data = response.data;
+        
+        if(data.length === 0) {
+          setHasMore(false);
+          return;
+        }
+        
+        setFriendsList(prev => [...prev, ...data]);
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách bạn bè:', error);
+      }
+    };
+    fetchFriends();
   };
 
   const handleNavigateToProfile = (id) => {
@@ -90,7 +108,6 @@ const Friends = ( { userData } ) => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
           <Typography variant="h6">Bạn bè</Typography>
           <Typography color="primary" sx={{ cursor: 'pointer' }}>
-            Tìm bạn bè
           </Typography>
         </Box>
         
@@ -131,22 +148,26 @@ const Friends = ( { userData } ) => {
                     </Box>
                   </Box>
                   <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button 
-                      variant="contained" 
-                      size="small" 
-                      fullWidth
-                      onClick={() => handleOpenConfirmDialog(friend.id)}
-                    >
-                      Bạn bè
-                    </Button>
-                    <Button 
-                      variant="outlined" 
-                      size="small" 
-                      fullWidth
-                      onClick={() => handleStartChat(friend.id)}
-                    >
-                      Nhắn tin
-                    </Button>
+                    {friend.button.includes('friend') && (
+                      <Button 
+                        variant="contained" 
+                        size="small" 
+                        fullWidth
+                        onClick={() => handleOpenConfirmDialog(friend.id)}
+                      >
+                        Bạn bè
+                      </Button>
+                    )}
+                    {friend.button.includes('chat') && (
+                      <Button 
+                        variant="outlined" 
+                        size="small" 
+                        fullWidth
+                        onClick={() => handleStartChat(friend.id)}
+                      >
+                        Nhắn tin
+                      </Button>
+                    )}
                   </Box>
                 </CardContent>
               </Card>

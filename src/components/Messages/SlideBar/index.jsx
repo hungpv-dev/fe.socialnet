@@ -175,7 +175,7 @@ function SlideBar() {
           )}
         </header>
         {createGroupModalVisible && <PupupCreateGroupChat onClose={() => setCreateGroupModalVisible(false)} />}
-        <div className='search'>
+        <div className='search-chat-room'>
           <div className='icon me-2'>
             {isSearchLoading ? (
               <CircularProgress size={16} />

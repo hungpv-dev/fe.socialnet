@@ -79,6 +79,7 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElNotif, setAnchorElNotif] = useState(null);
   const [chatNone, setChatNone] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const user = useSelector((state) => state.user);
   const notifications = useSelector((state) => state.notifications);
 
@@ -111,12 +112,6 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
       navigate(`/search?query=${searchQuery}`);
     }
   };
-
-  useEffect(() => {
-    if (query) {
-      setSearchQuery(query);
-    }
-  }, [query]);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);

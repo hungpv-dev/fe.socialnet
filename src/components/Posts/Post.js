@@ -34,7 +34,8 @@ import {
     Lock,
     People,
     Close,
-    Edit
+    Edit,
+    PhotoCamera
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import axiosInstance from '@/axios';
@@ -54,6 +55,14 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
     const [shareContent, setShareContent] = useState('');
     const [shareStatus, setShareStatus] = useState('public');
     const [openComment, setOpenComment] = useState(false);
+    const [openEdit, setOpenEdit] = useState(false);
+    const [editContent, setEditContent] = useState(post.content);
+    const [editStatus, setEditStatus] = useState(post.status);
+    const [newFiles, setNewFiles] = useState([]);
+    const [keepFiles, setKeepFiles] = useState({
+        image: post.data?.image || [],
+        video: post.data?.video || []
+    });
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -61,6 +70,67 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
 
     const handleClose = () => {
         setAnchorEl(null);
+    };
+
+    const handleEditOpen = () => {
+        setEditContent(post.content);
+        setEditStatus(post.status);
+        setNewFiles([]);
+        setKeepFiles({
+            image: post.data?.image || [],
+            video: post.data?.video || []
+        });
+        setOpenEdit(true);
+        handleClose();
+    };
+
+    const handleEditClose = () => {
+        setOpenEdit(false);
+        setEditContent(post.content);
+        setEditStatus(post.status);
+        setNewFiles([]);
+        setKeepFiles({
+            image: post.data?.image || [],
+            video: post.data?.video || []
+        });
+    };
+
+    const handleEditSave = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('content', editContent);
+            formData.append('status', editStatus);
+            formData.append('_method', 'PUT');
+            
+            // Xử lý files mới
+            if (newFiles?.length) {
+                newFiles.forEach(file => {
+                    formData.append('files[]', file);
+                });
+            }
+    
+            // Xử lý files giữ lại
+            formData.append('keep_files', JSON.stringify(keepFiles));
+    
+            const response = await axiosInstance.post(`posts/${post.id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+    
+            if (response.status === 200) {
+                setPosts(prevPosts => 
+                    prevPosts.map(p => 
+                        p.id === post.id ? response.data.data : p
+                    )
+                );
+                toast.success('Đã cập nhật bài viết');
+                handleEditClose();
+            }
+        } catch (error) {
+            console.error('Lỗi khi cập nhật bài viết:', error);
+            toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật bài viết');
+        }
     };
 
     const handleShareOpen = () => {
@@ -277,6 +347,39 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
         navigate(`/posts/${post.id}`);
     };
 
+    const handleFileChange = (e) => {
+        const files = Array.from(e.target.files);
+        setNewFiles(prev => [...prev, ...files]);
+    };
+
+    const handleRemoveOldFile = (fileUrl) => {
+        setKeepFiles(prev => ({
+            ...prev,
+            image: prev.image.filter(f => f !== fileUrl),
+            video: prev.video.filter(f => f !== fileUrl)
+        }));
+    };
+
+    const handleRemoveNewFile = (index) => {
+        setNewFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handlePaste = (e) => {
+        const items = e.clipboardData.items;
+        const files = [];
+        
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                const file = items[i].getAsFile();
+                files.push(file);
+            }
+        }
+
+        if (files.length > 0) {
+            setNewFiles(prev => [...prev, ...files]);
+        }
+    };
+
     return (
         <Card sx={{
             mb: 3,
@@ -304,7 +407,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                             onClose={handleClose}
                         >
                             {post.user_id === user.id ? (
-                                <MenuItem onClick={handleClose}>
+                                <MenuItem onClick={handleEditOpen}>
                                     <Edit sx={{ mr: 1 }} />
                                     Chỉnh sửa bài viết
                                 </MenuItem>
@@ -544,6 +647,162 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                         disabled={!shareContent.trim()}
                     >
                         Chia sẻ ngay
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog
+                open={openEdit}
+                onClose={handleEditClose}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DialogTitle>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography variant="h6">Chỉnh sửa bài viết</Typography>
+                        <IconButton onClick={handleEditClose}>
+                            <Close />
+                        </IconButton>
+                    </Box>
+                </DialogTitle>
+                <DialogContent>
+                    <TextField
+                        fullWidth
+                        multiline
+                        rows={4}
+                        placeholder="Nội dung bài viết"
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                        onPaste={handlePaste}
+                        sx={{ mb: 2, mt: 2 }}
+                    />
+                    
+                    {keepFiles.image?.length > 0 && (
+                        <Box sx={{ mb: 2 }}>
+                            <Typography variant="subtitle2" sx={{ mb: 1 }}>Ảnh hiện tại:</Typography>
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                {keepFiles.image.map((fileUrl, index) => (
+                                    <Box key={index} sx={{ position: 'relative' }}>
+                                        <img 
+                                            src={fileUrl} 
+                                            alt="" 
+                                            style={{
+                                                width: 100,
+                                                height: 100,
+                                                objectFit: 'cover',
+                                                borderRadius: 4
+                                            }}
+                                        />
+                                        <IconButton
+                                            size="small"
+                                            sx={{
+                                                position: 'absolute',
+                                                top: 4,
+                                                right: 4,
+                                                bgcolor: 'rgba(0,0,0,0.5)',
+                                                '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' }
+                                            }}
+                                            onClick={() => handleRemoveOldFile(fileUrl)}
+                                        >
+                                            <Close sx={{ fontSize: 16, color: 'white' }} />
+                                        </IconButton>
+                                    </Box>
+                                ))}
+                            </Box>
+                        </Box>
+                    )}
+
+                    {!post.post_share && (
+                        <Box sx={{ mb: 2 }}>
+                            <input
+                                type="file"
+                                multiple
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                style={{ display: 'none' }}
+                                id="upload-post-images"
+                            />
+                            <label htmlFor="upload-post-images">
+                                <Button
+                                    variant="outlined"
+                                    component="span"
+                                    startIcon={<PhotoCamera />}
+                                >
+                                    Thêm ảnh mới
+                                </Button>
+                            </label>
+                        </Box>
+                    )}
+
+                    {newFiles.length > 0 && (
+                        <Box sx={{ mb: 2 }}>
+                            <Typography variant="subtitle2" sx={{ mb: 1 }}>Ảnh mới:</Typography>
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                {Array.from(newFiles).map((file, index) => (
+                                    <Box key={index} sx={{ position: 'relative' }}>
+                                        <img 
+                                            src={URL.createObjectURL(file)} 
+                                            alt="" 
+                                            style={{
+                                                width: 100,
+                                                height: 100,
+                                                objectFit: 'cover',
+                                                borderRadius: 4
+                                            }}
+                                        />
+                                        <IconButton
+                                            size="small"
+                                            sx={{
+                                                position: 'absolute',
+                                                top: 4,
+                                                right: 4,
+                                                bgcolor: 'rgba(0,0,0,0.5)',
+                                                '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' }
+                                            }}
+                                            onClick={() => handleRemoveNewFile(index)}
+                                        >
+                                            <Close sx={{ fontSize: 16, color: 'white' }} />
+                                        </IconButton>
+                                    </Box>
+                                ))}
+                            </Box>
+                        </Box>
+                    )}
+
+                    <FormControl fullWidth sx={{ mb: 2 }}>
+                        <InputLabel>Đối tượng</InputLabel>
+                        <Select
+                            value={editStatus}
+                            onChange={(e) => setEditStatus(e.target.value)}
+                            label="Đối tượng"
+                        >
+                            <MenuItem value="public">
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Public /> Công khai
+                                </Box>
+                            </MenuItem>
+                            <MenuItem value="friend">
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <People /> Bạn bè
+                                </Box>
+                            </MenuItem>
+                            <MenuItem value="private">
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Lock /> Chỉ mình tôi
+                                </Box>
+                            </MenuItem>
+                        </Select>
+                    </FormControl>
+                    {renderMedia(post.data)}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleEditClose}>Hủy</Button>
+                    <Button
+                        variant="contained"
+                        onClick={handleEditSave}
+                        disabled={!editContent.trim()}
+                    >
+                        Lưu
                     </Button>
                 </DialogActions>
             </Dialog>
