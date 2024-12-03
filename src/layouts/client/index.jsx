@@ -47,17 +47,18 @@ function LayoutClient({ children }) {
     }, [notis]);
     
     useEffect(() => {
-        if (userId) {
-            const channel = echo.private(`App.Models.User.${userId}`);
-            channel.notification((notification) => {
-                if(notification.type === "App\\Notifications\\Message\\SendMessageBroadcast"){
-                    let message = notification.notification;
-                    let room_id = notification.room_id;
-                    let time = notification.created_at;
-                    setIdRoomAdd(room_id)
-                    // Kiểm tra xem thông báo đã hiển thị chưa để tránh hiển thị trùng lặp
-                    const toastId = `message-${room_id}-${time}`;
-                    if (!toast.isActive(toastId)) {
+   
+        const channel = echo.private(`App.Models.User.${userId}`);
+        channel.notification((notification) => {
+            if(notification.type === "App\\Notifications\\Message\\SendMessageBroadcast"){
+                let message = notification.notification;
+                let room_id = notification.room_id;
+                let time = notification.created_at;
+                setIdRoomAdd(room_id)
+                // Kiểm tra xem thông báo đã hiển thị chưa để tránh hiển thị trùng lặp
+                const toastId = `message-${room_id}-${time}`;
+                if (!toast.isActive(toastId)) {
+                    if (userId && !window.location.href.includes('messages')) {
                         toast.info(message, {
                             toastId,
                             position: "bottom-right",
@@ -72,32 +73,32 @@ function LayoutClient({ children }) {
                             }
                         });
                     }
-                }else{
-                    let neNoti = {
-                        id: notification.id,
-                        type: notification.type, 
-                        notifiable_type: "App\\Models\\User",
-                        notifiable_id: 1,
-                        data: {
-                            post_id: notification.post_id,
-                            comment_id: notification.comment_id,
-                            avatar: notification.avatar,
-                            message: notification.message
-                        },
-                        is_seen: 0,
-                        is_read: 0, 
-                        read_at: null,
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
-                    }
-                    setNotis(pre => [neNoti,...pre])
-                    setUnseenCount(c => c + 1)
                 }
-            });
-            return () => {
-                channel.stopListening('notification');
-            };
-        }
+            }else{
+                let neNoti = {
+                    id: notification.id,
+                    type: notification.type, 
+                    notifiable_type: "App\\Models\\User",
+                    notifiable_id: 1,
+                    data: {
+                        post_id: notification.post_id,
+                        comment_id: notification.comment_id,
+                        avatar: notification.avatar,
+                        message: notification.message
+                    },
+                    is_seen: 0,
+                    is_read: 0, 
+                    read_at: null,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                }
+                setNotis(pre => [neNoti,...pre])
+                setUnseenCount(c => c + 1)
+            }
+        });
+        return () => {
+            channel.stopListening('notification');
+        };
     }, [userId]);
 
     return (

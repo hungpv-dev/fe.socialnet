@@ -1,26 +1,27 @@
-import QuanLy from "../pages/Admin/Quanly";
-import Thongke from "../pages/Admin/Thongke";
-import ThongkeCT from "../pages/Admin/ThongkeCT";
-import ToCao from "../pages/Admin/Tocao";
-// import ToCao from "../pages/Admin/Tocao";
+import Dashboard from "@/components/Admin/Dashboard";
+import AdminLayout from "../layouts/admin";
+import UserManagement from "@/components/Admin/UserManagement";
+import Analytics from "@/components/Admin/Analytics";
 
-const adminRouters = [
+const adminRoutes = [
   {
-    path: "/quanli",
-    component: QuanLy,
-  },
-  {
-    path: "/thongke",
-    component: Thongke,
-  },
-  {
-    path: "/thongkect",
-    component: ThongkeCT,
-  },
-  {
-    path: "/tocao",
-    component: ToCao,
-  },
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [
+      {
+        path: "",
+        element: <Dashboard />
+      },
+      {
+        path: "users",
+        element: <UserManagement />
+      },
+      {
+        path: "analytics", 
+        element: <Analytics />
+      }
+    ]
+  }
 ];
 
-export default adminRouters;
+export default adminRoutes;

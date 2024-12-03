@@ -65,6 +65,7 @@ const useAuth = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     logoutService(access_token);
+    dispatch(setUser({}));
   };
 
   const register = async (email, name, password, cPassword) => {
