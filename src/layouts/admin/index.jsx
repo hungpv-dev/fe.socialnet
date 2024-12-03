@@ -1,19 +1,16 @@
-import classNames from "classnames/bind";
+import { Outlet } from 'react-router-dom';
+import AdminSidebar from '../../components/Admin/SlideBar';
+import { Box } from '@mui/material';
 
-import styles from "./main.scss";
-import SlideBar from "../../components/Admin/SlideBar";
-
-const cx = classNames.bind(styles);
-
-function LayoutAdmin({ children }) {
+const AdminLayout = () => {
   return (
-    <div className="container">
-      <div className="row">
-        <SlideBar></SlideBar>
-        {children}
-      </div>
-    </div>
+    <Box sx={{ display: 'flex' }}>
+      <AdminSidebar />
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <Outlet />
+      </Box>
+    </Box>
   );
-}
+};
 
-export default LayoutAdmin;
+export default AdminLayout;

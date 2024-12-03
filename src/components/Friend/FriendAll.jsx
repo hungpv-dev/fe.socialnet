@@ -62,7 +62,6 @@ const FriendAll = ({ friends, unfriendingStates, setUnfriendingStates }) => {
     }
     return acc;
   }, []);
-
   return (
     <div className={cx("friend-requests")}>
       <div className={cx("header")}>

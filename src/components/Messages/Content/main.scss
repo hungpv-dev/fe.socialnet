@@ -260,3 +260,47 @@
     }
   }
 }
+
+.list-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 60%;
+  
+  .show-image {
+    max-width: 200px;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+
+  // Responsive cho mobile
+  @media screen and (max-width: 867px) {
+    max-width: 100%;
+    
+    .show-image {
+      max-width: 150px;
+      max-height: 150px;
+    }
+  }
+}
+
+// Cho trường hợp reply message
+.d-flex.flex-wrap.gap-2 {
+  .show-image {
+    max-width: 150px;
+    max-height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+}
+.reply .show-image{
+  max-width: 50px !important;
+  max-height: 50px !important;
+}
