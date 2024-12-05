@@ -45,6 +45,7 @@ function RightSidebar() {
     const users = useSelector(state => state.user_online);
     const friendApi = useFriend();
     const [friendRequests, setFriendRequests] = useState([]);
+    const [suggestedFriends, setSuggestedFriends] = useState([]);
 
     const getFriendRequests = async () => {
         try {
@@ -52,6 +53,15 @@ function RightSidebar() {
             setFriendRequests(response.data);
         } catch (error) {
             console.error('Lỗi khi lấy danh sách lời mời kết bạn:', error);
+        }
+    };
+
+    const getSuggestedFriends = async () => {
+        try {
+            const response = await axiosInstance.get('friend/suggest?per_page=3');
+            setSuggestedFriends(response.data.data);
+        } catch (error) {
+            console.error('Lỗi khi lấy danh sách bạn bè gợi ý:', error);
         }
     };
 
@@ -72,6 +82,12 @@ function RightSidebar() {
         const filteredFriends = users.filter(user => friendIds.includes(user.id));
         setOnlineFriends(filteredFriends);
     }, [friendIds, users]);
+
+    useEffect(() => {
+        if (friendRequests.length === 0) {
+            getSuggestedFriends();
+        }
+    }, [friendRequests]);
 
     const handleUserClick = async (userId) => {
         try {
@@ -95,12 +111,22 @@ function RightSidebar() {
         getFriendRequests();
     };
 
+    const handleAddFriend = async (userId) => {
+        await friendApi.add(userId);
+        getSuggestedFriends();
+    };
+
+    const handleRemoveSuggestion = async (userId) => {
+        await friendApi.removeSuggestion(userId);
+        getSuggestedFriends();
+    };
+
     return (
         <Box component="aside" sx={{ width: 360, p: 2, bgcolor: 'background.paper' }}>
 
             <Divider sx={{ my: 2 }} />
 
-            {Array.isArray(friendRequests) && friendRequests.length > 0 && (
+            {Array.isArray(friendRequests) && friendRequests.length > 0 ? (
                 <Box sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                         <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
@@ -164,6 +190,71 @@ function RightSidebar() {
                                         >
                                             Xóa
                                         </Button>
+                                    </Box>
+                                </Box>
+                            </Box>
+                        </Paper>
+                    ))}
+                </Box>
+            ) : (
+                <Box sx={{ mb: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                            Gợi ý kết bạn
+                        </Typography>
+                    </Box>
+                     
+                    {suggestedFriends.map((suggestion) => (
+                        <Paper key={suggestion.id} elevation={0} sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
+                            <Box sx={{ display: 'flex', gap: 2 }}>
+                                <Avatar 
+                                    src={suggestion.avatar || "/user_default.png"} 
+                                    sx={{ width: 60, height: 60, cursor: 'pointer' }}
+                                    onClick={() => navigate(`/profile/${suggestion.id}`)}
+                                />
+                                <Box sx={{ flex: 1 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                                        <Typography 
+                                            variant="subtitle2" 
+                                            sx={{ 
+                                                fontWeight: 600, 
+                                                color: 'text.primary',
+                                                cursor: 'pointer',
+                                                '&:hover': { textDecoration: 'underline' }
+                                            }}
+                                            onClick={() => navigate(`/profile/${suggestion.id}`)}
+                                        >
+                                            {suggestion.name}
+                                        </Typography>
+                                    </Box>
+                                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                                        {suggestion.friend_commons.length} bạn chung
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                        <Button 
+                                            variant="contained" 
+                                            size="small" 
+                                            sx={{ 
+                                                textTransform: 'none',
+                                                fontWeight: 500,
+                                                bgcolor: 'primary.main'
+                                            }}
+                                            onClick={() => handleAddFriend(suggestion.id)}
+                                        >
+                                            Thêm bạn bè
+                                        </Button>
+                                        {/* <Button 
+                                            variant="outlined" 
+                                            size="small"
+                                            sx={{ 
+                                                textTransform: 'none',
+                                                fontWeight: 500,
+                                                color: 'text.primary'
+                                            }}
+                                            onClick={() => handleRemoveSuggestion(suggestion.id)}
+                                        >
+                                            Xóa
+                                        </Button> */}
                                     </Box>
                                 </Box>
                             </Box>

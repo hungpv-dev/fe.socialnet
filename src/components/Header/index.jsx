@@ -30,6 +30,7 @@ import { toast } from "react-toastify";
 import { setNotifications } from "@/actions/notification";
 import { useLocation } from "react-router-dom";
 import axiosInstance from "@/axios";
+import echo from "@/components/EchoComponent";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -179,6 +180,8 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
 
   const handleLogout = async () => {
     try {
+      // Ngắt kết nối WebSocket trước khi đăng xuất
+      echo.disconnect();
       await auth.logout();
       navigate("/login");
     } catch (e) {

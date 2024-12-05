@@ -1,15 +1,18 @@
 import { React, Fragment, useEffect, useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import { pulicRouter, privateRouters, adminRouters } from "./routes";
 import { LayoutClient } from "./layouts";
 import useAuth from "@/hooks/useAuth";
 import GlobalImageViewer from "./components/GlobalImageViewer";
 import NotFound from "./components/errors/404";
+import { useSelector } from "react-redux";
 
 const App = () => {
   const auth = useAuth();
+  const user = useSelector(state => state.user);
+  const navigate = useNavigate();
   const [checkLogin, setCheckLogin] = useState(false);
-  const [checkAdmin, setCheckAdmin] = useState(true);
+  const [checkAdmin, setCheckAdmin] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -19,9 +22,19 @@ const App = () => {
       setIsReady(true);
     };
     checkLoginStatus();
-  }, [auth]);
+  }, []);
+
+  useEffect(() => {
+    if(user && Object.keys(user).length > 0){
+      setCheckAdmin(user.is_admin);
+      if(!user.is_login){
+        navigate('/profile-avatar', { replace: true });
+      }
+    }
+  }, [user]);
 
   if (!isReady) return null;
+
 
   return (
     <>

@@ -62,15 +62,11 @@ const Introduction = ( {userData} ) => {
 
         <Box>
           <Typography variant="subtitle1" fontWeight="bold" gutterBottom>Mối quan hệ</Typography>
-          {userData?.relationship ? (
+          {userData?.relationship ?? (
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <Favorite sx={{ mr: 1 }} />
               <Typography>{userData.relationship === 'single' ? 'Độc thân' : userData.relationship}</Typography>
             </Box>
-          ) : (
-            <Button variant="outlined" startIcon={<Edit />} sx={{ mt: 1 }}>
-              Thêm tình trạng mối quan hệ
-            </Button>
           )}
         </Box>
       </CardContent>

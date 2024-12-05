@@ -35,6 +35,8 @@ import FriendPage from '../pages/Client/FriendPage/FriendPage';
 import PostDetail from "@/components/Posts/PostDetail";
 import StoryDetail from "@/components/Stories/StoryDetail";
 import VerifyCode from "@/pages/VerifyCode";
+import ProfileUpdate from "@/pages/Client/TrangCaNhan/ProfileUpdate";
+import ProfileUpdateAvatar from "@/pages/Client/TrangCaNhan/ProfileUpdateAvatar";
 // Router không cần đăng nhập vẫn vô được
 const pulicRouter = [
     {
@@ -109,7 +111,12 @@ const privateRouters = [
     {
         path: "/profile/:id", component: Canhan
     },
-   
+    {
+        path: "/profile-update", component: ProfileUpdate
+    },
+    {
+        path: "/profile-avatar", component: ProfileUpdateAvatar
+    },
     {
         path: "/search", component: Search
     },

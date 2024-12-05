@@ -20,7 +20,12 @@ import {
     TextField,
     FormControl,
     Select,
-    InputLabel
+    InputLabel,
+    List,
+    ListItem,
+    ListItemAvatar,
+    ListItemText,
+    CircularProgress
 } from '@mui/material';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -63,6 +68,15 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
         image: post.data?.image || [],
         video: post.data?.video || []
     });
+    const [openEmojiList, setOpenEmojiList] = useState(false);
+    const [emojiUsers, setEmojiUsers] = useState({
+        data: [],
+        currentPage: 1,
+        lastPage: 1,
+        loading: false,
+        loadingMore: false
+    });
+    const [loadingEmojis, setLoadingEmojis] = useState(false);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -380,6 +394,58 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
         }
     };
 
+    const handleShowEmojiUsers = async () => {
+        try {
+            setLoadingEmojis(true);
+            const response = await axiosInstance.get('/emotions', {
+                params: {
+                    id: post.id,
+                    type: 'post',
+                    page: 1
+                }
+            });
+            setEmojiUsers({
+                data: response.data.data,
+                currentPage: response.data.current_page,
+                lastPage: response.data.last_page,
+                loading: false,
+                loadingMore: false
+            });
+            setOpenEmojiList(true);
+        } catch (error) {
+            console.error('Lỗi khi tải danh sách cảm xúc:', error);
+            toast.error('Có lỗi xảy ra khi tải danh sách cảm xúc');
+        } finally {
+            setLoadingEmojis(false);
+        }
+    };
+
+    const handleLoadMore = async () => {
+        if (emojiUsers.currentPage >= emojiUsers.lastPage) return;
+        
+        try {
+            setEmojiUsers(prev => ({ ...prev, loadingMore: true }));
+            const response = await axiosInstance.get('/emotions', {
+                params: {
+                    id: post.id,
+                    type: 'post',
+                    page: emojiUsers.currentPage + 1
+                }
+            });
+            
+            setEmojiUsers(prev => ({
+                data: [...prev.data, ...response.data.data],
+                currentPage: response.data.current_page,
+                lastPage: response.data.last_page,
+                loading: false,
+                loadingMore: false
+            }));
+        } catch (error) {
+            console.error('Lỗi khi tải thêm danh sách cảm xúc:', error);
+            toast.error('Có lỗi xảy ra khi tải thêm danh sách cảm xúc');
+        }
+    };
+
     return (
         <Card sx={{
             mb: 3,
@@ -483,7 +549,18 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
 
             <Box sx={{ px: 2, py: 1 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box 
+                        sx={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: 0.5,
+                            cursor: 'pointer',
+                            '&:hover': {
+                                textDecoration: 'underline'
+                            }
+                        }}
+                        onClick={handleShowEmojiUsers}
+                    >
                         <ThumbUpAlt color="primary" sx={{ fontSize: '18px' }} />
                         <Typography variant="body2" color="text.secondary">
                             {emojiCount || 0}
@@ -807,13 +884,88 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                 </DialogActions>
             </Dialog>
 
-            <CommentDialog
+            <CommentDialog 
                 open={openComment}
                 onClose={handleCommentClose}
                 post={post}
                 setPosts={setPosts}
-                redirectDetail={redirectDetail}
             />
+
+            <Dialog
+                open={openEmojiList}
+                onClose={() => setOpenEmojiList(false)}
+                maxWidth="xs"
+                fullWidth
+            >
+                <DialogTitle>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography variant="h6">Những người đã bày tỏ cảm xúc</Typography>
+                        <IconButton onClick={() => setOpenEmojiList(false)}>
+                            <Close />
+                        </IconButton>
+                    </Box>
+                </DialogTitle>
+                <DialogContent dividers>
+                    {loadingEmojis ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+                            <CircularProgress size={24} />
+                        </Box>
+                    ) : (
+                        <>
+                            <List>
+                                {emojiUsers.data.map((emotion) => (
+                                    <ListItem
+                                        key={emotion.id}
+                                        sx={{
+                                            '&:hover': {
+                                                bgcolor: 'rgba(0, 0, 0, 0.04)'
+                                            }
+                                        }}
+                                    >
+                                        <ListItemAvatar>
+                                            <Avatar src={emotion.user.avatar} />
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    <Typography
+                                                        component="span"
+                                                        sx={{
+                                                            fontWeight: 500,
+                                                            cursor: 'pointer',
+                                                            '&:hover': {
+                                                                textDecoration: 'underline'
+                                                            }
+                                                        }}
+                                                        onClick={() => navigate(`/profile/${emotion.user.id}`)}
+                                                    >
+                                                        {emotion.user.name}
+                                                    </Typography>
+                                                    <Typography component="span" sx={{ fontSize: '18px' }}>
+                                                        {emotion.emoji}
+                                                    </Typography>
+                                                </Box>
+                                            }
+                                        />
+                                    </ListItem>
+                                ))}
+                            </List>
+                            
+                            {emojiUsers.currentPage < emojiUsers.lastPage && (
+                                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                                    <Button
+                                        onClick={handleLoadMore}
+                                        disabled={emojiUsers.loadingMore}
+                                        startIcon={emojiUsers.loadingMore ? <CircularProgress size={20} /> : null}
+                                    >
+                                        {emojiUsers.loadingMore ? 'Đang tải...' : 'Xem thêm'}
+                                    </Button>
+                                </Box>
+                            )}
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
         </Card>
     );
 };
