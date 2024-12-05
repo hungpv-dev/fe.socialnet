@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { setRooms } from "@/actions/rooms";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import Header from "@/components/Header";
 const cx = classNames.bind(styles);
 
 function LayoutMessages({ children }) {

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import React from 'react';
 import axiosInstance from "@/axios";
 import { toast } from 'react-toastify';
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, Navigate } from "react-router-dom";
 
 import { 
   Box,
@@ -109,10 +109,13 @@ const Canhan = () => {
         setUser(response.data);
       } catch (error) {
         console.error('Error fetching user data:', error);
+        if (error.response?.status === 404) {
+          navigate('/404');
+        }
       }
     };
     fetchUserData();
-  }, [id]);
+  }, [id, navigate]);
 
   useEffect(() => {
     const handleGlobalPaste = (e) => {
@@ -369,6 +372,10 @@ const Canhan = () => {
     }
   };
 
+  if (user === null) {
+    return null;
+  }
+
   return (
     <Box sx={{ bgcolor: 'background.default', height: '100vh', overflowY: 'auto' }}>
       <Container maxWidth="lg" sx={{ pt: 0 }}>
@@ -513,10 +520,9 @@ const Canhan = () => {
                 <Button 
                   variant="contained" 
                   color="primary"
-                  startIcon={<PersonAdd />}
                   onClick={() => handleAcceptFriend(user.id)}
                 >
-                  Chấp nhận lời mời
+                  Xác nhận
                 </Button>
               )}
               
@@ -526,7 +532,7 @@ const Canhan = () => {
                   color="error"
                   onClick={() => handleRejectFriend(user.id)}
                 >
-                  Từ chối
+                  Xóa
                 </Button>
               )}
 
@@ -536,7 +542,7 @@ const Canhan = () => {
                   color="error"
                   onClick={() => handleDeleteFriend(user.id)}
                 >
-                  Hủy kết bạn
+                  Gỡ lời mời
                 </Button>
               )}
 

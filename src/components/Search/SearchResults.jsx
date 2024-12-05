@@ -171,10 +171,10 @@ const SearchResults = ({ users }) => {
                 {adding && !added && <button style={{ cursor: 'not-allowed' }}>Đang thêm...</button>}
                 {!adding && added && !removing && (
                   <button onClick={() => handleRemoveFriend(user.id)}>
-                    Hủy kết bạn
+                    Gỡ lời mời
                   </button>
                 )}
-                {removing && <button style={{ cursor: 'not-allowed' }}>Đang hủy...</button>}
+                {removing && <button style={{ cursor: 'not-allowed' }}>Đang gỡ...</button>}
               </>
             ) : (
               <button

@@ -9,7 +9,7 @@ const Posts = ( { setPosts, posts } ) => {
             ))}
             {posts.length === 0 && (
                 <Box sx={{ textAlign: 'center', py: 2 }}>
-                    <Typography color="text.secondary">Chưa có bài viết nào</Typography>
+                    <Typography color="text.secondary"></Typography>
                 </Box>
             )}
         </Box>

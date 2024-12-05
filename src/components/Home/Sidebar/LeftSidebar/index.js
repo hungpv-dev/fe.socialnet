@@ -10,7 +10,7 @@ function LeftSidebar() {
         <Box sx={{ width: '100%', maxWidth: 360, paddingTop: '10px', bgcolor: 'background.paper' }}>
             <List component="nav">
                 <ListItem disablePadding>
-                    <ListItemButton component={Link} to="/profile">
+                    <ListItemButton component={Link} to={`/profile/${user.id}`}>
                         <ListItemIcon>
                             <Avatar src={user?.avatar || "/user_default.png"} />
                         </ListItemIcon>

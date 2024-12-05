@@ -12,6 +12,8 @@ import {
   CircularProgress
 } from '@mui/material';
 import useAuth from '@/hooks/useAuth';
+import { useDispatch } from 'react-redux';
+import { setUser } from '@/actions/user';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -73,6 +75,7 @@ const RegisterButton = styled(Button)(({ theme }) => ({
 
 const Register = () => {
   const auth = useAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -103,8 +106,12 @@ const Register = () => {
     try {
       const response = await auth.register(email, fullName, password, confirmPassword);
       if (response.status === 201) {
-        setSuccess('Đăng ký thành công!');
-        navigate('/login', { replace: true });
+        let loginResponse = await auth.login(email, password);
+        if (loginResponse === true) {
+          let profile = await auth.me();
+          dispatch(setUser(profile.data));
+          window.location.href = '/';
+        }
       } else {
         setErrors(response.data);
       }

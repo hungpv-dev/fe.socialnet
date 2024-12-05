@@ -89,7 +89,7 @@ const Login = () => {
       if(response === true){
         let profile = await auth.me();
         dispatch(setUser(profile.data));
-        navigate('/');
+        window.location.href = '/';
       }else{
         if (response === 400) {
           setError('Email hoặc mật khẩu không chính xác');

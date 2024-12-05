@@ -98,6 +98,10 @@ const Notification = ({ onClose,seenAll, unseenCount, setUnseenCount }) => {
             case "App\\Notifications\\Story\\EmotionNotification":
                 const storyId = notification.data?.story_id;
                 return `/story/${storyId}`;
+            case "App\\Notifications\\Friend\\FriendRequestNotification":
+            case "App\\Notifications\\Friend\\FriendNotification":
+                const userId = notification.data?.user_id;
+                return `/profile/${userId}`;
             default:
                 return '/';
         }

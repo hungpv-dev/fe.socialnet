@@ -116,7 +116,7 @@ const FriendRequestSent = ({ sents, removeStates, setRemoveStates }) => {
                   className={cx("decline", { removing, removed })}
                   disabled={removing || removed}
                 >
-                  {removing ? "Đang gỡ..." : removed ? "Đã gỡ" : "Gỡ"}
+                  {removing ? "Đang gỡ..." : removed ? "Đã gỡ" : "Gỡ lời mời"}
                 </button>
               </div>
             </div>
