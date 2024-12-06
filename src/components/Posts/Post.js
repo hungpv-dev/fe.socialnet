@@ -291,12 +291,12 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
             <Box sx={{ mt: 2 }}>
                 <Box sx={{
                     display: 'grid',
-                    gridTemplateColumns: layout.gridCols,
+                    gridTemplateColumns: layout?.gridCols,
                     gap: '2px',
-                    height: layout.height
+                    height: layout?.height
                 }}>
                     {data.image?.slice(0, 3).map((img, index) => (
-                        <Box key={index} sx={layout.styles}>
+                        <Box key={index} sx={layout?.styles}>
                             <img
                                 src={img}
                                 alt=""
