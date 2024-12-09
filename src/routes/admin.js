@@ -1,7 +1,9 @@
 import Dashboard from "@/components/Admin/Dashboard";
 import AdminLayout from "../layouts/admin";
 import UserManagement from "@/components/Admin/UserManagement";
+import ReportManagement from "@/components/Admin/ReportManagement";
 import Analytics from "@/components/Admin/Analytics";
+import ReportTypeManagement from "@/components/Admin/ReportTypeManagement";
 
 const adminRoutes = [
   {
@@ -19,7 +21,15 @@ const adminRoutes = [
       {
         path: "analytics", 
         element: <Analytics />
-      }
+      },
+      {
+        path: "reports", 
+        element: <ReportManagement />
+      },
+      {
+        path: "reports/type", 
+        element: <ReportTypeManagement />
+      },
     ]
   }
 ];

@@ -9,53 +9,111 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  IconButton,
-  useTheme
+  Collapse
 } from '@mui/material';
 import {
-  Menu as MenuIcon,
   Dashboard,
   Assessment,
   People,
-  Logout
+  Report,
+  ExpandLess,
+  ExpandMore
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const drawerWidth = 240;
 
 const AdminLayout = ({ children }) => {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const theme = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [openSubMenu, setOpenSubMenu] = useState(null);
 
   const menuItems = [
     { text: 'Tổng quan', icon: <Dashboard />, path: '/admin' },
-    { text: 'Thống kê', icon: <Assessment />, path: '/admin/analytics' },
     { text: 'Quản lý người dùng', icon: <People />, path: '/admin/users' },
+    { 
+      text: 'Quản lý báo cáo', 
+      icon: <Report />, 
+      path: '/admin/reports',
+      subItems: [
+        { text: 'Kiểu báo cáo', path: '/admin/reports/type' },
+        { text: 'Đơn báo cáo', path: '/admin/reports' },
+      ]
+    },
+    { text: 'Thống kê', icon: <Assessment />, path: '/admin/analytics' },
   ];
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
 
   const drawer = (
     <Box>
-      <Box sx={{ p: 2, textAlign: 'center' }}>
-        <Typography variant="h6" color="primary">
+      <Box sx={{ p: 2, textAlign: 'center', bgcolor: '#1976d2', color: '#fff' }}>
+        <Typography variant="h6">
           ADMIN PANEL
         </Typography>
       </Box>
       <List>
-        {menuItems.map((item) => (
-          <ListItem 
-            button 
-            key={item.text}
-            onClick={() => navigate(item.path)}
-          >
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
-          </ListItem>
-        ))}
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.path || (item.subItems && item.subItems.some(sub => location.pathname === sub.path));
+
+          return (
+            <div key={item.text}>
+              <ListItem
+                button
+                onClick={() => {
+                  if (item.subItems) {
+                    setOpenSubMenu(openSubMenu === item.text ? null : item.text);
+                  } else {
+                    navigate(item.path);
+                  }
+                }}
+                sx={{
+                  bgcolor: isActive ? 'rgba(25, 118, 210, 0.1)' : 'inherit',
+                  '&:hover': {
+                    bgcolor: 'rgba(25, 118, 210, 0.2)',
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ color: isActive ? '#1976d2' : 'inherit' }}>
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText 
+                  primary={item.text} 
+                  primaryTypographyProps={{
+                    color: isActive ? '#1976d2' : 'inherit',
+                  }}
+                />
+                {item.subItems && (
+                  openSubMenu === item.text ? <ExpandLess /> : <ExpandMore />
+                )}
+              </ListItem>
+              {item.subItems && (
+                <Collapse in={openSubMenu === item.text} timeout="auto" unmountOnExit>
+                  {item.subItems.map((subItem) => (
+                    <ListItem
+                      button
+                      key={subItem.text}
+                      onClick={() => navigate(subItem.path)}
+                      sx={{
+                        pl: 4,
+                        bgcolor: location.pathname === subItem.path ? 'rgba(25, 118, 210, 0.1)' : 'inherit',
+                        '&:hover': {
+                          bgcolor: 'rgba(25, 118, 210, 0.2)',
+                        },
+                      }}
+                    >
+                      <ListItemText 
+                        primary={subItem.text}
+                        primaryTypographyProps={{
+                          fontWeight: location.pathname === subItem.path ? 'bold' : 'normal',
+                          color: location.pathname === subItem.path ? '#1976d2' : 'inherit',
+                        }}
+                      />
+                    </ListItem>
+                  ))}
+                </Collapse>
+              )}
+            </div>
+          );
+        })}
       </List>
     </Box>
   );
@@ -65,19 +123,11 @@ const AdminLayout = ({ children }) => {
       <AppBar
         position="fixed"
         sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
+          width: `calc(100% - ${drawerWidth}px)`,
+          ml: `${drawerWidth}px`,
         }}
       >
         <Toolbar>
-          <IconButton
-            color="inherit"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography variant="h6" noWrap component="div">
             Hệ thống quản trị
           </Typography>
@@ -86,29 +136,11 @@ const AdminLayout = ({ children }) => {
 
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{ width: drawerWidth, flexShrink: 0 }}
       >
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true,
-          }}
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { 
-              boxSizing: 'border-box', 
-              width: drawerWidth 
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
         <Drawer
           variant="permanent"
           sx={{
-            display: { xs: 'none', sm: 'block' },
             '& .MuiDrawer-paper': { 
               boxSizing: 'border-box', 
               width: drawerWidth 
@@ -125,8 +157,8 @@ const AdminLayout = ({ children }) => {
         sx={{
           flexGrow: 1,
           p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          mt: 8
+          width: `calc(100% - ${drawerWidth}px)`,
+          mt: 8,
         }}
       >
         {children}
