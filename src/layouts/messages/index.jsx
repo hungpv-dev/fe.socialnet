@@ -13,6 +13,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setRooms } from "@/actions/rooms";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { CircularProgress, Box as LoadingContainer } from "@mui/material";
+
 const cx = classNames.bind(styles);
 
 function LayoutMessages({ children }) {
@@ -85,8 +87,21 @@ function LayoutMessages({ children }) {
     }, []);
 
     if (loading) {
-        return '';
+        return (
+            <LoadingContainer
+              sx={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                minHeight: '100vh',
+                bgcolor: 'background.default'
+              }}
+            >
+              <CircularProgress size={40} />
+            </LoadingContainer>
+          );
     }
+
 
     return (
         <>

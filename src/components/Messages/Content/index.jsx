@@ -316,7 +316,9 @@ function Content() {
           <Link to='/messages' className='link-back'>
             <i className="bi bi-chevron-left fw-bold"></i>
           </Link>
-          <div className={cx('user')}>
+          <div className={cx('user')}
+            onClick={handleDrawerOpen}
+          >
             <div className='user-avatar'>
               {showRoomAvatar(room)}
             </div>
@@ -333,7 +335,7 @@ function Content() {
           <Stack direction="row" spacing={1}>
             {!isOut && (
               <>
-                <IconButton
+                {/* <IconButton
                   title="Bắt đầu gọi thoại"
                   sx={{
                     color: 'primary.main',
@@ -355,7 +357,7 @@ function Content() {
                   }}
                 >
                   <VideocamIcon />
-                </IconButton>
+                </IconButton> */}
               </>
             )}
 

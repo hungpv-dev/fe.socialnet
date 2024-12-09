@@ -13,15 +13,13 @@ import {
   Select,
   MenuItem,
   Alert,
-  Avatar
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import axiosInstance from '@/axios';
 import { setUser } from '@/actions/user';
-import { PhotoCamera } from '@mui/icons-material';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(4),
+  padding: theme.spacing(3),
   borderRadius: '12px',
   boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
   marginBottom: theme.spacing(3)
@@ -30,7 +28,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 const StyledForm = styled('form')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  gap: theme.spacing(3)
+  gap: theme.spacing(2)
 }));
 
 const StyledTextField = styled(TextField)({
@@ -51,13 +49,26 @@ const StyledTextField = styled(TextField)({
 
 const SubmitButton = styled(Button)(({ theme }) => ({
   backgroundColor: '#1877f2',
-  padding: '12px 16px',
+  padding: '8px 16px',
   borderRadius: '8px',
-  fontSize: '16px',
+  fontSize: '15px',
   fontWeight: 'bold',
   textTransform: 'none',
   '&:hover': {
     backgroundColor: '#166fe5'
+  }
+}));
+
+const SkipButton = styled(Button)(({ theme }) => ({
+  padding: '8px 16px',
+  borderRadius: '8px',
+  fontSize: '15px',
+  fontWeight: 'bold',
+  textTransform: 'none',
+  color: '#65676B',
+  backgroundColor: '#E4E6EB',
+  '&:hover': {
+    backgroundColor: '#D8DADF'
   }
 }));
 
@@ -132,15 +143,19 @@ function ProfileUpdate() {
     }
   };
 
+  const handleSkip = () => {
+    navigate('/friends/suggestions');
+  };
+
   return (
     <Box sx={{ py: 4, backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
-      <Container maxWidth="md">
-        <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold', color: '#1c1e21' }}>
+      <Container maxWidth="sm">
+        <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold', color: '#1c1e21' }}>
           Cập nhật thông tin cá nhân
         </Typography>
 
         <StyledPaper>
-          <StyledForm onSubmit={handleSubmit}>
+          <StyledForm onSubmit={handleSubmit} sx={{ maxWidth: '500px', margin: '0 auto' }}>
             {error && (
               <Alert severity="error" sx={{ borderRadius: '8px' }}>
                 {error}
@@ -219,13 +234,22 @@ function ProfileUpdate() {
               </Select>
             </FormControl>
 
-            <SubmitButton
-              type="submit"
-              variant="contained"
-              disabled={loading}
-            >
-              {loading ? 'Đang cập nhật...' : 'Cập nhật thông tin'}
-            </SubmitButton>
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+              <SkipButton
+                onClick={handleSkip}
+                disabled={loading}
+              >
+                Bỏ qua
+              </SkipButton>
+              
+              <SubmitButton
+                type="submit"
+                variant="contained"
+                disabled={loading}
+              >
+                {loading ? 'Đang cập nhật...' : 'Cập nhật thông tin'}
+              </SubmitButton>
+            </Box>
           </StyledForm>
         </StyledPaper>
       </Container>

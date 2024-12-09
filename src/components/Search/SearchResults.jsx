@@ -1,11 +1,27 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./SearchResults.scss";
 import {
-  addFriendRequest,
-  deleteFriendRequest,
-} from "@/services/friendRequestService";
-import CircularProgress from "@mui/material/CircularProgress";
+  Box,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Avatar,
+  Button,
+  Typography,
+  Chip,
+  Divider,
+  CircularProgress
+} from "@mui/material";
+import {
+  PersonAdd,
+  PersonRemove,
+  Message,
+  Home,
+  LocationOn,
+  People
+} from "@mui/icons-material";
+import { addFriendRequest, deleteFriendRequest } from "@/services/friendRequestService";
 import useChatRoom from "@/hooks/useChatRoom";
 
 const SearchResults = ({ users }) => {
@@ -107,90 +123,178 @@ const SearchResults = ({ users }) => {
     }
   };
 
+  const renderUserInfo = (user) => {
+    const infoParts = [];
+
+    if (user.button.includes("friend")) {
+      infoParts.push(<Chip size="small" label="Bạn bè" color="primary" />);
+    }
+
+    if (user.friend_commons.length > 0) {
+      infoParts.push(
+        <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <People fontSize="small" />
+          <Typography variant="body2">{user.friend_commons.length} bạn chung</Typography>
+        </Box>
+      );
+    }
+
+    if (user.address) {
+      infoParts.push(
+        <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <LocationOn fontSize="small" />
+          <Typography variant="body2">{user.address}</Typography>
+        </Box>
+      );
+    }
+
+    if (user.hometown) {
+      infoParts.push(
+        <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <Home fontSize="small" />
+          <Typography variant="body2">{user.hometown}</Typography>
+        </Box>
+      );
+    }
+
+    if (user.friend_counts > 0) {
+      infoParts.push(
+        <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <People fontSize="small" />
+          <Typography variant="body2">{user.friend_counts} bạn bè</Typography>
+        </Box>
+      );
+    }
+
+    return (
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center' }}>
+        {infoParts.map((part, index) => (
+          <React.Fragment key={index}>
+            {index > 0 && <Typography variant="body2" color="text.secondary">●</Typography>}
+            {part}
+          </React.Fragment>
+        ))}
+      </Box>
+    );
+  };
+
   return (
-    <div className="search-results">
+    <List>
       {uniqueUsers.map((user, index) => {
         const { adding, added } = addStates[user.id] || {};
-        const { removing, removed } = removeStates[user.id] || {};
+        const { removing } = removeStates[user.id] || {};
         const { messaging } = messageStates[user.id] || {};
 
         return (
-          <div key={index} className="result-item">
-            <div className="avatar">
-              <img src={user.avatar || "/user_default.png"} alt={user.name} />
-            </div>
-            <div className="info">
-              <h4>
-                <Link className="link" to={`/profile/${user.id}`}>
-                  {user.name}
-                </Link>
-              </h4>
-              <p>
-                {user.button.includes("friend") && "Bạn bè"}
+          <React.Fragment key={user.id}>
+            <ListItem
+              alignItems="flex-start"
+              sx={{
+                py: 2,
+                transition: 'background-color 0.2s',
+                '&:hover': {
+                  bgcolor: 'action.hover'
+                }
+              }}
+            >
+              <ListItemAvatar>
+                <Avatar
+                  src={user.avatar || "/user_default.png"}
+                  alt={user.name}
+                  sx={{ 
+                    width: 56, 
+                    height: 56,
+                    border: 1,
+                    borderColor: 'divider'
+                  }}
+                />
+              </ListItemAvatar>
+              
+              <ListItemText
+                primary={
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                    <Typography
+                      component={Link}
+                      to={`/profile/${user.id}`}
+                      variant="subtitle1"
+                      sx={{
+                        textDecoration: 'none',
+                        color: 'text.primary',
+                        fontWeight: 500,
+                        '&:hover': {
+                          textDecoration: 'underline'
+                        }
+                      }}
+                    >
+                      {user.name}
+                    </Typography>
+                    {user.button.includes("friend") && (
+                      <Chip 
+                        size="small" 
+                        label="Bạn bè" 
+                        color="primary" 
+                        variant="outlined"
+                      />
+                    )}
+                  </Box>
+                }
+                secondary={
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                    {renderUserInfo(user)}
+                  </Box>
+                }
+              />
 
-                {user.friend_commons.length > 0 && (
-                  <>
-                    {user.button.includes("friend") && " ● "}
-                    <small>{user.friend_commons.length} bạn chung</small>
-                  </>
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: { xs: 'column', sm: 'row' },
+                gap: 1,
+                alignItems: 'flex-start',
+                minWidth: { xs: 'auto', sm: 140 }
+              }}>
+                {user.button.includes("add") ? (
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    startIcon={adding || added ? <PersonRemove /> : <PersonAdd />}
+                    onClick={() => added ? handleRemoveFriend(user.id) : handleAddfriend(user.id)}
+                    disabled={adding || removing}
+                    color={added ? "error" : "primary"}
+                    size="small"
+                  >
+                    {adding ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : added ? (
+                      "Gỡ lời mời"
+                    ) : (
+                      "Thêm bạn bè"
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    startIcon={<Message />}
+                    onClick={() => handleStartChat(user.id)}
+                    disabled={messaging}
+                    size="small"
+                  >
+                    {messaging ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      "Nhắn tin"
+                    )}
+                  </Button>
                 )}
-
-                {user.address && (
-                  <>
-                    {user.friend_commons.length > 0 && " ● "}
-                    {`Sống tại ${user.address}`}
-                  </>
-                )}
-
-                {user.hometown && (
-                  <>
-                    {(user.address || user.friend_commons.length > 0) && " ● "}
-                    {`Đến từ ${user.hometown}`}
-                  </>
-                )}
-
-                {user.friend_counts > 0 && (
-                  <>
-                    {(user.button.includes("friend") ||
-                      user.address ||
-                      user.friend_commons.length > 0 ||
-                      user.hometown) &&
-                      " ● "}
-                    {`${user.friend_counts} bạn bè`}
-                  </>
-                )}
-              </p>
-            </div>
-            {user.button.includes("add") ? (
-              <>
-                {!adding && !added && (
-                  <button onClick={() => handleAddfriend(user.id)}>
-                    Thêm bạn bè
-                  </button>
-                )}
-                {adding && !added && <button style={{ cursor: 'not-allowed' }}>Đang thêm...</button>}
-                {!adding && added && !removing && (
-                  <button onClick={() => handleRemoveFriend(user.id)}>
-                    Gỡ lời mời
-                  </button>
-                )}
-                {removing && <button style={{ cursor: 'not-allowed' }}>Đang gỡ...</button>}
-              </>
-            ) : (
-              <button
-                onClick={() => handleStartChat(user.id)}
-                disabled={messaging}
-                className="chat-button"
-              >
-                <div className="button-content">
-                  {messaging ? <CircularProgress size={15} /> : "Nhắn tin"}
-                </div>
-              </button>
+              </Box>
+            </ListItem>
+            {index < uniqueUsers.length - 1 && (
+              <Divider variant="inset" component="li" />
             )}
-          </div>
+          </React.Fragment>
         );
       })}
-    </div>
+    </List>
   );
 };
 

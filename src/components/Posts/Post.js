@@ -47,6 +47,7 @@ import axiosInstance from '@/axios';
 import CommentDialog from './CommentDialog.js';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import Report from './Report.js';
 
 const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetail = false }) => {
     const navigate = useNavigate();
@@ -77,6 +78,10 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
         loadingMore: false
     });
     const [loadingEmojis, setLoadingEmojis] = useState(false);
+    const [openImageViewer, setOpenImageViewer] = useState(false);
+    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+    const [openReport, setOpenReport] = useState(false);
+    const [loadingShare, setLoadingShare] = useState(false);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -166,6 +171,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
     };
 
     const handleShare = async () => {
+        setLoadingShare(true);
         try {
             const response = await axiosInstance.post('posts', {
                 content: shareContent,
@@ -189,6 +195,8 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
         } catch (error) {
             console.error('Lỗi khi chia sẻ bài viết:', error);
             toast.error('Có lỗi xảy ra khi chia sẻ bài viết');
+        } finally {
+            setLoadingShare(false);
         }
     };
 
@@ -247,6 +255,10 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
         }
     };
 
+    const handleImageClick = (index) => {
+        setSelectedImageIndex(index);
+        setOpenImageViewer(true);
+    };
 
     const renderMedia = (data) => {
         if (!data || (!data.image?.length && !data.video?.length)) return null;
@@ -254,76 +266,154 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
         const imageCount = data.image?.length || 0;
         const layouts = {
             1: {
-                gridCols: '1fr',
-                height: '400px',
-                styles: {
-                    position: 'relative',
-                    height: '100%',
-                    borderRadius: '8px',
-                    overflow: 'hidden'
-                }
+                gridTemplateAreas: '"main"',
+                gridTemplateColumns: '1fr',
+                gridTemplateRows: '400px'
             },
             2: {
-                gridCols: '1fr 1fr',
-                height: '400px',
-                styles: {
-                    position: 'relative',
-                    height: '100%',
-                    borderRadius: '8px',
-                    overflow: 'hidden'
-                }
+                gridTemplateAreas: '"left right"',
+                gridTemplateColumns: '1fr 1fr',
+                gridTemplateRows: '400px'
             },
             3: {
-                gridCols: '2fr 1fr',
-                height: '400px',
-                styles: {
-                    position: 'relative',
-                    height: '100%',
-                    borderRadius: '8px',
-                    overflow: 'hidden'
-                }
+                gridTemplateAreas: '"left right-top" "left right-bottom"',
+                gridTemplateColumns: '2fr 1fr',
+                gridTemplateRows: '200px 200px'
+            },
+            4: {
+                gridTemplateAreas: '"left-top right-top" "left-bottom right-bottom"',
+                gridTemplateColumns: '1fr 1fr',
+                gridTemplateRows: '200px 200px'
             }
         };
 
-        const layout = layouts[Math.min(imageCount, 3)];
+        const layout = layouts[Math.min(imageCount, 4)];
 
         return (
-            <Box sx={{ mt: 2 }}>
+            <Box sx={{ mt: 2, mb: 2 }}>
                 <Box sx={{
                     display: 'grid',
-                    gridTemplateColumns: layout?.gridCols,
                     gap: '2px',
-                    height: layout?.height
+                    ...layout,
+                    width: '100%',
+                    overflow: 'hidden',
+                    borderRadius: '8px'
                 }}>
-                    {data.image?.slice(0, 3).map((img, index) => (
-                        <Box key={index} sx={layout?.styles}>
-                            <img
-                                src={img}
-                                alt=""
-                                className={'show-image'}
-                                style={{
-                                    width: '100%',
+                    {data.image?.slice(0, 4).map((img, index) => {
+                        let gridArea = '';
+                        if (imageCount === 1) gridArea = 'main';
+                        else if (imageCount === 2) gridArea = index === 0 ? 'left' : 'right';
+                        else if (imageCount === 3) {
+                            if (index === 0) gridArea = 'left';
+                            else if (index === 1) gridArea = 'right-top';
+                            else gridArea = 'right-bottom';
+                        }
+                        else if (imageCount >= 4) {
+                            if (index === 0) gridArea = 'left-top';
+                            else if (index === 1) gridArea = 'right-top';
+                            else if (index === 2) gridArea = 'left-bottom';
+                            else gridArea = 'right-bottom';
+                        }
+
+                        return (
+                            <Box 
+                                key={index} 
+                                sx={{
+                                    position: 'relative',
+                                    gridArea,
+                                    cursor: 'pointer',
                                     height: '100%',
-                                    objectFit: 'cover'
+                                    '&:hover': {
+                                        opacity: 0.95
+                                    }
                                 }}
-                            />
-                            {index === 2 && imageCount > 3 && (
-                                <Box sx={{
-                                    position: 'absolute',
-                                    inset: 0,
-                                    bgcolor: 'rgba(0,0,0,0.4)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}>
-                                    <Typography variant="h6" color="white">
-                                        +{imageCount - 3}
-                                    </Typography>
-                                </Box>
-                            )}
-                        </Box>
-                    ))}
+                                onClick={() => handleImageClick(index)}
+                            >
+                                <img
+                                    src={img}
+                                    alt=""
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover'
+                                    }}
+                                />
+                                {index === 3 && imageCount > 4 && (
+                                    <Box sx={{
+                                        position: 'absolute',
+                                        inset: 0,
+                                        bgcolor: 'rgba(0,0,0,0.4)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}>
+                                        <Typography variant="h6" color="white">
+                                            +{imageCount - 4}
+                                        </Typography>
+                                    </Box>
+                                )}
+                            </Box>
+                        );
+                    })}
                 </Box>
+
+                <Dialog
+                    open={openImageViewer}
+                    onClose={() => setOpenImageViewer(false)}
+                    maxWidth="xl"
+                    fullWidth
+                >
+                    <DialogTitle>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Typography>
+                                Tất cả ảnh ({data.image?.length})
+                            </Typography>
+                            <IconButton onClick={() => setOpenImageViewer(false)}>
+                                <Close />
+                            </IconButton>
+                        </Box>
+                    </DialogTitle>
+                    <DialogContent>
+                        <Box sx={{ 
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                            gap: 2,
+                            p: 2
+                        }}>
+                            {data.image?.map((img, index) => (
+                                <Box 
+                                    key={index}
+                                    sx={{
+                                        position: 'relative',
+                                        paddingTop: '100%',
+                                        '&:hover': {
+                                            '& img': {
+                                                transform: 'scale(1.02)',
+                                                transition: 'transform 0.2s'
+                                            }
+                                        }
+                                    }}
+                                >
+                                    <img
+                                        src={img}
+                                        className='show-image'
+                                        alt=""
+                                        style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'cover',
+                                            borderRadius: '8px',
+                                            cursor: 'pointer'
+                                        }}
+                                    />
+                                </Box>
+                            ))}
+                        </Box>
+                    </DialogContent>
+                </Dialog>
 
                 {data.video?.map((video, index) => (
                     <Box key={index} sx={{
@@ -478,7 +568,10 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                                     Chỉnh sửa bài viết
                                 </MenuItem>
                             ) : (
-                                <MenuItem onClick={handleClose}>
+                                <MenuItem onClick={() => {
+                                    handleClose();
+                                    setOpenReport(true);
+                                }}>
                                     Báo cáo
                                 </MenuItem>
                             )}
@@ -520,6 +613,9 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                             </Typography>
                             <Typography color="text.secondary">•</Typography>
                             {getStatusIcon()}
+                            {post.is_active === 0 && (
+                                <Typography color="error">Đã khóa</Typography>
+                            )}
                         </Box>
                     </Box>
                 }
@@ -528,23 +624,31 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                 <Typography variant="body1" sx={{ mb: post.post_share ? 2 : 0 }}>
                     {post.content}
                 </Typography>
-                {post.post_share && (
+                {post.post_share && post.post_share.is_active === 0 ? (
                     <Card sx={{ bgcolor: '#f0f2f5' }}>
-                        <CardHeader
-                            avatar={<Avatar src={post.post_share.user.avatar} />}
-                            title={post.post_share.user.name}
-                            subheader={formatDistanceToNow(new Date(post.post_share.created_at), {
-                                addSuffix: true,
-                                locale: vi
-                            })}
-                        />
                         <CardContent>
-                            <Typography variant="body2">{post.post_share.content}</Typography>
-                            {renderMedia(post.post_share.data)}
+                            <Typography sx={{ bgcolor: '#f0f2f5' }} color="error">Đã bị khóa</Typography>
                         </CardContent>
-                    </Card>
+                    </Card> 
+                ) : (
+                    <>
+                        {post.post_share && <Card sx={{ bgcolor: '#f0f2f5' }}>
+                            <CardHeader
+                                avatar={<Avatar src={post.post_share.user.avatar} />}
+                                title={post.post_share.user.name}
+                                subheader={formatDistanceToNow(new Date(post.post_share.created_at), {
+                                    addSuffix: true,
+                                    locale: vi
+                                })}
+                            />
+                            <CardContent>
+                                <Typography variant="body2">{post.post_share.content}</Typography>
+                                {renderMedia(post.post_share.data)}
+                            </CardContent>
+                        </Card>}
+                        {!post.post_share && renderMedia(post.data)}
+                    </>
                 )}
-                {!post.post_share && renderMedia(post.data)}
             </CardContent>
 
             <Box sx={{ px: 2, py: 1 }}>
@@ -649,7 +753,10 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                 <DialogTitle>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Typography variant="h6">Chia sẻ bài viết</Typography>
-                        <IconButton onClick={handleShareClose}>
+                        <IconButton 
+                            onClick={handleShareClose}
+                            disabled={loadingShare}
+                        >
                             <Close />
                         </IconButton>
                     </Box>
@@ -663,6 +770,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                         value={shareContent}
                         onChange={(e) => setShareContent(e.target.value)}
                         sx={{ mb: 2 }}
+                        disabled={loadingShare}
                     />
                     <FormControl fullWidth sx={{ mb: 2 }}>
                         <InputLabel>Đối tượng</InputLabel>
@@ -670,6 +778,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                             value={shareStatus}
                             onChange={(e) => setShareStatus(e.target.value)}
                             label="Đối tượng"
+                            disabled={loadingShare}
                         >
                             <MenuItem value="public">
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -717,13 +826,19 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                     </Card>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleShareClose}>Hủy</Button>
+                    <Button 
+                        onClick={handleShareClose}
+                        disabled={loadingShare}
+                    >
+                        Hủy
+                    </Button>
                     <Button 
                         variant="contained"
                         onClick={handleShare}
-                        disabled={!shareContent.trim()}
+                        disabled={!shareContent.trim() || loadingShare}
+                        startIcon={loadingShare && <CircularProgress size={20} color="inherit" />}
                     >
-                        Chia sẻ ngay
+                        {loadingShare ? 'Đang chia sẻ...' : 'Chia sẻ ngay'}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -877,7 +992,6 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                     <Button
                         variant="contained"
                         onClick={handleEditSave}
-                        disabled={!editContent.trim()}
                     >
                         Lưu
                     </Button>
@@ -966,6 +1080,13 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                     )}
                 </DialogContent>
             </Dialog>
+
+            <Report 
+                open={openReport}
+                onClose={() => setOpenReport(false)}
+                type="post"
+                id={post.id}
+            />
         </Card>
     );
 };

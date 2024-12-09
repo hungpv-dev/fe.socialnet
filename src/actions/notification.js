@@ -9,3 +9,8 @@ export const setNotifications = (notifications) => {
         payload: notifications,
     };
 };
+
+export const updateNotificationStatus = (id) => ({
+    type: 'UPDATE_NOTIFICATION_STATUS',
+    payload: id,
+});

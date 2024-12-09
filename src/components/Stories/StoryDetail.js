@@ -46,7 +46,7 @@ const StoryDetail = () => {
     {
       id: story.user.id,
       name: story.user.name,
-      avatar: story.user.avatar,
+      avatar: story.user?.avatar || "/user_default.png",
       stories: [story]
     }
   ] : [];
