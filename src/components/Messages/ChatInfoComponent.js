@@ -10,6 +10,7 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import EditIcon from '@mui/icons-material/Edit';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import PersonIcon from '@mui/icons-material/Person';
 import { useSelector } from 'react-redux';
 import NickName from './ChatInfo/NickName';
 import BlockUser from './ChatInfo/BlockUser';
@@ -17,6 +18,7 @@ import { toast } from 'react-toastify';
 import axiosInstance from '@/axios';
 import ListImages from './ChatInfo/ListImages';
 import AddMember from './ChatInfo/AddMember';
+import { useNavigate } from 'react-router-dom';
 
 // Styled components
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -76,6 +78,7 @@ function ChatInfo({ room, isOut,outs, onClose }) {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const currentUser = useSelector(state => state.user);
   isOut = outs.includes('user_' + currentUser.id);
+  const navigate = useNavigate();
 
   // Xử lý dữ liệu
   if (!room) return null;
@@ -150,7 +153,7 @@ function ChatInfo({ room, isOut,outs, onClose }) {
   const renderHeader = () => (
     <>
       <LargeAvatar
-        src={room.chat_room_type === 1 ? room.users[0].avatar : room.avatar}
+        src={room.chat_room_type === 1 ? (room.users[0].avatar || "/user_default.png") : room.avatar}
         alt={room.name}
         onClick={handleAvatarClick}
         title={room.chat_room_type !== 1 && isAdmin && !isOut ? "Nhấp để thay đổi ảnh nhóm" : ""}
@@ -176,6 +179,15 @@ function ChatInfo({ room, isOut,outs, onClose }) {
 
     return room.chat_room_type === 1 ? (
       <>
+        <FullWidthButton 
+          startIcon={<PersonIcon />} 
+          onClick={() => {
+            navigate(`/profile/${room.users[0].id}`);
+            onClose();
+          }}
+        >
+          Xem trang cá nhân
+        </FullWidthButton>
         <FullWidthButton startIcon={<EditIcon />} onClick={() => setOpenNickname(true)}>
           Đặt biệt danh
         </FullWidthButton>

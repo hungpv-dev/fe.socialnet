@@ -63,7 +63,7 @@ function Message({ message, isOut, user, onReply, updateMessage, setMessage }) {
             send && send.map((user) =>
             (
               <div key={user.id} className={cx('user-send')}>
-                <img src={user.avatar} alt="" />
+                <img src={user?.avatar || "/user_default.png"} alt="" />
               </div>
             )
             )
@@ -89,7 +89,7 @@ function Message({ message, isOut, user, onReply, updateMessage, setMessage }) {
           send && send.map((user) =>
           (
             <div key={user.id} className={cx('user-send')}>
-              <img src={user.avatar} alt="" />
+              <img src={user?.avatar || "/user_default.png"} alt="" />
             </div>
           )
           )
@@ -98,7 +98,7 @@ function Message({ message, isOut, user, onReply, updateMessage, setMessage }) {
       <div className={cx('user-message', { 'flex-row-reverse': me, 'reply-success': rep })}>
         {!me && (
           <div className='avatar'>
-            <img src={message.user_send.avatar} alt="Avatar" />
+            <img src={message.user_send?.avatar || "/user_default.png"} alt="Avatar" />
           </div>
         )}
         {rep && (

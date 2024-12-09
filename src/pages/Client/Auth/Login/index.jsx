@@ -95,6 +95,8 @@ const Login = () => {
           setError('Email hoặc mật khẩu không chính xác');
         } else if (response === 401) {
           setError('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại');
+        } else if (response === 500) {
+          setError('Tài khoản của bạn đã bị khóa');
         } else {
           setError('Có lỗi xảy ra, vui lòng thử lại sau');
         }

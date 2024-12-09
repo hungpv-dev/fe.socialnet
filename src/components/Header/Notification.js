@@ -6,8 +6,10 @@ import { vi } from 'date-fns/locale';
 import { useSelector, useDispatch } from 'react-redux';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import notificationService from '@/services/notificationService';
-import { setNotifications } from "@/actions/notification";
+import { setNotifications, updateNotificationStatus } from "@/actions/notification";
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '@/axios';
+import { toast } from 'react-toastify';
 
 const Notification = ({ onClose,seenAll, unseenCount, setUnseenCount }) => {
     const dispatch = useDispatch();
@@ -48,6 +50,19 @@ const Notification = ({ onClose,seenAll, unseenCount, setUnseenCount }) => {
             setUnseenCount(0)
         }
     }, [unseenCount]);
+
+
+    const handleNotificationClick = async (notificationId) => {
+        try {
+            const response = await axiosInstance.post('/notifications/read', { id: notificationId });
+            if (response.status === 200) {
+                dispatch(updateNotificationStatus(notificationId));
+            }
+        } catch (error) {
+            console.error('Error marking notification as read:', error);
+            toast.error('Có lỗi xảy ra khi cập nhật thông báo');
+        }
+    };
 
     // Kiểm tra cuộn đến cuối
     const handleScroll = useCallback((event) => {
@@ -159,7 +174,10 @@ const Notification = ({ onClose,seenAll, unseenCount, setUnseenCount }) => {
                             key={notification.id}
                             component={Link}
                             to={getNotificationLink(notification)}
-                            onClick={onClose}
+                            onClick={() => {
+                                onClose();
+                                handleNotificationClick(notification.id);
+                            }}
                             sx={{
                                 p: 2,
                                 textDecoration: 'none',

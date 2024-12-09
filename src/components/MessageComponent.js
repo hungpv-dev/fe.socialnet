@@ -8,7 +8,7 @@ export const showRoomAvatar = (room) => {
         <div className="user-avatars">
             {room.chat_room_type === 1 ? (
                 <div className='image-user' key={room.users[0].id}>
-                    <img src={room.users[0].avatar} className="avatar" alt="" />
+                    <img src={room.users[0].avatar || "/user_default.png"} className="avatar" alt="" />
                 </div>
             ) : (
                 <div className='image-user'>

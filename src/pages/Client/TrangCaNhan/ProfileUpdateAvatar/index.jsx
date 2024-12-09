@@ -57,7 +57,7 @@ function ProfileUpdateAvatar() {
   const user = useSelector(state => state.user);
   
   const [selectedAvatar, setSelectedAvatar] = useState(null);
-  const [avatarPreview, setAvatarPreview] = useState(user?.avatar || null);
+  const [avatarPreview, setAvatarPreview] = useState(user?.avatar || "/user_default.png");
   const [caption, setCaption] = useState('');
   const [privacy, setPrivacy] = useState('public');
   const [loading, setLoading] = useState(false);

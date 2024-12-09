@@ -332,7 +332,7 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
                     }}
                   >
                     <img 
-                      src={currentUser?.avatar} 
+                      src={currentUser?.avatar  || "/user_default.png"} 
                       alt={currentUser?.name}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
@@ -659,7 +659,7 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
                       >
                         <ListItemAvatar>
                           <Avatar 
-                            src={viewer.user.avatar} 
+                            src={viewer.user?.avatar  || "/user_default.png"} 
                             sx={{ width: 32, height: 32 }} 
                           />
                         </ListItemAvatar>

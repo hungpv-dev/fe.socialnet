@@ -5,10 +5,11 @@ import { styled } from '@mui/material/styles';
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    backgroundColor: 'rgba(0, 0, 0, 0.95)',
     boxShadow: 'none',
     maxWidth: 'none',
-    margin: 0
+    margin: 0,
+    overflow: 'hidden'
   }
 }));
 
@@ -30,21 +31,33 @@ const ImageContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '24px'
+  padding: 0
 });
 
 const StyledImg = styled('img')(({ theme }) => ({
-  maxWidth: ({ isMobile }) => isMobile ? '100vw' : '80vw',
-  maxHeight: ({ isMobile }) => isMobile ? '100vh' : '80vh',
+  maxWidth: '95vw',
+  maxHeight: '95vh',
   height: 'auto',
   width: 'auto',
   objectFit: 'contain',
-  borderRadius: '8px'
+  borderRadius: '0',
+  boxShadow: '0 0 30px rgba(0,0,0,0.5)',
+  transform: 'scale(0.95)',
+  opacity: 0,
+  '&.loaded': {
+    transform: 'scale(1)',
+    opacity: 1
+  }
 }));
 
 const ImageViewer = ({ open, onClose, imageSrc }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [isLoaded, setIsLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    if (open) setIsLoaded(false);
+  }, [open]);
 
   if (!imageSrc) return null;
 
@@ -54,16 +67,20 @@ const ImageViewer = ({ open, onClose, imageSrc }) => {
       onClose={onClose}
       fullScreen
       onClick={onClose}
+      TransitionProps={{
+        timeout: 300
+      }}
     >
       <ImageContainer>
         <StyledImg 
           src={imageSrc} 
           alt="Xem ảnh phóng to"
           onClick={(e) => e.stopPropagation()}
+          className={isLoaded ? 'loaded' : ''}
+          onLoad={() => setIsLoaded(true)}
           style={{
-            transition: 'all 0.3s ease-in-out'
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
-          isMobile={isMobile}
         />
         <CloseButton 
           onClick={onClose}

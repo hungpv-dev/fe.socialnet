@@ -1,39 +1,53 @@
-import React, { useState, useEffect, useRef } from "react";
-import classNames from "classnames/bind";
-import styles from "./main.scss";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import {
+  Box,
+  Container,
+  Paper,
+  Typography,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
+  CircularProgress,
+  Drawer,
+  useTheme,
+  useMediaQuery,
+  Button,
+  Stack,
+  TextField
+} from "@mui/material";
+import { FilterList, Clear } from "@mui/icons-material";
 import SearchResults from "@/components/Search/SearchResults";
 import axiosInstance from "@/axios";
-import CircularProgress from "@mui/material/CircularProgress";
-import axios from "axios";
-import { useLocation } from "react-router-dom";
-
-const cx = classNames.bind(styles);
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Search = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
-  const [provinces, setProvinces] = useState([]);
-  const [selectedProvince, setSelectedProvince] = useState(""); // Tỉnh/Thành phố
-  const [selectedHometown, setSelectedHometown] = useState(""); // Quê quán
-  const [selectedGender, setSelectedGender] = useState(""); // Giới tính
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedHometown, setSelectedHometown] = useState("");
+  const [selectedGender, setSelectedGender] = useState("");
   const query = new URLSearchParams(location.search).get("query");
   const loaderRef = useRef(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [openFilter, setOpenFilter] = useState(false);
+  const [searchText, setSearchText] = useState(query || "");
 
-  // Hàm gọi API để lấy kết quả tìm kiếm
   const fetchResults = async (page, filters = {}) => {
     try {
       setLoading(true);
       const response = await axiosInstance.post("/user/find", {
         name: query,
         page,
-        address: selectedProvince, // Tỉnh/Thành phố
-        hometown: selectedHometown, // Quê quán
-        gender: selectedGender, // Giới tính
+        address: selectedProvince,
+        hometown: selectedHometown,
+        gender: selectedGender,
       });
-      console.log(response);
 
       if (response.data.data.length === 0) {
         setHasMore(false);
@@ -46,39 +60,23 @@ const Search = () => {
     }
   };
 
-  console.log(
-    `Tỉnh: ${selectedProvince}; Quê: ${selectedHometown}; Gender: ${selectedGender}`
-  );
-
-  // Hàm gọi API để lấy danh sách tỉnh thành
-  const fetchProvinces = async () => {
-    try {
-      const response = await axios.get("https://provinces.open-api.vn/api/"); // API để lấy danh sách tỉnh thành
-      setProvinces(response.data);
-    } catch (error) {
-      console.error("Error fetching provinces:", error);
-    }
-  };
-
   useEffect(() => {
-    fetchProvinces(); // Gọi API khi component được mount
-  }, []);
+    const delayDebounceFn = setTimeout(() => {
+      if (query || selectedProvince || selectedHometown || selectedGender) {
+        setResults([]);
+        setHasMore(true);
+        setPage(1);
+        fetchResults(1, {
+          address: selectedProvince,
+          hometown: selectedHometown,
+          gender: selectedGender,
+        });
+      }
+    }, 1000);
 
-  useEffect(() => {
-    // Kiểm tra nếu có filter được chọn và query không rỗng
-    if (query || selectedProvince || selectedHometown || selectedGender) {
-      setResults([]); // Reset lại kết quả tìm kiếm
-      setHasMore(true);
-      setPage(1);
-      fetchResults(1, {
-        address: selectedProvince,
-        hometown: selectedHometown,
-        gender: selectedGender,
-      });
-    }
+    return () => clearTimeout(delayDebounceFn);
   }, [query, selectedProvince, selectedHometown, selectedGender]);
 
-  // Hàm xử lý khi cuộn đến cuối
   const handleLoadMore = (entries) => {
     if (entries[0].isIntersecting && hasMore && !loading) {
       setPage((prevPage) => {
@@ -94,7 +92,7 @@ const Search = () => {
 
   useEffect(() => {
     const observer = new IntersectionObserver(handleLoadMore, {
-      rootMargin: "100px", // Khi loader gần 100px gần đáy, sẽ kích hoạt
+      rootMargin: "100px",
     });
     if (loaderRef.current) {
       observer.observe(loaderRef.current);
@@ -106,90 +104,173 @@ const Search = () => {
     };
   }, [loaderRef, hasMore, loading]);
 
-  const handleFilterChange = (event, type) => {
+  const handleFilterChange = useCallback((event, type) => {
     const value = event.target.value;
     if (type === "province") {
-      setSelectedProvince(value); // Lưu giá trị Tỉnh/Thành phố
+      setSelectedProvince(value);
     } else if (type === "hometown") {
-      setSelectedHometown(value); // Lưu giá trị Quê quán
+      setSelectedHometown(value);
     } else if (type === "gender") {
-      setSelectedGender(value); // Lưu giá trị Giới tính
+      setSelectedGender(value);
+    }
+  }, [setSelectedProvince, setSelectedHometown, setSelectedGender]);
+
+  const handleClearFilters = () => {
+    setSelectedProvince("");
+    setSelectedHometown("");
+    setSelectedGender("");
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchText(e.target.value);
+  };
+
+  const handleSearch = () => {
+    navigate(`/search?query=${encodeURIComponent(searchText)}`);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && searchText.trim()) {
+      navigate(`/search?query=${encodeURIComponent(searchText.trim())}`);
     }
   };
 
+  const FilterContent = React.memo(() => (
+    <Box sx={{ p: 3, width: isMobile ? 'auto' : 300 }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography variant="h6">
+          Bộ lọc tìm kiếm
+        </Typography>
+        {(selectedProvince || selectedHometown || selectedGender) && (
+          <Button
+            startIcon={<Clear />}
+            onClick={handleClearFilters}
+            size="small"
+            color="error"
+            variant="outlined"
+          >
+            Xóa lọc
+          </Button>
+        )}
+      </Stack>
+
+      <TextField
+        fullWidth
+        sx={{ mt: 2 }}
+        label="Nơi sống"
+        value={selectedProvince}
+        onChange={(e) => handleFilterChange(e, "province")}
+      />
+
+      <TextField
+        fullWidth
+        sx={{ mt: 2 }}
+        label="Quê quán"
+        value={selectedHometown}
+        onChange={(e) => handleFilterChange(e, "hometown")}
+      />
+
+      <FormControl fullWidth sx={{ mt: 2 }}>
+        <InputLabel>Giới tính</InputLabel>
+        <Select
+          value={selectedGender}
+          onChange={(e) => handleFilterChange(e, "gender")}
+          label="Giới tính"
+        >
+          <MenuItem value="">Tất cả</MenuItem>
+          <MenuItem value="male">Nam</MenuItem>
+          <MenuItem value="female">Nữ</MenuItem>
+        </Select>
+      </FormControl>
+    </Box>
+  ));
+
   return (
-    <div className={cx("search")}>
-      <div className="sidebar">
-        <h3>Kết quả tìm kiếm</h3>
-        <ul>
-          <li className="active">Mọi người</li>
-        </ul>
-        <div className="filters">
-          <select
-            value={selectedProvince}
-            onChange={(e) => handleFilterChange(e, "province")}
+    <Container 
+      maxWidth="lg" 
+      sx={{ 
+        mt: 3, 
+        mb: 3,
+        minHeight: 'calc(100vh - 88px)',
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
+      <Paper elevation={1}>
+        <Box sx={{ 
+          p: 2,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          borderBottom: 1,
+          borderColor: 'divider'
+        }}>
+          <Typography variant="h6">
+            Kết quả tìm kiếm {query && `cho "${query}"`}
+          </Typography>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {(selectedProvince || selectedHometown || selectedGender) && (
+              <Typography variant="body2" color="text.secondary">
+                Đang lọc: {[
+                  selectedProvince && `Tỉnh: ${selectedProvince}`,
+                  selectedHometown && `Quê: ${selectedHometown}`,
+                  selectedGender && `Giới tính: ${selectedGender === 'male' ? 'Nam' : 'Nữ'}`
+                ].filter(Boolean).join(', ')}
+              </Typography>
+            )}
+
+            <Button
+              startIcon={<FilterList />}
+              onClick={() => setOpenFilter(true)}
+              variant="outlined"
+              color={selectedProvince || selectedHometown || selectedGender ? "primary" : "inherit"}
+              size="small"
+            >
+              Bộ lọc {(selectedProvince || selectedHometown || selectedGender) && '(Đang lọc)'}
+            </Button>
+          </Box>
+        </Box>
+
+        <SearchResults users={results} />
+
+        {loading && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+            <CircularProgress />
+          </Box>
+        )}
+        
+        {!loading && !hasMore && results.length > 0 && (
+          <Typography 
+            align="center" 
+            color="text.secondary"
+            sx={{ p: 2 }}
           >
-            <option value="">Tỉnh/Thành phố</option>
-            {provinces.map((province) => (
-              <option key={province.code} value={province.name}>
-                {province.name}
-              </option>
-            ))}
-          </select>
+            Không còn kết quả.
+          </Typography>
+        )}
 
-          <select
-            value={selectedHometown}
-            onChange={(e) => handleFilterChange(e, "hometown")}
+        {!loading && results.length === 0 && (
+          <Typography 
+            align="center" 
+            color="text.secondary"
+            sx={{ p: 4 }}
           >
-            <option value="">Quê quán</option>
-            {provinces.map((province) => (
-              <option key={province.code} value={province.name}>
-                {province.name}
-              </option>
-            ))}
-          </select>
+            Không tìm thấy kết quả nào.
+          </Typography>
+        )}
+        
+        <div ref={loaderRef} style={{ height: "10px" }}></div>
+      </Paper>
 
-          <select
-            value={selectedGender}
-            onChange={(e) => handleFilterChange(e, "gender")}
-          >
-            <option value="">Giới tính</option>
-            <option value="male">Nam</option>
-            <option value="female">Nữ</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Hiển thị kết quả tìm kiếm */}
-      <SearchResults users={results} />
-
-      {/* Phần "loader" để kích hoạt infinite scroll */}
-      {loading && (
-        <div
-          style={{
-            marginLeft: "300px",
-            height: "50px",
-            textAlign: "center",
-            marginBottom: "0px",
-          }}
-        >
-          <CircularProgress size={30} />
-        </div>
-      )}
-      {!loading && !hasMore && (
-        <div
-          style={{
-            marginLeft: "300px",
-            height: "50px",
-            textAlign: "center",
-            marginBottom: "0px",
-          }}
-        >
-          Không còn kết quả.
-        </div>
-      )}
-      <div ref={loaderRef} style={{ height: "10px" }}></div>
-    </div>
+      <Drawer
+        anchor="right"
+        open={openFilter}
+        onClose={() => setOpenFilter(false)}
+      >
+        <FilterContent />
+      </Drawer>
+    </Container>
   );
 };
 

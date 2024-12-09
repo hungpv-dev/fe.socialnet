@@ -59,7 +59,7 @@ const Story = ({ story, onClick }) => {
           }}
         >
           <img 
-            src={story.avatar}
+            src={story?.avatar || "/user_default.png"}
             alt={story.name}
             style={{
               width: '100%',

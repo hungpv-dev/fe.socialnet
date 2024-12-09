@@ -118,6 +118,8 @@ const Register = () => {
     } catch (err) {
       if (err.status === 401) {
         setErrors({message: 'Không thể xác thực client'});
+      } else if (err.status === 500) {
+        setErrors({message: 'Tài khoản của bạn đã bị khóa'});
       } else if (err.status === 422) {
         setErrors(err.response.data);
       } else {

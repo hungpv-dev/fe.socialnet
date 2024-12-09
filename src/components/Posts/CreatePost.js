@@ -13,7 +13,8 @@ import {
     ImageList,
     ImageListItem,
     Select,
-    MenuItem
+    MenuItem,
+    CircularProgress
 } from '@mui/material';
 import {
     Image as ImageIcon,
@@ -36,11 +37,14 @@ const CreatePost = ( { setPosts, onClose } ) => {
     const currentUser = useSelector(state => state.user);
     const [anchorEl, setAnchorEl] = useState(null);
     const [privacy, setPrivacy] = useState('public');
+    const [loading, setLoading] = useState(false);
 
     const MAX_FILE_SIZE = 30 * 1024 * 1024; // 30MB in bytes
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        
         let formData = new FormData();
         formData.append('content', content);
         formData.append('status', privacy);
@@ -70,6 +74,8 @@ const CreatePost = ( { setPosts, onClose } ) => {
             }
         } catch (e) {
             console.log('Lỗi khi gửi file:', e);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -252,6 +258,7 @@ const CreatePost = ( { setPosts, onClose } ) => {
                         <Button
                             component="label"
                             startIcon={<ImageIcon color="success" />}
+                            disabled={loading}
                             sx={{
                                 textTransform: 'none',
                                 borderRadius: 2,
@@ -322,7 +329,8 @@ const CreatePost = ( { setPosts, onClose } ) => {
                     <Button
                         variant="contained"
                         onClick={handleSubmit}
-                        disabled={!content && mediaFiles.length === 0}
+                        disabled={(!content && mediaFiles.length === 0) || loading}
+                        startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
                         sx={{
                             textTransform: 'none',
                             borderRadius: 2,
@@ -333,7 +341,7 @@ const CreatePost = ( { setPosts, onClose } ) => {
                             }
                         }}
                     >
-                        Đăng
+                        {loading ? 'Đang đăng...' : 'Đăng'}
                     </Button>
                 </Stack>
             </Stack>
