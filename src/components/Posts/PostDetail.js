@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { CircularProgress, Box, Paper } from '@mui/material';
 import axiosInstance from '@/axios';
 import Post from './Post';
+import NotFound from '../errors/404';
 
 const PostDetail = () => {
   const [post, setPost] = useState(null);
@@ -42,18 +43,7 @@ const PostDetail = () => {
   }
 
   if (!post) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100vh'
-        }}
-      >
-        <div>Không tìm thấy bài viết</div>
-      </Box>
-    );
+    return <NotFound message='Không tìm thấy bài viết!' />;
   }
 
   return (

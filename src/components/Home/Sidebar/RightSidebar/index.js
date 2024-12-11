@@ -46,6 +46,7 @@ function RightSidebar() {
     const friendApi = useFriend();
     const [friendRequests, setFriendRequests] = useState([]);
     const [suggestedFriends, setSuggestedFriends] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const getFriendRequests = async () => {
         try {
@@ -112,8 +113,15 @@ function RightSidebar() {
     };
 
     const handleAddFriend = async (userId) => {
-        await friendApi.add(userId);
-        getSuggestedFriends();
+        setLoading(true);
+        try {
+            await friendApi.add(userId);
+            getSuggestedFriends();
+        } catch (error) {
+            console.error('Lỗi khi thêm bạn:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleRemoveSuggestion = async (userId) => {
@@ -240,8 +248,9 @@ function RightSidebar() {
                                                 bgcolor: 'primary.main'
                                             }}
                                             onClick={() => handleAddFriend(suggestion.id)}
+                                            disabled={loading}
                                         >
-                                            Thêm bạn bè
+                                            {loading ? 'Đang gửi...' : 'Thêm bạn bè'}
                                         </Button>
                                         {/* <Button 
                                             variant="outlined" 
