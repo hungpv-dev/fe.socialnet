@@ -221,8 +221,6 @@ const ReportManagement = () => {
     }
   };
 
-  console.log(reports);
-
   const handleConfirm = async (id, status) => {
     const promise = axiosInstance.put(`admin/reports/${id}`, {
       status,
@@ -747,9 +745,6 @@ const ReportManagement = () => {
                       ? "Bạn bè"
                       : "Riêng tư"}
                   </b>
-                  {selectedReport.reportable.is_active === 0 && (
-                    <span sx={{ color: "red" }}> • Đã bị ẩn</span>
-                  )}
                 </Typography>
                 {selectedReport.reportable.content && (
                   <Typography variant="body1">
