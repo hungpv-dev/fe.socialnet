@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '@/axios';
 import StoryViewer from './StoryViewer';
+import NotFound from '../errors/404';
 
 const StoryDetail = () => {
   const { id } = useParams();
@@ -17,7 +18,6 @@ const StoryDetail = () => {
         setStory(response.data);
       } catch (error) {
         console.error('Lỗi khi tải story:', error);
-        navigate('/');
       } finally {
         setLoading(false);
       }
@@ -50,6 +50,10 @@ const StoryDetail = () => {
       stories: [story]
     }
   ] : [];
+
+  if(!story){
+    return <NotFound message='Tin không tồn tại' />;
+  }
 
   return (
     <StoryViewer

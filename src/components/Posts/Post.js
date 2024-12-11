@@ -82,6 +82,8 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [openReport, setOpenReport] = useState(false);
     const [loadingShare, setLoadingShare] = useState(false);
+    const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
+    const [loadingDelete, setLoadingDelete] = useState(false);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -536,6 +538,31 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
         }
     };
 
+    const handleDeleteOpen = () => {
+        setOpenDeleteConfirm(true);
+    };
+
+    const handleDeleteClose = () => {
+        setOpenDeleteConfirm(false);
+    };
+
+    const handleDelete = async () => {
+        setLoadingDelete(true);
+        try {
+            const response = await axiosInstance.delete(`posts/${post.id}`);
+            if (response.status === 200) {
+                setPosts(prevPosts => prevPosts.filter(p => p.id !== post.id));
+                toast.success('Đã xóa bài viết');
+                handleDeleteClose();
+            }
+        } catch (error) {
+            console.error('Lỗi khi xóa bài viết:', error);
+            toast.error('Có lỗi xảy ra khi xóa bài viết');
+        } finally {
+            setLoadingDelete(false);
+        }
+    };
+
     return (
         <Card sx={{
             mb: 3,
@@ -563,10 +590,16 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                             onClose={handleClose}
                         >
                             {post.user_id === user.id ? (
-                                <MenuItem onClick={handleEditOpen}>
-                                    <Edit sx={{ mr: 1 }} />
-                                    Chỉnh sửa bài viết
-                                </MenuItem>
+                                <>
+                                    <MenuItem onClick={handleEditOpen}>
+                                        <Edit sx={{ mr: 1 }} />
+                                        Chỉnh sửa bài viết
+                                    </MenuItem>
+                                    <MenuItem onClick={handleDeleteOpen}>
+                                        <Close sx={{ mr: 1 }} />
+                                        Xóa bài viết
+                                    </MenuItem>
+                                </>
                             ) : (
                                 <MenuItem onClick={() => {
                                     handleClose();
@@ -632,7 +665,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                     </Card> 
                 ) : (
                     <>
-                        {post.post_share && <Card sx={{ bgcolor: '#f0f2f5' }}>
+                        {post.post_share ? <Card sx={{ bgcolor: '#f0f2f5' }}>
                             <CardHeader
                                 avatar={<Avatar src={post.post_share.user.avatar} />}
                                 title={post.post_share.user.name}
@@ -645,7 +678,15 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                                 <Typography variant="body2">{post.post_share.content}</Typography>
                                 {renderMedia(post.post_share.data)}
                             </CardContent>
-                        </Card>}
+                        </Card> : (post.share_id > 0 ? 
+                            <>
+                            <Card sx={{ bgcolor: '#f0f2f5' }}>
+                                <CardContent>
+                                    <Typography sx={{ bgcolor: '#f0f2f5' }} color="error">Bài viết đã bị xóa!</Typography>
+                                </CardContent>
+                            </Card>
+                            </>
+                         : '')}
                         {!post.post_share && renderMedia(post.data)}
                     </>
                 )}
@@ -665,10 +706,14 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                         }}
                         onClick={handleShowEmojiUsers}
                     >
-                        <ThumbUpAlt color="primary" sx={{ fontSize: '18px' }} />
-                        <Typography variant="body2" color="text.secondary">
-                            {emojiCount || 0}
-                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <Typography variant="body2" color="text.secondary">
+                                {emojiCount || 0}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                cảm xúc
+                            </Typography>
+                        </Box>
                     </Box>
                     <Box sx={{ display: 'flex', gap: 2 }}>
                         <Typography variant="body2" color="text.secondary">
@@ -830,7 +875,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                         onClick={handleShareClose}
                         disabled={loadingShare}
                     >
-                        Hủy
+                        H��y
                     </Button>
                     <Button 
                         variant="contained"
@@ -966,7 +1011,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                         <Select
                             value={editStatus}
                             onChange={(e) => setEditStatus(e.target.value)}
-                            label="Đối tượng"
+                            label="Đ���i tượng"
                         >
                             <MenuItem value="public">
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -1087,6 +1132,35 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                 type="post"
                 id={post.id}
             />
+
+            <Dialog
+                open={openDeleteConfirm}
+                onClose={handleDeleteClose}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DialogTitle>Xác nhận xóa</DialogTitle>
+                <DialogContent>
+                    {loadingDelete ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+                            <CircularProgress />
+                        </Box>
+                    ) : (
+                        <Typography>Bạn có chắc chắn muốn xóa bài viết này không?</Typography>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleDeleteClose} disabled={loadingDelete}>Hủy</Button>
+                    <Button 
+                        variant="contained" 
+                        color="error" 
+                        onClick={handleDelete} 
+                        disabled={loadingDelete}
+                    >
+                        {loadingDelete ? 'Đang xóa...' : 'Xóa'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Card>
     );
 };

@@ -108,6 +108,7 @@ const Canhan = () => {
     }
   }, [user]);
 
+  console.log(user);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
