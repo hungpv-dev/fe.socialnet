@@ -21,6 +21,7 @@ import {
   Chat,
   Notifications,
   Logout,
+  AdminPanelSettingsTwoTone,
 } from "@mui/icons-material";
 import { styled, alpha } from "@mui/material/styles";
 import { useSelector, useDispatch } from "react-redux";
@@ -299,6 +300,15 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
               />
               <Typography>{user?.name || "Trang cá nhân"}</Typography>
             </MenuItem>
+            {user.is_admin && (
+              <MenuItem
+                component={Link}
+                to='/admin'
+              >
+                <AdminPanelSettingsTwoTone sx={{ mr: 1 }} />
+                <Typography>Trang quản trị</Typography>
+              </MenuItem>
+            )}
             <MenuItem onClick={handleLogout}>
               <Logout sx={{ mr: 1 }} />
               <Typography>Đăng xuất</Typography>
