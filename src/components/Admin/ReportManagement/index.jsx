@@ -202,11 +202,13 @@ const ReportManagement = () => {
         draggable: false,
       }
     );
+  };
+
+  const handleConfirm = async (id, status) => {
+    const promise = axiosInstance.put(`admin/reports/${id}`, { status });
 
     try {
-      await axiosInstance.put(`admin/reports/${id}`, {
-        status,
-      });
+      await promise;
       setReports((prevReports) => ({
         ...prevReports,
         data: prevReports.data.map((report) =>
@@ -219,32 +221,20 @@ const ReportManagement = () => {
       setIsUpdating(false);
       handleClosePopup();
     }
-  };
-
-  const handleConfirm = async (id, status) => {
-    const promise = axiosInstance.put(`admin/reports/${id}`, {
-      status,
-    });
 
     toast.promise(promise, {
       pending: "Đang cập nhật trạng thái báo cáo...",
       success: {
         render({ data }) {
-          return data.data.message; // Hiển thị thông báo thành công
+          return data.data.message;
         },
       },
       error: {
         render({ data }) {
-          return data.data.message; // Hiển thị thông báo lỗi
+          return data.data.message;
         },
       },
     });
-
-    try {
-      const res = await promise;
-    } catch (error) {
-      console.error("Lỗi khi cập nhật trạng thái báo cáo:", error);
-    }
   };
 
   return (
