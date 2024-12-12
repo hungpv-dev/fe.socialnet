@@ -30,6 +30,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import InfoIcon from "@mui/icons-material/Info";
 import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "react-toastify";
+import ReportDetail from './ReportDetail'; // Nhập khẩu component ReportDetail
 
 const ReportManagement = () => {
   const [page, setPage] = useState(0);
@@ -149,9 +150,13 @@ const ReportManagement = () => {
     setSelectedReport(null);
   };
 
+  let confirmToast = null
+
   const handleReport = async (id, status) => {
-    setIsUpdating(true);
-    const confirmToast = toast(
+    if (confirmToast) {
+      toast.dismiss(confirmToast); // Đóng toast đang hiện nếu có
+    }
+    confirmToast = toast(
       <div>
         <p>
           Bạn có chắc chắn muốn{" "}
@@ -205,7 +210,8 @@ const ReportManagement = () => {
   };
 
   const handleConfirm = async (id, status) => {
-    const promise = axiosInstance.put(`admin/reports/${id}`, { status });
+    setIsUpdating(true);
+    const promise = axiosInstance.put(`admin/reports/${id}`,{ status });
 
     try {
       await promise;
@@ -491,7 +497,7 @@ const ReportManagement = () => {
               Sống tại <b>{hoveredUser.hometown}</b>
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
-              Đăng kí vào{" "}
+              ��ăng kí vào{" "}
               <b>
                 {new Date(hoveredUser.created_at).toLocaleString("vi-VN", {
                   day: "2-digit",
@@ -598,207 +604,13 @@ const ReportManagement = () => {
         >
           <DialogTitle>Thông tin báo cáo</DialogTitle>
           <DialogContent>
-            <Box display="flex">
-              <Box
-                flex={1}
-                sx={{
-                  paddingRight: 2,
-                  marginRight: 1,
-                  overflowY: "auto",
-                  maxHeight: "400px",
-                  "&::-webkit-scrollbar": { display: "none" },
-                }}
-              >
-                <Typography variant="h6">Người gửi:</Typography>
-                <Box display="flex" flexDirection="column" alignItems="center">
-                  <img
-                    src={selectedReport.user.avatar || "/user_default.png"}
-                    alt="Avatar"
-                    style={{
-                      width: 80,
-                      height: 80,
-                      borderRadius: "50%",
-                      marginBottom: 10,
-                    }}
-                  />
-                  <Typography
-                    variant="h6"
-                    sx={{ fontWeight: 600, mb: 1, textAlign: "center" }}
-                  >
-                    {selectedReport.user.name}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ mb: 1, textAlign: "center" }}
-                  >
-                    <b>{selectedReport.user.email}</b>
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ mb: 1, textAlign: "center" }}
-                  >
-                    Có <b>{selectedReport.user.follower}</b> lượt theo dõi
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ mb: 1, textAlign: "center" }}
-                  >
-                    Có <b>{selectedReport.user.friend_counts}</b> bạn bè
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ mb: 1, textAlign: "center" }}
-                  >
-                    Đến từ <b>{selectedReport.user.hometown}</b>
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ mb: 1, textAlign: "center" }}
-                  >
-                    Sống tại <b>{selectedReport.user.hometown}</b>
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ mb: 1, textAlign: "center" }}
-                  >
-                    Đăng kí vào{" "}
-                    <b>
-                      {new Date(selectedReport.user.created_at).toLocaleString(
-                        "vi-VN",
-                        {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                          hour12: false,
-                        }
-                      )}
-                    </b>
-                  </Typography>
-                </Box>
-                <Divider
-                  orientation="vertical"
-                  flexItem
-                  sx={{
-                    my: 2,
-                    width: "100%",
-                    borderColor: "black",
-                    borderWidth: 1,
-                  }}
-                />
-                <Typography variant="body1">
-                  Kiểu báo cáo: <b>{selectedReport.report_type.name}</b>
-                </Typography>
-                <Typography variant="body1">
-                  Nội dung: <b>{selectedReport.content}</b>
-                </Typography>
-              </Box>
-              <Divider
-                orientation="vertical"
-                flexItem
-                sx={{ borderColor: "black", borderWidth: 1 }}
-              />
-              <Box
-                flex={1}
-                sx={{
-                  marginLeft: 1,
-                  overflowY: "auto",
-                  maxHeight: "400px",
-                  "&::-webkit-scrollbar": { display: "none" },
-                }}
-              >
-                <Typography variant="h6">
-                  Nội dung bài viết bị báo cáo:
-                </Typography>
-                <Typography variant="body1">
-                  Tạo lúc:{" "}
-                  <b>
-                    {new Date(
-                      selectedReport.reportable.created_at
-                    ).toLocaleString("vi-VN", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                      hour12: false,
-                    })}
-                  </b>{" "}
-                  •{" "}
-                  <b>
-                    {selectedReport.reportable.status === "public"
-                      ? "Công khai"
-                      : selectedReport.reportable.status === "friend"
-                      ? "Bạn bè"
-                      : "Riêng tư"}
-                  </b>
-                </Typography>
-                {selectedReport.reportable.content && (
-                  <Typography variant="body1">
-                    {selectedReport.reportable.content}
-                  </Typography>
-                )}
-                {selectedReport.reportable.data && (
-                  <Box
-                    sx={{ display: "flex", flexDirection: "column", gap: 1 }}
-                  >
-                    {(() => {
-                      const parsedData = JSON.parse(
-                        selectedReport.reportable.data
-                      );
-                      const images = parsedData.images.split(",");
-                      return images.map((image, index) => (
-                        <img
-                          key={index}
-                          src={image}
-                          alt={`Image ${index + 1}`}
-                          style={{ maxWidth: "100%", borderRadius: "8px" }}
-                        />
-                      ));
-                    })()}
-                  </Box>
-                )}
-              </Box>
-            </Box>
+            <ReportDetail 
+              report={selectedReport} 
+              handleReport={handleReport} 
+              isUpdating={isUpdating} 
+            /> 
           </DialogContent>
           <DialogActions>
-            <Button
-              onClick={() => handleReport(selectedReport.id, "approved")}
-              sx={{
-                backgroundColor: "success.main",
-                color: "white",
-                "&:hover": {
-                  backgroundColor: "success.dark",
-                },
-                cursor:
-                  isUpdating || selectedReport.status !== "pending"
-                    ? "not-allowed"
-                    : "pointer",
-              }}
-              disabled={isUpdating || selectedReport.status !== "pending"}
-            >
-              Chấp nhận
-            </Button>
-            <Button
-              onClick={() => handleReport(selectedReport.id, "declined")}
-              sx={{
-                backgroundColor: "error.main",
-                color: "white",
-                "&:hover": {
-                  backgroundColor: "error.dark",
-                },
-                cursor:
-                  isUpdating || selectedReport.status !== "pending"
-                    ? "not-allowed"
-                    : "pointer",
-              }}
-              disabled={isUpdating || selectedReport.status !== "pending"}
-            >
-              Từ chối
-            </Button>
             <IconButton
               onClick={handleClosePopup}
               sx={{ position: "absolute", top: 8, right: 8 }}
