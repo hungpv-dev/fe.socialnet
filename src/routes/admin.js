@@ -4,6 +4,7 @@ import UserManagement from "@/components/Admin/UserManagement";
 import ReportManagement from "@/components/Admin/ReportManagement";
 import Analytics from "@/components/Admin/Analytics";
 import ReportTypeManagement from "@/components/Admin/ReportTypeManagement";
+import UserLog from "@/components/Admin/UserLog";
 
 const adminRoutes = [
   {
@@ -29,6 +30,10 @@ const adminRoutes = [
       {
         path: "reports/type", 
         element: <ReportTypeManagement />
+      },
+      {
+        path: "log", 
+        element: <UserLog />
       },
     ]
   }

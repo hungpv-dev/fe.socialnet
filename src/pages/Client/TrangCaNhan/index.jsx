@@ -42,6 +42,7 @@ import {
   PersonAdd,
   Message,
   Phone,
+  MoreVert
 } from '@mui/icons-material';
 import Introduction from './Introduction';
 import Friends from './Friends';
@@ -74,6 +75,7 @@ const Canhan = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
   const [coverMenuAnchorEl, setCoverMenuAnchorEl] = useState(null);
+  const [activityMenuAnchorEl, setActivityMenuAnchorEl] = useState(null);
 
   // Form state for profile editing
   const [editForm, setEditForm] = useState({
@@ -108,7 +110,6 @@ const Canhan = () => {
     }
   }, [user]);
 
-  console.log(user);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -451,6 +452,10 @@ const Canhan = () => {
   const handleChangeCover = () => {
     handleCoverMenuClose();
     setOpenCoverDialog(true);
+  };
+
+  const handleCloseActivityMenu = () => {
+    setActivityMenuAnchorEl(null);
   };
 
   if (pageLoading) {
@@ -984,35 +989,58 @@ const Canhan = () => {
               display: 'flex', 
               p: 2, 
               overflowX: 'auto',
-              justifyContent: { xs: 'space-between', sm: 'flex-start' },
+              justifyContent: 'space-between',
               gap: { xs: 0, sm: 2 }
             }}>
-              <Button 
-                color={activeTab === 'posts' ? 'primary' : 'inherit'}
-                onClick={() => handleTabChange('posts')}
-              >
-                Bài viết
-              </Button>
-              <Button
-                color={activeTab === 'about' ? 'primary' : 'inherit'}
-                onClick={() => handleTabChange('about')}
-              >
-                Giới thiệu
-              </Button>
-              <Button
-                color={activeTab === 'friends' ? 'primary' : 'inherit'}
-                onClick={() => handleTabChange('friends')}
-              >
-                Bạn bè
-              </Button>
-              <Button
-                color={activeTab === 'photos' ? 'primary' : 'inherit'}
-                onClick={() => handleTabChange('photos')}
-              >
-                Ảnh
-              </Button>
+              <Box sx={{ display: 'flex', flexGrow: 1, gap: 2 }}>
+                <Button 
+                  color={activeTab === 'posts' ? 'primary' : 'inherit'}
+                  onClick={() => handleTabChange('posts')}
+                >
+                  Bài viết
+                </Button>
+                <Button
+                  color={activeTab === 'about' ? 'primary' : 'inherit'}
+                  onClick={() => handleTabChange('about')}
+                >
+                  Giới thiệu
+                </Button>
+                <Button
+                  color={activeTab === 'friends' ? 'primary' : 'inherit'}
+                  onClick={() => handleTabChange('friends')}
+                >
+                  Bạn bè
+                </Button>
+                <Button
+                  color={activeTab === 'photos' ? 'primary' : 'inherit'}
+                  onClick={() => handleTabChange('photos')}
+                >
+                  Ảnh
+                </Button>
+              </Box>
+              <IconButton onClick={(e) => setActivityMenuAnchorEl(e.currentTarget)}>
+                <MoreVert />
+              </IconButton>
             </Box>
           </Paper>
+          {/* Menu cho nhật ký hoạt động */}
+          <Menu
+            anchorEl={activityMenuAnchorEl}
+            open={Boolean(activityMenuAnchorEl)}
+            onClose={handleCloseActivityMenu}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+          >
+            <MenuItem onClick={() => navigate('/activity/log')}>
+              Nhật ký hoạt động
+            </MenuItem>
+          </Menu>
 
           {/* Main Content */}
           <Grid container spacing={3} sx={{ px: { sm: 2, md: 3 } }}>
