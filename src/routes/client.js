@@ -37,6 +37,7 @@ import StoryDetail from "@/components/Stories/StoryDetail";
 import VerifyCode from "@/pages/VerifyCode";
 import ProfileUpdate from "@/pages/Client/TrangCaNhan/ProfileUpdate";
 import ProfileUpdateAvatar from "@/pages/Client/TrangCaNhan/ProfileUpdateAvatar";
+import ActivityLogPpage from "@/pages/Client/ActivityLog";
 // Router không cần đăng nhập vẫn vô được
 const pulicRouter = [
     {
@@ -137,6 +138,9 @@ const privateRouters = [
     },
     {
         path: "/friends/suggestions", component: FriendPage
+    },
+    {
+        path: "/activity/log", component: ActivityLogPpage
     },
 
 ];
