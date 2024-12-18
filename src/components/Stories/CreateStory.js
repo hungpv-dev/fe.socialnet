@@ -198,6 +198,8 @@ const CreateStory = ({ open,stories,  setStories, onClose }) => {
                             borderRadius: 1,
                             mb: 2,
                             bgcolor: '#f5f5f5',
+                            padding: '16px',
+                            boxSizing: 'border-box',
                         }}
                     >
                         <Typography variant="h6" color="text.secondary" sx={{ mb: 3 }}>
@@ -223,7 +225,7 @@ const CreateStory = ({ open,stories,  setStories, onClose }) => {
                                 />
                             </Button>
                             
-                            <Button
+                            {/* <Button
                                 variant="contained"
                                 onClick={handlePasteImage}
                                 startIcon={<ContentPaste />}
@@ -233,7 +235,7 @@ const CreateStory = ({ open,stories,  setStories, onClose }) => {
                                 }}
                             >
                                 Dán ảnh
-                            </Button>
+                            </Button> */}
                         </Box>
                         
                         <Typography color="text.secondary" variant="body2">

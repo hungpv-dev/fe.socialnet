@@ -83,6 +83,8 @@ function LayoutClient({ children }) {
                     data: {
                         post_id: notification.post_id,
                         comment_id: notification.comment_id,
+                        story_id: notification?.story_id,
+                        user_id: notification?.user_id,
                         avatar: notification.avatar,
                         message: notification.message
                     },

@@ -40,7 +40,7 @@ const AdminLayout = ({ children }) => {
         { text: 'Đơn báo cáo', path: '/admin/reports' },
       ]
     },
-    { text: 'Thống kê', icon: <Assessment />, path: '/admin/analytics' },
+    // { text: 'Thống kê', icon: <Assessment />, path: '/admin/analytics' },
   ];
 
   const drawer = (

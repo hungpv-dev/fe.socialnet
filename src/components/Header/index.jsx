@@ -23,7 +23,7 @@ import {
   Logout,
   AdminPanelSettingsTwoTone,
 } from "@mui/icons-material";
-import { styled, alpha } from "@mui/material/styles";
+import { styled, alpha, keyframes } from "@mui/material/styles";
 import { useSelector, useDispatch } from "react-redux";
 import Notification from "./Notification";
 import useAuth from "@/hooks/useAuth";
@@ -33,53 +33,117 @@ import { useLocation } from "react-router-dom";
 import axiosInstance from "@/axios";
 import echo from "@/components/EchoComponent";
 
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  // backgroundColor: alpha(theme.palette.common.white, 0.15),
-  // "&:hover": {
-  //   backgroundColor: alpha(theme.palette.common.white, 0.25),
-  // },
-  backgroundColor: "#F0F2F5",
-  borderRadius: "50px",
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
+const slideDown = keyframes`
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+`;
+const SearchMobile = styled("div")(({ theme }) => ({
+  position: "fixed", // Vị trí cố định
+  top: 0,
+  left: 0,
   width: "100%",
-  [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(3),
-    width: "auto",
+  zIndex: 1000,
+  backgroundColor: theme.palette.background.default,
+  display: "flex",
+  alignItems: "center",
+  padding: theme.spacing(1, 2),
+  boxShadow: theme.shadows[2],
+  borderBottom: `1px solid ${theme.palette.divider}`,
+
+  // Hiệu ứng xuất hiện
+  animation: `${slideDown} 0.3s ease-out`,
+
+  // Responsive cho thiết bị nhỏ
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(0.5, 1),
   },
 }));
 
-const SearchIconWrapper = styled("div")(({ theme }) => ({
+const SearchButton = styled("button")(({ theme }) => ({
+  padding: theme.spacing(1, 2),
+  marginLeft: theme.spacing(1),
+  border: "none",
+  outline: "none",
+  backgroundColor: theme.palette.primary.main,
+  color: theme.palette.primary.contrastText,
+  borderRadius: theme.shape.borderRadius,
+  cursor: "pointer",
+  fontSize: "1rem",
+  fontWeight: "bold",
+  transition: "background-color 0.3s ease",
+
+  "&:hover": {
+    backgroundColor: theme.palette.primary.dark,
+  },
+
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(0.8, 1.5),
+    fontSize: "0.9rem",
+  },
+}));
+
+const StyledInputBaseMobile = styled("input")(({ theme }) => ({
+  flex: 1, // Chiếm toàn bộ không gian còn lại
+  border: "none",
+  outline: "none",
+  fontSize: "1.2rem", // Tăng kích thước font chữ
+  padding: theme.spacing(1, 2), // Tăng khoảng cách bên trong
+  color: theme.palette.text.primary,
+  backgroundColor: theme.palette.background.default,
+  borderRadius: theme.shape.borderRadius, // Thêm bo góc
+  boxShadow: theme.shadows[1], // Đổ bóng nhẹ
+  [theme.breakpoints.down("sm")]: {
+    fontSize: "1rem", // Kích thước phù hợp với màn hình nhỏ
+    padding: theme.spacing(0.8, 1.5),
+  },
+}));
+
+const Search = styled('div')(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: '#F0F2F5',
+  marginRight: theme.spacing(2),
+  marginLeft: 0,
+  width: '100%',
+  [theme.breakpoints.up('sm')]: {
+    marginLeft: theme.spacing(3),
+    width: 'auto',
+  },
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
+  color: 'inherit',
+  '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: "20ch",
-    },
+    width: '100%',
   },
 }));
 
 function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
   const auth = useAuth();
   const navigate = useNavigate();
+  const searchMobileRef = useRef(null);
   const dispatch = useDispatch();
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElNotif, setAnchorElNotif] = useState(null);
+  const [showSearch, setShowSearch] = useState(false); // Thêm trạng thái để điều khiển hiển thị ô tìm kiếm
   const [chatNone, setChatNone] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const user = useSelector((state) => state.user);
@@ -114,6 +178,10 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
       navigate(`/search?query=${searchQuery}`);
     }
   };
+  const handleSearchSubmit = (event) => {
+    navigate(`/search?query=${searchQuery}`);
+    setShowSearch(false)
+  };
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -136,8 +204,8 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
       const response = await axiosInstance.get("/chat-room").then(res => res.data);
       let data = []
       response.data.forEach(item => {
-        if(item.last_message && !item.last_message.is_seen){
-          if(!item.outs?.includes('user_'+user.id) && !item.block?.includes('user_'+user.id)){
+        if (item.last_message && !item.last_message.is_seen) {
+          if (!item.outs?.includes('user_' + user.id) && !item.block?.includes('user_' + user.id)) {
             data.push({
               id: item.chat_room_id,
             })
@@ -150,17 +218,17 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
     }
   };
   useEffect(() => {
-    if(idRoomAdd > 0){
+    if (idRoomAdd > 0) {
       const exists = chatNone.some(item => item.id === idRoomAdd);
-      if(!exists) {
-        setChatNone(s => [...s, {id: idRoomAdd}]);
+      if (!exists) {
+        setChatNone(s => [...s, { id: idRoomAdd }]);
       }
     }
     if (typeof setIdRoomAdd === 'function') {
-      setIdRoomAdd(0); 
+      setIdRoomAdd(0);
     }
   }, [idRoomAdd, chatNone]);
-  
+
   useEffect(() => {
     fetchChatNone();
   }, []);
@@ -195,11 +263,11 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
     <AppBar position="fixed" sx={{ bgcolor: "white", color: "black" }}>
       <Toolbar>
         {/* Left section */}
-        <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <Link to="/">
             <img src="/logo2.png" alt="logo" style={{ height: 40 }} />
           </Link>
-          <Search>
+          <Search sx={{ display: { xs: 'none', sm: 'flex' } }}>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
@@ -211,6 +279,41 @@ function Header({ idRoomAdd, setIdRoomAdd, unseenCount, setUnseenCount }) {
               onKeyDown={handleSearchKeyDown} // Kiểm tra phím Enter khi nhấn
             />
           </Search>
+          <IconButton
+            sx={{ display: { xs: 'flex', sm: 'none' }, bgcolor: 'primary.main', borderRadius: '50%', '&:hover': { bgcolor: 'primary.dark' } }}
+            onClick={() => setShowSearch(!showSearch)}
+          >
+            <SearchIcon sx={{ color: 'white' }} />
+          </IconButton>
+          {showSearch && (
+            <>
+              <div
+                style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)', // Màu nền bóng
+                  zIndex: 999, // Đảm bảo overlay ở trên các phần tử khác
+                }}
+                onClick={() => setShowSearch(false)} // Đóng search khi click vào nền
+              />
+              <SearchMobile
+                ref={searchMobileRef}
+                onClick={(e) => e.stopPropagation()} // Ngừng sự kiện click để không đóng search
+              >
+                <StyledInputBaseMobile
+                  placeholder="Tìm kiếm..."
+                  inputProps={{ "aria-label": "search" }}
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  onKeyDown={handleSearchKeyDown}
+                />
+                <SearchButton onClick={handleSearchSubmit}>Tìm kiếm</SearchButton>
+              </SearchMobile>
+            </>
+          )}
         </Box>
 
         {/* Center section */}

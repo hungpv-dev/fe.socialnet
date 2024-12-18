@@ -126,7 +126,7 @@ const UserManagement = () => {
       <div>
         <p>
           Bạn có chắc chắn muốn{" "}
-          {currentStatusToToggle === 0 ? "khóa" : "mở khóa"} tài khoản này
+          {selectedUser.is_active === 0 ? "khóa" : "mở khóa"} tài khoản này
           không?
         </p>
         <Button
@@ -136,9 +136,9 @@ const UserManagement = () => {
 
             setIsUpdating(true);
             try {
-              await toast.promise(
+              let res = await toast.promise(
                 axiosInstance.put(`admin/users/${userId}`, {
-                  is_active: currentStatusToToggle === 0 ? 1 : 0,
+                  is_active: selectedUser.is_active === 0 ? 1 : 0,
                 }),
                 {
                   pending: "Đang cập nhật trạng thái...",
@@ -146,15 +146,16 @@ const UserManagement = () => {
                   error: "Cập nhật thất bại!",
                 }
               );
-
-              setUser((prevUsers) => ({
-                ...prevUsers,
-                data: prevUsers.data.map((user) =>
-                  user.id === userId
-                    ? { ...user, is_active: currentStatus === 0 ? 1 : 0 }
-                    : user
-                ),
-              }));
+              if(res.status === 200){
+                let u = res.data.user;
+                setUsers((prevUsers) => ({
+                  ...prevUsers,
+                  data: prevUsers.data.map((user) =>
+                    user.id === userId ? u : user
+                  ),
+                }));
+                setOpenDialog(false)
+              }
             } catch (error) {
               console.error("Lỗi khi thay đổi trạng thái người dùng:", error);
             } finally {
@@ -213,7 +214,7 @@ const UserManagement = () => {
             toast.dismiss(confirmToast);
             setIsConfirmDisabled(true);
             try {
-              await toast.promise(
+              let res = await toast.promise(
                 axiosInstance.put(`admin/users/${userId}`, {
                   is_admin: !currentStatus,
                 }),
@@ -223,19 +224,16 @@ const UserManagement = () => {
                   error: "Cập nhật quyền quản trị thất bại!",
                 }
               );
-
-              // Cập nhật dữ liệu người dùng trong state
-              setUser((prevUsers) => ({
-                ...prevUsers,
-                data: prevUsers.data.map((user) =>
-                  user.id === userId
-                    ? {
-                        ...user,
-                        is_active: currentStatus === false ? true : false,
-                      }
-                    : user
-                ),
-              }));
+              if (res.status === 200) {
+                let u = res.data.user;
+                setUsers((prevUsers) => ({
+                  ...prevUsers,
+                  data: prevUsers.data.map((user) =>
+                    user.id === userId ? u : user
+                  ),
+                }));
+                setOpenDialog(false)
+              }
             } catch (error) {
               console.error("Lỗi khi thay đổi quyền quản trị:", error);
             } finally {
@@ -346,72 +344,72 @@ const UserManagement = () => {
           <TableBody>
             {loading
               ? Array.from({ length: rowsPerPage }).map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Skeleton width={20} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={50} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width="80%" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width="80%" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={70} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={70} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={120} />
-                    </TableCell>
-                  </TableRow>
-                ))
+                <TableRow key={index}>
+                  <TableCell>
+                    <Skeleton width={20} />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton width={50} />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton width="80%" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton width="80%" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton width={70} />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton width={70} />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton width={120} />
+                  </TableCell>
+                </TableRow>
+              ))
               : users.data.map((user, index) => (
-                  <TableRow
-                    key={user.id}
-                    sx={{
-                      backgroundColor: index % 2 === 0 ? "#f5f5f5" : "#ffffff",
-                    }}
-                  >
-                    <TableCell>{index + 1 + page * rowsPerPage}</TableCell>
-                    <TableCell># {user.id}</TableCell>
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={user.is_active === 0 ? "Hoạt động" : "Bị khóa"}
-                        color={user.is_active === 0 ? "success" : "error"}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={user.is_admin ? "Quản trị" : "Người dùng"}
-                        color={user.is_admin ? "secondary" : "warning"}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      {new Date(user.created_at).toLocaleString("vi-VN", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: false,
-                      })}
-                    </TableCell>
-                    <TableCell>
-                      <IconButton onClick={() => handleInfoClick(user)}>
-                        <InfoIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                <TableRow
+                  key={user.id}
+                  sx={{
+                    backgroundColor: index % 2 === 0 ? "#f5f5f5" : "#ffffff",
+                  }}
+                >
+                  <TableCell>{index + 1 + page * rowsPerPage}</TableCell>
+                  <TableCell># {user.id}</TableCell>
+                  <TableCell>{user.name}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={user.is_active === 0 ? "Hoạt động" : "Bị khóa"}
+                      color={user.is_active === 0 ? "success" : "error"}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={user.is_admin ? "Quản trị" : "Người dùng"}
+                      color={user.is_admin ? "secondary" : "warning"}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    {new Date(user.created_at).toLocaleString("vi-VN", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })}
+                  </TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => handleInfoClick(user)}>
+                      <InfoIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
@@ -501,7 +499,6 @@ const UserManagement = () => {
         }}
       >
         <DialogContent sx={{ padding: 0, textAlign: "left" }}>
-          {console.log(selectedUser)}
           {selectedUser && (
             <div
               style={{

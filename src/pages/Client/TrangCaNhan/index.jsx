@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import React from 'react';
 import axiosInstance from "@/axios";
 import { toast } from 'react-toastify';
-import { useNavigate, useSearchParams, Navigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { CircularProgress, Box as LoadingContainer } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import Visibility from '@mui/icons-material/Visibility';
@@ -18,7 +18,6 @@ import {
   CardContent,
   CardMedia,
   Grid,
-  Divider,
   Paper,
   Dialog,
   DialogTitle,
@@ -108,7 +107,6 @@ const Canhan = () => {
     }
   }, [user]);
 
-  console.log(user);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -487,7 +485,10 @@ const Canhan = () => {
               sx={{ 
                 cursor: currentUser.id === user?.id ? 'pointer' : 'default',
                 height: 400,
-                objectFit: 'cover'
+                objectFit: 'cover',
+                '@media (max-width: 768px)': {
+                  height: 200,
+                },
               }}
             />
           </Card>

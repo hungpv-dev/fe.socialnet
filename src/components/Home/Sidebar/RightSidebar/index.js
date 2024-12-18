@@ -130,7 +130,7 @@ function RightSidebar() {
     };
 
     return (
-        <Box component="aside" sx={{ width: 360, p: 2, bgcolor: 'background.paper' }}>
+        <Box component="aside" sx={{ width: 360, p: 2, bgcolor: 'background.paper',display: { xs: 'none', sm: 'block' } }}>
 
             <Divider sx={{ my: 2 }} />
 
