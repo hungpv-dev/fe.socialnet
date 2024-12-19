@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, IconButton, Button } from "@mui/material";
 import classNames from "classnames/bind";
 import FriendRequests from "../../../components/Friend/FriendRequest";
 import FriendAll from "../../../components/Friend/FriendAll";
@@ -14,12 +14,15 @@ import {
   PersonAdd,
   SupervisedUserCircle,
   Send,
+  Menu,
+  Add,
 } from "@mui/icons-material";
 import { getListFriend, getSuggestFriend } from "@/services/friendService";
 import {
   getFriendRequests,
   getSentFriendRequests,
 } from "@/services/friendRequestService";
+import MenuIcon from "@mui/icons-material/Menu";
 
 const cx = classNames.bind(styles);
 
@@ -50,6 +53,24 @@ const FriendPage = () => {
   const [suggestionStates, setSuggestionStates] = useState({});
 
   const user = useSelector((state) => state.user);
+
+  const [isSidebarVisible, setIsSidebarVisible] = useState(window.innerWidth > 768);
+
+  const toggleSidebar = () => {
+    setIsSidebarVisible((prev) => !prev);
+  };
+
+  // Thêm sự kiện resize để cập nhật trạng thái sidebar
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSidebarVisible(window.innerWidth > 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   // Fetch danh sách bạn bè
   const fetchFriends = async (index) => {
@@ -237,48 +258,89 @@ const FriendPage = () => {
     },
   ];
 
+  const renderButtonToggleSlidebar = () => {
+    return <>
+      <IconButton 
+        className={cx("toggle-button")} 
+        onClick={toggleSidebar} 
+        style={{ 
+          display: window.innerWidth < 768 ? 'flex' : 'none'
+        }} 
+      >
+        <MenuIcon />
+      </IconButton>
+    </>
+  }
+
   const renderContent = () => {
     switch (location.pathname) {
       case "/friends":
         return (
-          <FriendAll
-            friends={friends}
-            unfriendingStates={unfriendingStates}
-            setUnfriendingStates={setUnfriendingStates}
-          />
+          <>
+            {renderButtonToggleSlidebar()}
+            <FriendAll
+              friends={friends}
+              unfriendingStates={unfriendingStates}
+              setUnfriendingStates={setUnfriendingStates}
+            />
+          </>
         );
       case "/friends/request":
         return (
-          <FriendRequests
-            requests={requests}
-            requestStates={requestStates}
-            setRequestStates={setRequestStates}
-          />
+          <>
+            {renderButtonToggleSlidebar()}
+            <FriendRequests
+              requests={requests}
+              requestStates={requestStates}
+              setRequestStates={setRequestStates}
+            />
+          </>
         );
       case "/friends/suggestions":
         return (
-          <FriendSuggestion
-            suggestion={suggestion}
-            suggestionStates={suggestionStates}
-            setSuggestionStates={setSuggestionStates}
-          />
+          <>
+            {renderButtonToggleSlidebar()}
+            <FriendSuggestion
+              suggestion={suggestion}
+              suggestionStates={suggestionStates}
+              setSuggestionStates={setSuggestionStates}
+            />
+          </>
         );
       case "/friends/request/sent":
         return (
-          <FriendRequestSent
-            sents={sents}
-            removeStates={removeStates}
-            setRemoveStates={setRemoveStates}
-          />
+          <>
+            {renderButtonToggleSlidebar()}
+            <FriendRequestSent
+              sents={sents}
+              removeStates={removeStates}
+              setRemoveStates={setRemoveStates}
+            />
+          </>
         );
       default:
         return <div>Không tìm thấy nội dung</div>;
     }
   };
 
+  const renderOverlay = () => {
+    return (
+      <div 
+        className={cx("overlay")} 
+        onClick={() => setIsSidebarVisible(false)} 
+        style={{ 
+          display: isSidebarVisible && window.innerWidth < 768 ? 'block' : 'none',
+          width: '100vw', // Thêm chiều rộng
+          height: '100vh' // Thêm chiều cao
+        }} 
+      />
+    );
+  };
+
   return (
     <div className={cx("friend-requests-page")}>
-      <div className={cx("sidebar")}>
+      {renderOverlay()}
+      <div className={`${cx("sidebar")} ${isSidebarVisible ? "" : cx("hidden")}`}>
         <ul>
           {navItems.map((item) => (
             <li

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import React from 'react';
 import axiosInstance from "@/axios";
 import { toast } from 'react-toastify';
-import { useNavigate, useSearchParams, Navigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { CircularProgress, Box as LoadingContainer } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import Visibility from '@mui/icons-material/Visibility';
@@ -18,7 +18,6 @@ import {
   CardContent,
   CardMedia,
   Grid,
-  Divider,
   Paper,
   Dialog,
   DialogTitle,
@@ -95,6 +94,36 @@ const Canhan = () => {
   const handleTabChange = (tabName) => {
     setSearchParams({ tab: tabName });
   };
+
+  const handleBlockUser = async (id) => {
+    try {
+      if (!id) {
+        toast.error("ID không hợp lệ!");
+        return;
+      }
+      if (user.block) {
+        const response = await axiosInstance.delete(`/blocks/${id}`);
+        if (response.status === 200) {
+          toast.success("Đã bỏ chặn người dùng này!");
+          await reUser(); 
+        } else {
+          toast.error("Lỗi xảy ra, vui lòng thử lại sau");
+        }
+      } else {
+        const payload = { id_account: id };
+        const response = await axiosInstance.post('/blocks', payload);
+        if (response.status === 200) {
+          toast.success("Đã chặn người dùng này!");
+          await reUser();
+        } else {
+          toast.error("Lỗi xảy ra, vui lòng thử lại sau");
+        }
+      }
+    } catch (error) {
+      toast.error(`Lỗi xảy ra, vui lòng thử lại sau`);
+    }
+    setActivityMenuAnchorEl();
+  }
 
   useEffect(() => {
     if (user) {
@@ -492,7 +521,10 @@ const Canhan = () => {
               sx={{ 
                 cursor: currentUser.id === user?.id ? 'pointer' : 'default',
                 height: 400,
-                objectFit: 'cover'
+                objectFit: 'cover',
+                '@media (max-width: 768px)': {
+                  height: 200,
+                },
               }}
             />
           </Card>
@@ -671,19 +703,21 @@ const Canhan = () => {
                   variant="h4" 
                   fontWeight="bold"
                   sx={{ 
-                    fontSize: { xs: '1.5rem', sm: '2rem' },
+                    fontSize: { xs: '1rem', sm: '1.5rem' },
                     wordBreak: 'break-word',
                     overflowWrap: 'break-word',
                     lineHeight: 1.2
                   }}
                 >
-                  {user?.name || 'User'}
+                  {user?.name || 'User'} {user.block && (
+                    <span dangerouslySetInnerHTML={{ __html: '<span class="text-danger">(Đã chặn)</span>' }} />
+                  )}
                 </Typography>
                 <Typography 
                   variant="body1" 
                   color="textSecondary" 
                   sx={{ 
-                    mt: 1,
+                    mt: 0,
                     wordBreak: 'break-word',
                     overflowWrap: 'break-word'
                   }}
@@ -979,7 +1013,6 @@ const Canhan = () => {
               </Button>
             </DialogActions>
           </Dialog>
-
           {/* Navigation */}
           <Paper sx={{ 
             mb: 4,
@@ -1024,6 +1057,7 @@ const Canhan = () => {
             </Box>
           </Paper>
           {/* Menu cho nhật ký hoạt động */}
+      
           <Menu
             anchorEl={activityMenuAnchorEl}
             open={Boolean(activityMenuAnchorEl)}
@@ -1037,9 +1071,20 @@ const Canhan = () => {
               horizontal: 'right',
             }}
           >
-            <MenuItem onClick={() => navigate('/activity/log')}>
-              Nhật ký hoạt động
-            </MenuItem>
+            {currentUser.id === user?.id ? (
+              <>
+                <MenuItem onClick={() => navigate('/activity/log')}>
+                  Nhật ký hoạt động
+                </MenuItem>
+                <MenuItem onClick={() => navigate('/blocks')}>
+                  Người dùng đã chặn
+                </MenuItem>
+              </>
+            ) : (
+              <MenuItem onClick={() => handleBlockUser(user?.id)}>
+                {user.block ? "Bỏ chặn" : "Chặn"}
+              </MenuItem>
+            )}
           </Menu>
 
           {/* Main Content */}

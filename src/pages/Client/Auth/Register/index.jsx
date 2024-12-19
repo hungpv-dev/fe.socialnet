@@ -107,10 +107,10 @@ const Register = () => {
       const response = await auth.register(email, fullName, password, confirmPassword);
       if (response.status === 201) {
         let loginResponse = await auth.login(email, password);
-        if (loginResponse === true) {
+        if (loginResponse) {
           let profile = await auth.me();
           dispatch(setUser(profile.data));
-          window.location.href = '/';
+          window.location.href = '/profile-avatar';
         }
       } else {
         setErrors(response.data);

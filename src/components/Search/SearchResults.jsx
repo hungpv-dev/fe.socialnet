@@ -5,13 +5,12 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  ListItemText,
   Avatar,
   Button,
   Typography,
   Chip,
-  Divider,
-  CircularProgress
+  CircularProgress,
+  Grid
 } from "@mui/material";
 import {
   PersonAdd,
@@ -31,7 +30,6 @@ const SearchResults = ({ users }) => {
   const chatRoom = useChatRoom();
   const navigate = useNavigate();
 
-  // Lọc danh sách người dùng không bị trùng lặp dựa trên id
   const uniqueUsers = [
     ...new Map(users.map((user) => [user.id, user])).values(),
   ];
@@ -124,177 +122,137 @@ const SearchResults = ({ users }) => {
   };
 
   const renderUserInfo = (user) => {
-    const infoParts = [];
-
-    if (user.button.includes("friend")) {
-      infoParts.push(<Chip size="small" label="Bạn bè" color="primary" />);
-    }
-
-    if (user.friend_commons.length > 0) {
-      infoParts.push(
-        <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <People fontSize="small" />
-          <Typography variant="body2">{user.friend_commons.length} bạn chung</Typography>
-        </Box>
-      );
-    }
-
-    if (user.address) {
-      infoParts.push(
-        <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <LocationOn fontSize="small" />
-          <Typography variant="body2">{user.address}</Typography>
-        </Box>
-      );
-    }
-
-    if (user.hometown) {
-      infoParts.push(
-        <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Home fontSize="small" />
-          <Typography variant="body2">{user.hometown}</Typography>
-        </Box>
-      );
-    }
-
-    if (user.friend_counts > 0) {
-      infoParts.push(
-        <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <People fontSize="small" />
-          <Typography variant="body2">{user.friend_counts} bạn bè</Typography>
-        </Box>
-      );
-    }
-
     return (
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center' }}>
-        {infoParts.map((part, index) => (
-          <React.Fragment key={index}>
-            {index > 0 && <Typography variant="body2" color="text.secondary">●</Typography>}
-            {part}
-          </React.Fragment>
-        ))}
-      </Box>
+      <Grid container spacing={1} alignItems="center">
+        {user.button.includes("friend") && (
+          <Grid item>
+            <Chip size="small" label="Bạn bè" color="primary" />
+          </Grid>
+        )}
+
+        {user.friend_commons.length > 0 && (
+          <Grid item>
+            <Typography variant="body2">
+              <People fontSize="small" /> {user.friend_commons.length} bạn chung
+            </Typography>
+          </Grid>
+        )}
+
+        {user.address && (
+          <Grid item>
+            <Typography variant="body2">
+              <LocationOn fontSize="small" /> {user.address}
+            </Typography>
+          </Grid>
+        )}
+
+        {user.hometown && (
+          <Grid item>
+            <Typography variant="body2">
+              <Home fontSize="small" /> {user.hometown}
+            </Typography>
+          </Grid>
+        )}
+
+        {user.friend_counts > 0 && (
+          <Grid item>
+            <Typography variant="body2">
+              <People fontSize="small" /> {user.friend_counts} bạn bè
+            </Typography>
+          </Grid>
+        )}
+      </Grid>
     );
   };
 
   return (
-    <List>
-      {uniqueUsers.map((user, index) => {
-        const { adding, added } = addStates[user.id] || {};
-        const { removing } = removeStates[user.id] || {};
-        const { messaging } = messageStates[user.id] || {};
+    <Box sx={{ padding: 2 }}>
+      <List>
+        {uniqueUsers.map((user) => {
+          const { adding, added } = addStates[user.id] || {};
+          const { removing } = removeStates[user.id] || {};
+          const { messaging } = messageStates[user.id] || {};
 
-        return (
-          <React.Fragment key={user.id}>
-            <ListItem
-              alignItems="flex-start"
-              sx={{
-                py: 2,
-                transition: 'background-color 0.2s',
-                '&:hover': {
-                  bgcolor: 'action.hover'
-                }
-              }}
-            >
-              <ListItemAvatar>
-                <Avatar
-                  src={user.avatar || "/user_default.png"}
-                  alt={user.name}
-                  sx={{ 
-                    width: 56, 
-                    height: 56,
-                    border: 1,
-                    borderColor: 'divider'
+          return (
+            <React.Fragment key={user.id}>
+              <ListItem
+                sx={{
+                  display: 'flex',
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  alignItems: { xs: 'flex-start', sm: 'center' },
+                  gap: 2,
+                  padding: 2,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  mb: 2
+                }}
+              >
+                <ListItemAvatar>
+                  <Avatar
+                    src={user.avatar || "/user_default.png"}
+                    alt={user.name}
+                    sx={{ width: 64, height: 64 }}
+                  />
+                </ListItemAvatar>
+
+                <Box flex={1}>
+                  <Typography
+                    component={Link}
+                    to={`/profile/${user.id}`}
+                    variant="h6"
+                    sx={{ textDecoration: 'none', color: 'text.primary' }}
+                  >
+                    {user.name}
+                  </Typography>
+                  {renderUserInfo(user)}
+                </Box>
+
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'row', sm: 'column' },
+                    gap: 1,
+                    minWidth: 120
                   }}
-                />
-              </ListItemAvatar>
-              
-              <ListItemText
-                primary={
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                    <Typography
-                      component={Link}
-                      to={`/profile/${user.id}`}
-                      variant="subtitle1"
-                      sx={{
-                        textDecoration: 'none',
-                        color: 'text.primary',
-                        fontWeight: 500,
-                        '&:hover': {
-                          textDecoration: 'underline'
-                        }
-                      }}
+                >
+                  {user.button.includes("add") ? (
+                    <Button
+                      variant="contained"
+                      color={added ? "error" : "primary"}
+                      startIcon={adding || added ? <PersonRemove /> : <PersonAdd />}
+                      onClick={() => added ? handleRemoveFriend(user.id) : handleAddfriend(user.id)}
+                      disabled={adding || removing}
                     >
-                      {user.name}
-                    </Typography>
-                    {user.button.includes("friend") && (
-                      <Chip 
-                        size="small" 
-                        label="Bạn bè" 
-                        color="primary" 
-                        variant="outlined"
-                      />
-                    )}
-                  </Box>
-                }
-                secondary={
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                    {renderUserInfo(user)}
-                  </Box>
-                }
-              />
-
-              <Box sx={{ 
-                display: 'flex', 
-                flexDirection: { xs: 'column', sm: 'row' },
-                gap: 1,
-                alignItems: 'flex-start',
-                minWidth: { xs: 'auto', sm: 140 }
-              }}>
-                {user.button.includes("add") ? (
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    startIcon={adding || added ? <PersonRemove /> : <PersonAdd />}
-                    onClick={() => added ? handleRemoveFriend(user.id) : handleAddfriend(user.id)}
-                    disabled={adding || removing}
-                    color={added ? "error" : "primary"}
-                    size="small"
-                  >
-                    {adding ? (
-                      <CircularProgress size={20} color="inherit" />
-                    ) : added ? (
-                      "Gỡ lời mời"
-                    ) : (
-                      "Thêm bạn bè"
-                    )}
-                  </Button>
-                ) : (
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    startIcon={<Message />}
-                    onClick={() => handleStartChat(user.id)}
-                    disabled={messaging}
-                    size="small"
-                  >
-                    {messaging ? (
-                      <CircularProgress size={20} color="inherit" />
-                    ) : (
-                      "Nhắn tin"
-                    )}
-                  </Button>
-                )}
-              </Box>
-            </ListItem>
-            {index < uniqueUsers.length - 1 && (
-              <Divider variant="inset" component="li" />
-            )}
-          </React.Fragment>
-        );
-      })}
-    </List>
+                      {adding ? (
+                        <CircularProgress size={20} color="inherit" />
+                      ) : added ? (
+                        "Gỡ bạn bè"
+                      ) : (
+                        "Thêm bạn"
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outlined"
+                      startIcon={<Message />}
+                      onClick={() => handleStartChat(user.id)}
+                      disabled={messaging}
+                    >
+                      {messaging ? (
+                        <CircularProgress size={20} color="inherit" />
+                      ) : (
+                        "Nhắn tin"
+                      )}
+                    </Button>
+                  )}
+                </Box>
+              </ListItem>
+            </React.Fragment>
+          );
+        })}
+      </List>
+    </Box>
   );
 };
 

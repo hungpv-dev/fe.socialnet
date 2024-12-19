@@ -14,10 +14,12 @@ import { MoreVert, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-materia
 import { useSelector } from 'react-redux';
 import axiosInstance from '@/axios';
 import { toast } from 'react-toastify';
+import { useTheme } from '@mui/material/styles';
 import { formatDateToNow } from '@/components/FormatDate';
 import { useNavigate } from 'react-router-dom';
 
 const CommentItem = ({ comment, level = 0, deleteCommentChil, setDeleteCommentChil, commentChilde, setCommentChilde, onReply, onDelete, currentUser, post }) => {
+    const theme = useTheme();
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const [showReplies, setShowReplies] = useState(false);
@@ -44,7 +46,7 @@ const CommentItem = ({ comment, level = 0, deleteCommentChil, setDeleteCommentCh
             });
             if (selectedIcon === icon) {
                 setSelectedIcon(null);
-            }else{
+            } else {
                 setSelectedIcon(icon);
             }
 
@@ -118,7 +120,16 @@ const CommentItem = ({ comment, level = 0, deleteCommentChil, setDeleteCommentCh
     const canShowReplies = level < 2;
 
     return (
-        <Box sx={{ ml: level * 4, position: 'relative', mb: 1.5 }}>
+        <Box
+            sx={{
+                ml: level * 4,
+                position: 'relative',
+                mb: 1.5,
+                [theme.breakpoints.down('sm')]: {
+                    ml: level * 2, // Giảm khoảng cách
+                    mb: 1 // Giảm margin-bottom
+                }
+            }}>
             {level > 0 && (
                 <Box
                     sx={{
@@ -136,6 +147,10 @@ const CommentItem = ({ comment, level = 0, deleteCommentChil, setDeleteCommentCh
                             width: '24px',
                             height: '2px',
                             bgcolor: 'rgba(0, 0, 0, 0.08)'
+                        },
+                        [theme.breakpoints.down('sm')]: {
+                            left: '-12px', // Giảm khoảng cách
+                            top: '12px'
                         }
                     }}
                 />
@@ -143,12 +158,16 @@ const CommentItem = ({ comment, level = 0, deleteCommentChil, setDeleteCommentCh
             <Box sx={{ display: 'flex', gap: 1.5 }}>
                 <Avatar
                     src={comment.user.avatar}
-                    sx={{ 
-                        width: 32, 
+                    sx={{
+                        width: 32,
                         height: 32,
                         cursor: 'pointer',
                         '&:hover': {
                             opacity: 0.8
+                        },
+                        [theme.breakpoints.down('sm')]: {
+                            width: 28, // Giảm kích thước Avatar
+                            height: 28
                         }
                     }}
                     onClick={handleNameClick}
@@ -157,29 +176,46 @@ const CommentItem = ({ comment, level = 0, deleteCommentChil, setDeleteCommentCh
                     <Box sx={{
                         bgcolor: '#f0f2f5',
                         p: 1.5,
-                        borderRadius: '18px', 
+                        borderRadius: '18px',
                         display: 'inline-block',
                         maxWidth: '100%',
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                        [theme.breakpoints.down('sm')]: {
+                            p: 1, // Giảm padding
+                            borderRadius: '12px'
+                        }
                     }}>
-                        <Typography 
-                            variant="subtitle2" 
-                            sx={{ 
-                                fontSize: '0.875rem', 
-                                fontWeight: 600, 
-                                color: '#050505', 
+                        <Typography
+                            variant="subtitle2"
+                            sx={{
+                                fontSize: '0.875rem',
+                                fontWeight: 600,
+                                color: '#050505',
                                 mb: 0.5,
                                 cursor: 'pointer',
                                 '&:hover': {
                                     textDecoration: 'underline'
+                                },
+                                [theme.breakpoints.down('sm')]: {
+                                    fontSize: '0.75rem' // Giảm font size
                                 }
                             }}
                             onClick={handleNameClick}
                         >
                             {comment.user.name}
                         </Typography>
-                        <Typography variant="body2" sx={{ fontSize: '0.9375rem', color: '#050505', whiteSpace: 'pre-wrap', lineHeight: 1.3333 }}>
-                            {comment.parent ? <span style={{fontWeight: 600}}>@{comment.parent?.user?.name} </span> : ''}{comment.content.text}
+                        <Typography 
+                            variant="body2"
+                            sx={{ 
+                                fontSize: '0.9375rem', 
+                                color: '#050505', 
+                                whiteSpace: 'pre-wrap',
+                                lineHeight: 1.3333,
+                                [theme.breakpoints.down('sm')]: {
+                                    fontSize: '0.8125rem' // Giảm font size
+                                }
+                            }}>
+                            {comment.parent ? <span style={{ fontWeight: 600 }}>@{comment.parent?.user?.name} </span> : ''}{comment.content.text}
                         </Typography>
                         {comment.content.image && (
                             <Box sx={{ mt: 1 }}>

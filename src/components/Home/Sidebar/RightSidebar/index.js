@@ -46,8 +46,9 @@ function RightSidebar() {
     const friendApi = useFriend();
     const [friendRequests, setFriendRequests] = useState([]);
     const [suggestedFriends, setSuggestedFriends] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState({});
 
+    
     const getFriendRequests = async () => {
         try {
             const response = await axiosInstance.get('friend/request/all?take=3&index=0');
@@ -103,34 +104,50 @@ function RightSidebar() {
     };
 
     const handleAcceptFriend = async (userId) => {
-        await friendApi.accept(userId);
-        getFriendRequests();
+        setLoading((prevState) => ({ ...prevState, [userId]: true })); // Bắt đầu loading cho thao tác xác nhận
+        try {
+            await friendApi.accept(userId);
+            getFriendRequests();
+        } catch (error) {
+            console.error('Lỗi khi xác nhận kết bạn:', error);
+        } finally {
+            setLoading((prevState) => ({ ...prevState, [userId]: false }));  // Tắt loading khi thao tác hoàn thành
+        }
     };
-
+    
     const handleRejectFriend = async (userId) => {
-        await friendApi.reject(userId);
-        getFriendRequests();
+        setLoading((prevState) => ({ ...prevState, [userId]: true }));  // Bắt đầu loading cho thao tác từ chối
+        try {
+            await friendApi.reject(userId);
+            getFriendRequests();
+        } catch (error) {
+            console.error('Lỗi khi từ chối kết bạn:', error);
+        } finally {
+            setLoading((prevState) => ({ ...prevState, [userId]: true }));  // Tắt loading khi thao tác hoàn thành
+        }
     };
-
+    
     const handleAddFriend = async (userId) => {
-        setLoading(true);
+        setLoading((prevState) => ({ ...prevState, [userId]: true }));
         try {
             await friendApi.add(userId);
             getSuggestedFriends();
         } catch (error) {
             console.error('Lỗi khi thêm bạn:', error);
         } finally {
-            setLoading(false);
+            setLoading((prevState) => ({ ...prevState, [userId]: false })); 
         }
     };
 
     const handleRemoveSuggestion = async (userId) => {
-        await friendApi.removeSuggestion(userId);
-        getSuggestedFriends();
+        setSuggestedFriends((prevSuggestedFriends) =>
+            prevSuggestedFriends.filter((friend) => friend.id !== userId)
+        );
+        // getSuggestedFriends();
     };
 
     return (
-        <Box component="aside" sx={{ width: 360, p: 2, bgcolor: 'background.paper' }}>
+        <Box component="aside" sx={{ width: 360, p: 2, bgcolor: 'background.paper',display: { xs: 'none', sm: 'block' } }}>
 
             <Divider sx={{ my: 2 }} />
 
@@ -174,30 +191,32 @@ function RightSidebar() {
                                         {request.mutualFriends} bạn chung • {formatDateToNow(request.created_at)}
                                     </Typography>
                                     <Box sx={{ display: 'flex', gap: 1 }}>
-                                        <Button 
-                                            variant="contained" 
-                                            size="small" 
-                                            sx={{ 
-                                                textTransform: 'none',
-                                                fontWeight: 500,
-                                                bgcolor: 'primary.main'
-                                            }}
-                                            onClick={() => handleAcceptFriend(request.sender.id)}
-                                        >
-                                            Xác nhận
-                                        </Button>
-                                        <Button 
-                                            variant="outlined" 
-                                            size="small"
-                                            sx={{ 
-                                                textTransform: 'none',
-                                                fontWeight: 500,
-                                                color: 'text.primary'
-                                            }}
-                                            onClick={() => handleRejectFriend(request.sender.id)}
-                                        >
-                                            Xóa
-                                        </Button>
+                                    <Button
+                                        variant="contained"
+                                        size="small"
+                                        sx={{
+                                            textTransform: 'none',
+                                            fontWeight: 500,
+                                            bgcolor: 'primary.main'
+                                        }}
+                                        onClick={() => handleAcceptFriend(request.sender.id)}
+                                        disabled={loading[request.sender.id]} 
+                                    >
+                                        {loading[request.sender.id] ? 'Xác nhận' : 'Xác nhận'}
+                                    </Button>
+                                    <Button
+                                        variant="outlined"
+                                        size="small"
+                                        sx={{
+                                            textTransform: 'none',
+                                            fontWeight: 500,
+                                            color: 'text.primary'
+                                        }}
+                                        onClick={() => handleRejectFriend(request.sender.id)}
+                                        disabled={loading[request.sender.id]} 
+                                    >
+                                        {loading[request.sender.id] ? 'Xóa' : 'Xóa'}
+                                    </Button>
                                     </Box>
                                 </Box>
                             </Box>
@@ -210,6 +229,11 @@ function RightSidebar() {
                         <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
                             Gợi ý kết bạn
                         </Typography>
+                        <Link to="/friends/suggestions" style={{ textDecoration: 'none' }}>
+                            <Typography color="primary" sx={{ fontWeight: 500, '&:hover': { textDecoration: 'underline' } }}>
+                                Xem tất cả
+                            </Typography>
+                        </Link>
                     </Box>
                      
                     {suggestedFriends.map((suggestion) => (
@@ -248,11 +272,11 @@ function RightSidebar() {
                                                 bgcolor: 'primary.main'
                                             }}
                                             onClick={() => handleAddFriend(suggestion.id)}
-                                            disabled={loading}
+                                            disabled={loading[suggestion.id]}
                                         >
-                                            {loading ? 'Đang gửi...' : 'Thêm bạn bè'}
+                                            {loading[suggestion.id] ? 'Thêm bạn' : 'Thêm bạn'}
                                         </Button>
-                                        {/* <Button 
+                                        <Button 
                                             variant="outlined" 
                                             size="small"
                                             sx={{ 
@@ -260,10 +284,11 @@ function RightSidebar() {
                                                 fontWeight: 500,
                                                 color: 'text.primary'
                                             }}
+                                            disabled={loading[suggestion.id]}
                                             onClick={() => handleRemoveSuggestion(suggestion.id)}
                                         >
-                                            Xóa
-                                        </Button> */}
+                                            {loading[suggestion.id] ? 'Xóa' : 'Xóa'}
+                                        </Button>
                                     </Box>
                                 </Box>
                             </Box>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Card,
     CardHeader,
@@ -30,7 +30,6 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import {
-    ThumbUpAlt,
     ChatBubbleOutline,
     Share,
     MoreHoriz,
@@ -48,6 +47,7 @@ import CommentDialog from './CommentDialog.js';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Report from './Report.js';
+import ImageViewer from './ImageViewer.js';
 
 const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetail = false }) => {
     const navigate = useNavigate();
@@ -93,6 +93,10 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
         setAnchorEl(null);
     };
 
+    useEffect(() => {
+        setSelectedEmoji(post.user_emotion?.emoji || null)
+    },[post])
+
     const handleEditOpen = () => {
         setEditContent(post.content);
         setEditStatus(post.status);
@@ -122,26 +126,26 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
             formData.append('content', editContent);
             formData.append('status', editStatus);
             formData.append('_method', 'PUT');
-            
+
             // Xử lý files mới
             if (newFiles?.length) {
                 newFiles.forEach(file => {
                     formData.append('files[]', file);
                 });
             }
-    
+
             // Xử lý files giữ lại
             formData.append('keep_files', JSON.stringify(keepFiles));
-    
+
             const response = await axiosInstance.post(`posts/${post.id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-    
+
             if (response.status === 200) {
-                setPosts(prevPosts => 
-                    prevPosts.map(p => 
+                setPosts(prevPosts =>
+                    prevPosts.map(p =>
                         p.id === post.id ? response.data.data : p
                     )
                 );
@@ -180,11 +184,11 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                 share: post.id,
                 status: shareStatus
             });
-            
+
             if (response.status === 200) {
-                if(redirectDetail){
+                if (redirectDetail) {
                     navigate(`/posts/${response.data.data.id}`);
-                }else{
+                } else {
                     let post = response.data.data;
                     setPosts(prevPosts => [post, ...prevPosts])
                     toast.success('Đã chia sẻ bài viết');
@@ -214,10 +218,15 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                 if (selectedEmoji === emoji) {
                     setLiked(false);
                     setSelectedEmoji(null);
-                }else{
+                } else {
                     setLiked(true);
                     setSelectedEmoji(emoji);
                 }
+                setPosts((prevPosts) => 
+                    prevPosts.map((item) =>
+                        item.id === response.data.post.id ? response.data.post : item
+                    )
+                );
                 setEmojiCount(response.data.post.emoji_count);
             }
             setEmojiAnchorEl(null);
@@ -299,7 +308,13 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                     ...layout,
                     width: '100%',
                     overflow: 'hidden',
-                    borderRadius: '8px'
+                    borderRadius: '8px',
+                    '@media (max-width: 768px)': {
+                        gridTemplateRows: layout?.gridTemplateRows
+                            .split(' ')
+                            .map(row => `${parseInt(row) / 2}px`)
+                            .join(' '),
+                    }
                 }}>
                     {data.image?.slice(0, 4).map((img, index) => {
                         let gridArea = '';
@@ -318,8 +333,8 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                         }
 
                         return (
-                            <Box 
-                                key={index} 
+                            <Box
+                                key={index}
                                 sx={{
                                     position: 'relative',
                                     gridArea,
@@ -332,6 +347,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                                 onClick={() => handleImageClick(index)}
                             >
                                 <img
+                                    loading="lazy"
                                     src={img}
                                     alt=""
                                     style={{
@@ -364,58 +380,30 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                     onClose={() => setOpenImageViewer(false)}
                     maxWidth="xl"
                     fullWidth
-                >
-                    <DialogTitle>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Typography>
-                                Tất cả ảnh ({data.image?.length})
-                            </Typography>
-                            <IconButton onClick={() => setOpenImageViewer(false)}>
-                                <Close />
-                            </IconButton>
-                        </Box>
-                    </DialogTitle>
-                    <DialogContent>
-                        <Box sx={{ 
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                            gap: 2,
-                            p: 2
-                        }}>
-                            {data.image?.map((img, index) => (
-                                <Box 
-                                    key={index}
-                                    sx={{
-                                        position: 'relative',
-                                        paddingTop: '100%',
-                                        '&:hover': {
-                                            '& img': {
-                                                transform: 'scale(1.02)',
-                                                transition: 'transform 0.2s'
-                                            }
-                                        }
-                                    }}
-                                >
-                                    <img
-                                        src={img}
-                                        className='show-image'
-                                        alt=""
-                                        style={{
-                                            position: 'absolute',
-                                            top: 0,
-                                            left: 0,
-                                            width: '100%',
-                                            height: '100%',
-                                            objectFit: 'cover',
-                                            borderRadius: '8px',
-                                            cursor: 'pointer'
-                                        }}
-                                    />
-                                </Box>
-                            ))}
-                        </Box>
-                    </DialogContent>
-                </Dialog>
+                    >
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        fontSize: { xs: '14px', sm: '16px' },
+                        px: 1
+                    }}>
+                        <Typography sx={{ fontSize: { xs: '14px', sm: '16px' } }}>
+                        Tất cả ảnh ({data.image?.length})
+                        </Typography>
+                        <IconButton onClick={() => setOpenImageViewer(false)}>
+                        <Close />
+                        </IconButton>
+                    </Box>
+                    
+                    <ImageViewer
+                        open={openImageViewer}
+                        onClose={() => setOpenImageViewer(false)}
+                        data={data}
+                        currentIndex={selectedImageIndex}
+                        setCurrentIndex={setSelectedImageIndex}
+                    />
+                    </Dialog>
 
                 {data.video?.map((video, index) => (
                     <Box key={index} sx={{
@@ -424,13 +412,15 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                         borderRadius: '8px',
                         overflow: 'hidden',
                         bgcolor: '#000',
-                        mt: 2
+                        mt: 2,
+                        maxWidth: '100%',
+                        width: '100%',
                     }}>
                         <video
                             controls
                             style={{
                                 width: '100%',
-                                height: '100%',
+                                height: 'auto',
                                 objectFit: 'contain'
                             }}
                         >
@@ -473,7 +463,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
     const handlePaste = (e) => {
         const items = e.clipboardData.items;
         const files = [];
-        
+
         for (let i = 0; i < items.length; i++) {
             if (items[i].type.indexOf('image') !== -1) {
                 const file = items[i].getAsFile();
@@ -514,7 +504,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
 
     const handleLoadMore = async () => {
         if (emojiUsers.currentPage >= emojiUsers.lastPage) return;
-        
+
         try {
             setEmojiUsers(prev => ({ ...prev, loadingMore: true }));
             const response = await axiosInstance.get('/emotions', {
@@ -524,7 +514,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                     page: emojiUsers.currentPage + 1
                 }
             });
-            
+
             setEmojiUsers(prev => ({
                 data: [...prev.data, ...response.data.data],
                 currentPage: response.data.current_page,
@@ -613,10 +603,10 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                 }
                 title={
                     <Box>
-                        <Typography 
-                            variant="subtitle1" 
+                        <Typography
+                            variant="subtitle1"
                             component="span"
-                            sx={{ 
+                            sx={{
                                 fontWeight: 600,
                                 cursor: 'pointer',
                                 '&:hover': {
@@ -628,10 +618,10 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                             {post.user.name}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <Typography 
-                                variant="body2" 
+                            <Typography
+                                variant="body2"
                                 color="text.secondary"
-                                sx={{ 
+                                sx={{
                                     cursor: 'pointer',
                                     '&:hover': {
                                         textDecoration: 'underline'
@@ -662,7 +652,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                         <CardContent>
                             <Typography sx={{ bgcolor: '#f0f2f5' }} color="error">Đã bị khóa</Typography>
                         </CardContent>
-                    </Card> 
+                    </Card>
                 ) : (
                     <>
                         {post.post_share ? <Card sx={{ bgcolor: '#f0f2f5' }}>
@@ -678,15 +668,15 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                                 <Typography variant="body2">{post.post_share.content}</Typography>
                                 {renderMedia(post.post_share.data)}
                             </CardContent>
-                        </Card> : (post.share_id > 0 ? 
+                        </Card> : (post.share_id > 0 ?
                             <>
-                            <Card sx={{ bgcolor: '#f0f2f5' }}>
-                                <CardContent>
-                                    <Typography sx={{ bgcolor: '#f0f2f5' }} color="error">Bài viết đã bị xóa!</Typography>
-                                </CardContent>
-                            </Card>
+                                <Card sx={{ bgcolor: '#f0f2f5' }}>
+                                    <CardContent>
+                                        <Typography sx={{ bgcolor: '#f0f2f5' }} color="error">Bài viết đã bị xóa!</Typography>
+                                    </CardContent>
+                                </Card>
                             </>
-                         : '')}
+                            : '')}
                         {!post.post_share && renderMedia(post.data)}
                     </>
                 )}
@@ -694,10 +684,10 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
 
             <Box sx={{ px: 2, py: 1 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Box 
-                        sx={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
                             gap: 0.5,
                             cursor: 'pointer',
                             '&:hover': {
@@ -731,8 +721,8 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
             <CardActions>
                 <Button
                     startIcon={liked ?
-                        <Typography sx={{ fontSize: '18px' }}>{selectedEmoji || "👍"}</Typography> :
-                        <ThumbUpAltOutlined sx={{ fontSize: '18px' }} />
+                        <Typography sx={{ fontSize: '14px' }}>{selectedEmoji || "👍"}</Typography> :
+                        <ThumbUpAltOutlined sx={{ fontSize: '14px' }} />
                     }
                     onClick={handleEmojiOpen}
                     onMouseEnter={handleEmojiOpen}
@@ -764,32 +754,42 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                     {reactionIcons.map((reaction, index) => (
                         <IconButton
                             key={index}
+                            sx={{ fontSize: {
+                                    xs: '12px', 
+                                    sm: '14px', 
+                                }}}
                             onClick={() => handleEmojiClick(reaction.emoji)}
                             title={reaction.name}
                         >
-                            <Typography sx={{ fontSize: '18px' }}>{reaction.emoji}</Typography>
+                            <Typography sx={{ fontSize: '14px' }}>{reaction.emoji}</Typography>
                         </IconButton>
                     ))}
                 </Popover>
                 {!hideCommentButton && (
                     <Button
-                        startIcon={<ChatBubbleOutline sx={{ fontSize: '18px' }} />}
-                        sx={{ flex: 1 }}
+                        startIcon={<ChatBubbleOutline sx={{ fontSize: '12px' }} />}
+                        sx={{ flex: 1, fontSize: {
+                                    xs: '12px', 
+                                    sm: '14px', 
+                                } }}
                         onClick={handleCommentOpen}
                     >
-                        Bình luận
+                    Bình luận
                     </Button>
                 )}
                 <Button
-                    startIcon={<Share sx={{ fontSize: '18px' }} />}
-                    sx={{ flex: 1 }}
+                    startIcon={<Share sx={{ fontSize: '12px' }} />}
+                    sx={{ flex: 1, fontSize: {
+                                    xs: '12px', 
+                                    sm: '14px', 
+                                } }}
                     onClick={handleShareOpen}
                 >
                     Chia sẻ
                 </Button>
             </CardActions>
 
-            <Dialog 
+            <Dialog
                 open={openShare}
                 onClose={handleShareClose}
                 maxWidth="sm"
@@ -798,7 +798,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                 <DialogTitle>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Typography variant="h6">Chia sẻ bài viết</Typography>
-                        <IconButton 
+                        <IconButton
                             onClick={handleShareClose}
                             disabled={loadingShare}
                         >
@@ -855,8 +855,9 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                             <Typography variant="body2">{post.content}</Typography>
                             {post.data?.image && post.data.image[0] && (
                                 <Box sx={{ mt: 1 }}>
-                                    <img 
-                                        src={post.data.image[0]} 
+                                    <img
+                                        loading="lazy"
+                                        src={post.data.image[0]}
                                         alt=""
                                         style={{
                                             width: '100%',
@@ -871,13 +872,13 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                     </Card>
                 </DialogContent>
                 <DialogActions>
-                    <Button 
+                    <Button
                         onClick={handleShareClose}
                         disabled={loadingShare}
                     >
-                        H��y
+                        Hủy
                     </Button>
-                    <Button 
+                    <Button
                         variant="contained"
                         onClick={handleShare}
                         disabled={!shareContent.trim() || loadingShare}
@@ -913,16 +914,17 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                         onPaste={handlePaste}
                         sx={{ mb: 2, mt: 2 }}
                     />
-                    
+
                     {keepFiles.image?.length > 0 && (
                         <Box sx={{ mb: 2 }}>
                             <Typography variant="subtitle2" sx={{ mb: 1 }}>Ảnh hiện tại:</Typography>
                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                                 {keepFiles.image.map((fileUrl, index) => (
                                     <Box key={index} sx={{ position: 'relative' }}>
-                                        <img 
-                                            src={fileUrl} 
-                                            alt="" 
+                                        <img
+                                            loading="lazy"
+                                            src={fileUrl}
+                                            alt=""
                                             style={{
                                                 width: 100,
                                                 height: 100,
@@ -977,9 +979,10 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                                 {Array.from(newFiles).map((file, index) => (
                                     <Box key={index} sx={{ position: 'relative' }}>
-                                        <img 
-                                            src={URL.createObjectURL(file)} 
-                                            alt="" 
+                                        <img
+                                            loading="lazy"
+                                            src={URL.createObjectURL(file)}
+                                            alt=""
                                             style={{
                                                 width: 100,
                                                 height: 100,
@@ -1011,7 +1014,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                         <Select
                             value={editStatus}
                             onChange={(e) => setEditStatus(e.target.value)}
-                            label="Đ���i tượng"
+                            label="Đối tượng"
                         >
                             <MenuItem value="public">
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -1043,7 +1046,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                 </DialogActions>
             </Dialog>
 
-            <CommentDialog 
+            <CommentDialog
                 open={openComment}
                 onClose={handleCommentClose}
                 post={post}
@@ -1058,7 +1061,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
             >
                 <DialogTitle>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="h6">Những người đã bày tỏ cảm xúc</Typography>
+                        <Typography variant="h6">Bày tỏ cảm xúc</Typography>
                         <IconButton onClick={() => setOpenEmojiList(false)}>
                             <Close />
                         </IconButton>
@@ -1109,7 +1112,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                                     </ListItem>
                                 ))}
                             </List>
-                            
+
                             {emojiUsers.currentPage < emojiUsers.lastPage && (
                                 <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
                                     <Button
@@ -1126,7 +1129,7 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                 </DialogContent>
             </Dialog>
 
-            <Report 
+            <Report
                 open={openReport}
                 onClose={() => setOpenReport(false)}
                 type="post"
@@ -1151,10 +1154,10 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleDeleteClose} disabled={loadingDelete}>Hủy</Button>
-                    <Button 
-                        variant="contained" 
-                        color="error" 
-                        onClick={handleDelete} 
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={handleDelete}
                         disabled={loadingDelete}
                     >
                         {loadingDelete ? 'Đang xóa...' : 'Xóa'}

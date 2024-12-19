@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '@/actions/user';
@@ -23,18 +23,20 @@ import ContentPaste from '@mui/icons-material/ContentPaste';
 import LockIcon from '@mui/icons-material/Lock';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(4),
+  padding: theme.spacing(3),
   borderRadius: '12px',
   boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
   marginBottom: theme.spacing(3),
-  background: '#ffffff'
+  background: '#ffffff',
+  maxWidth: '350px',
+  margin: '0 auto'
 }));
 
 const LargeAvatar = styled(Avatar)(({ theme }) => ({
-  width: 200,
-  height: 200,
+  width: 120,
+  height: 120,
   margin: '0 auto',
-  marginBottom: theme.spacing(3),
+  marginBottom: theme.spacing(2),
   border: '4px solid #fff',
   boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
 }));
@@ -61,7 +63,7 @@ function ProfileUpdateAvatar() {
   const [caption, setCaption] = useState('');
   const [privacy, setPrivacy] = useState('public');
   const [loading, setLoading] = useState(false);
-
+  const captionRef = useRef(null);
 
   useEffect(() => {
     const checkLogin = async () => {
@@ -96,7 +98,8 @@ function ProfileUpdateAvatar() {
     }
   };
 
-  const handlePasteAvatar = async () => {
+  const handlePasteAvatar = async (event) => {
+    event.preventDefault();
     try {
       const items = await navigator.clipboard.read();
       for (const item of items) {
@@ -138,6 +141,7 @@ function ProfileUpdateAvatar() {
       });
 
       if (response.status === 200) {
+        console.log(response.data);
         dispatch(setUser({
           ...user,
           ...response.data.user
@@ -183,16 +187,6 @@ function ProfileUpdateAvatar() {
                   Chọn ảnh
                 </Button>
               </label>
-              
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<ContentPaste />}
-                onClick={handlePasteAvatar}
-                sx={{ borderColor: '#1877f2', color: '#1877f2' }}
-              >
-                Dán ảnh
-              </Button>
             </Box>
 
             <TextField
@@ -200,9 +194,11 @@ function ProfileUpdateAvatar() {
               placeholder="Nói gì đó về ảnh của bạn..."
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
+              onPaste={handlePasteAvatar}
               multiline
               rows={2}
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, '& .MuiInputBase-input': { fontSize: '14px' } }}
+              inputRef={captionRef}
             />
 
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>

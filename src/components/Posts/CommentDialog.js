@@ -8,6 +8,7 @@ import {
     IconButton,
     Avatar,
     TextField,
+    CircularProgress,
 } from '@mui/material';
 import axiosInstance from '@/axios';
 import { toast } from 'react-toastify';
@@ -32,6 +33,7 @@ const CommentDialog = ({ open, onClose, post, setPosts, redirectDetail=false }) 
     const currentUser = useSelector(state => state.user);
     const [scrollPosition, setScrollPosition] = useState(0);
     const dialogContentRef = useRef(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (open && post?.id) {
@@ -131,6 +133,13 @@ const CommentDialog = ({ open, onClose, post, setPosts, redirectDetail=false }) 
             setComments(prevComments =>
                 prevComments.filter(comment => comment.id !== commentId)
             );
+            setPosts((prevPosts) =>
+                prevPosts.map((item) =>
+                    item.id === post.id
+                        ? { ...item, comment_count: item.comment_count - 1 }
+                        : item
+                )
+            );
             setDeleteCommentChil(commentId)
             toast.success('Xóa bình luận thành công');
         } catch (error) {
@@ -141,6 +150,8 @@ const CommentDialog = ({ open, onClose, post, setPosts, redirectDetail=false }) 
 
     const handleSubmitComment = async () => {
         if (!newComment.trim() && !selectedImage) return;
+
+        setLoading(true);
 
         try {
             const formData = new FormData();
@@ -207,10 +218,19 @@ const CommentDialog = ({ open, onClose, post, setPosts, redirectDetail=false }) 
                 setSelectedImage(null);
                 setPreviewImage(null);
                 setReplyTo(null);
+                setPosts((prevPosts) =>
+                    prevPosts.map((item) =>
+                        item.id === post.id
+                            ? { ...item, comment_count: item.comment_count + 1 }
+                            : item
+                    )
+                );
             }
         } catch (error) {
             console.error('Lỗi khi thêm bình luận:', error);
             toast.error('Có lỗi xảy ra khi tải bình luận');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -229,8 +249,8 @@ const CommentDialog = ({ open, onClose, post, setPosts, redirectDetail=false }) 
             fullWidth
             PaperProps={{
                 sx: {
-                    height: '90vh',
-                    minHeight: '900px', 
+                    height: '80vh',
+                    // minHeight: '900px', 
                     display: 'flex',
                     flexDirection: 'column',
                     borderRadius: '12px',
@@ -404,13 +424,13 @@ const CommentDialog = ({ open, onClose, post, setPosts, redirectDetail=false }) 
                     </IconButton>
                     <IconButton
                         onClick={handleSubmitComment}
-                        disabled={!newComment.trim() && !selectedImage}
+                        disabled={!newComment.trim() || loading}
                         sx={{
-                            color: !newComment.trim() && !selectedImage ? '#BCC0C4' : '#1877F2',
+                            color: !newComment.trim() || loading ? '#BCC0C4' : '#1877F2',
                             '&:hover': { bgcolor: '#F0F2F5' }
                         }}
                     >
-                        <Send />
+                        {loading ? <CircularProgress size={20} color="inherit" /> : <Send />}
                     </IconButton>
                 </Box>
             </Box>

@@ -38,6 +38,7 @@ import VerifyCode from "@/pages/VerifyCode";
 import ProfileUpdate from "@/pages/Client/TrangCaNhan/ProfileUpdate";
 import ProfileUpdateAvatar from "@/pages/Client/TrangCaNhan/ProfileUpdateAvatar";
 import ActivityLogPpage from "@/pages/Client/ActivityLog";
+import BlockedUsersList from "@/pages/Client/TrangCaNhan/BlockList";
 // Router không cần đăng nhập vẫn vô được
 const pulicRouter = [
     {
@@ -76,6 +77,11 @@ const privateRouters = [
     // Chi tiết bài viết
     {
         path: "/posts/:id", component: PostDetail
+    },
+
+    // Chi tiết bài viết
+    {
+        path: "/blocks", component: BlockedUsersList
     },
 
     // Chi tiết bài viết

@@ -7,7 +7,7 @@ function LeftSidebar() {
     const user = useSelector(state => state.user);
 
     return (
-        <Box sx={{ width: '100%', maxWidth: 360, paddingTop: '10px', bgcolor: 'background.paper' }}>
+        <Box sx={{ width: '100%', maxWidth: 360, paddingTop: '10px', bgcolor: 'background.paper', display: { xs: 'none', sm: 'block' } }}>
             <List component="nav">
                 <ListItem disablePadding>
                     <ListItemButton component={Link} to={`/profile/${user.id}`}>

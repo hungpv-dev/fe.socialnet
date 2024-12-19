@@ -6,7 +6,8 @@ import { StyledEngineProvider } from '@mui/material/styles';
 import { formatDateToNow } from '@/components/FormatDate'
 import axios from '@/axios';
 import { useSelector } from 'react-redux';
-
+import { toast } from 'react-toastify';
+import { Button, Stack } from "@mui/material";
 const theme = createTheme();
 
 const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) => {
@@ -17,7 +18,7 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
   const [isPaused, setIsPaused] = useState(false);
   const [viewedStories, setViewedStories] = useState(new Set());
   const [currentEmotion, setCurrentEmotion] = useState('');
-  const [viewers, setViewers] = useState({data: [], count: 0});
+  const [viewers, setViewers] = useState({ data: [], count: 0 });
   const [anchorEl, setAnchorEl] = useState(null);
   const [showViewers, setShowViewers] = useState(false);
   const user = useSelector(state => state.user);
@@ -89,7 +90,7 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
       if (!currentStory?.id || viewedStories.has(currentStory.id) || !open || isMyStory) return;
 
       try {
-        await axios.post(`story/${currentStory.id}/emotion`,{emoji: ''});
+        await axios.post(`story/${currentStory.id}/emotion`, { emoji: '' });
         setViewedStories(prev => new Set([...prev, currentStory.id]));
       } catch (error) {
         console.error('Lỗi khi đánh dấu story đã xem:', error);
@@ -103,7 +104,7 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
 
   useEffect(() => {
     if (!open || isPaused) return;
-    
+
     // Nếu là video dài hơn 5s thì không dùng interval
     if (currentStory?.file?.video && videoDuration > 5) {
       return;
@@ -152,6 +153,67 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
     }
   };
 
+  const handleDelete = async () => {
+    if (!currentStory?.id) return;
+  
+    const autoCloseTime = 5000;
+  
+    toast(
+      ({ closeToast }) => (
+        <div>
+          <p>Bạn có chắc chắn muốn xóa tin này?</p>
+          <Stack direction="row" spacing={2} justifyContent="center" mt={2}>
+            {/* Nút Đồng ý */}
+            <Button
+              variant="contained"
+              color="error"
+              onClick={async () => {
+                closeToast(); // Đóng toast confirm
+  
+                try {
+                  await axios.delete(`story/${currentStory.id}`);
+                  const updatedStories = [...stories];
+                  updatedStories[currentUserIndex].stories.splice(currentStoryIndex, 1);
+  
+                  if (updatedStories[currentUserIndex].stories.length === 0) {
+                    updatedStories.splice(currentUserIndex, 1);
+                    setCurrentUserIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
+                  }
+  
+                  setStories(updatedStories);
+  
+                  if (updatedStories.length === 0) {
+                    onClose(); // Đóng modal nếu không còn story nào
+                  } else {
+                    handleNext(); // Chuyển đến story tiếp theo
+                  }
+  
+                  toast.success("Xóa story thành công!");
+                } catch (error) {
+                  toast.error("Đã xảy ra lỗi khi xóa story. Vui lòng thử lại!");
+                }finally{
+                  setAnchorEl(null)
+                }
+              }}
+            >
+              Đồng ý
+            </Button>
+            {/* Nút Hủy */}
+            <Button variant="outlined" color="primary" onClick={() => toast.dismiss()}>
+              Hủy
+            </Button>
+          </Stack>
+        </div>
+      ),
+      {
+        autoClose: autoCloseTime, // Đóng toast sau 5 giây nếu không có thao tác
+        closeOnClick: false, // Không đóng khi click bên ngoài
+        pauseOnHover: false, // Không tạm dừng khi hover
+        draggable: false, // Không kéo được toast
+      }
+    );
+  };
+
   const handleLoadedMetadata = (e) => {
     setVideoDuration(e.target.duration);
   };
@@ -162,10 +224,10 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
 
   const handleReactionClick = async (reaction) => {
     try {
-      await axios.post(`story/${currentStory.id}/emotion`,{
+      await axios.post(`story/${currentStory.id}/emotion`, {
         emoji: reaction.emoji
       });
-      
+
       // Cập nhật lại stories
       const updatedStories = stories.map(user => {
         if (user.id === currentUser.id) {
@@ -204,7 +266,7 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
       await axios.put(`story/${currentStory.id}`, {
         status: privacy
       });
-      
+
       // Cập nhật lại stories
       const updatedStories = stories.map(user => {
         if (user.id === currentUser.id) {
@@ -244,7 +306,7 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
             '& .MuiDialog-paper': {
               margin: 0,
               maxWidth: 'none',
-              bgcolor: 'transparent', 
+              bgcolor: 'transparent',
               boxShadow: 'none',
               display: 'flex',
               alignItems: 'center',
@@ -273,7 +335,7 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
           />
 
           {/* Story Container */}
-          <Box 
+          <Box
             sx={{
               position: 'relative',
               width: '100%',
@@ -289,7 +351,7 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <Box 
+            <Box
               sx={{
                 position: 'absolute',
                 top: 0,
@@ -322,8 +384,8 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
               {/* User info */}
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                  <Box 
-                    sx={{ 
+                  <Box
+                    sx={{
                       width: 44,
                       height: 44,
                       borderRadius: '50%',
@@ -331,34 +393,34 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
                       border: '3px solid #1876f2',
                     }}
                   >
-                    <img 
-                      src={currentUser?.avatar  || "/user_default.png"} 
+                    <img
+                      src={currentUser?.avatar || "/user_default.png"}
                       alt={currentUser?.name}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
                   </Box>
                   <Box sx={{ color: 'white' }}>
-                    <Typography sx={{ 
-                      fontWeight: 600, 
+                    <Typography sx={{
+                      fontWeight: 600,
                       fontSize: '15px',
                       lineHeight: '1.2',
                     }}>
                       {currentUser?.name}
                     </Typography>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
+                    <Box sx={{
+                      display: 'flex',
+                      alignItems: 'center',
                       gap: 1,
                       fontSize: '13px',
-                      opacity: 0.7 
+                      opacity: 0.7
                     }}>
                       <Typography>
                         {currentStory?.created_at ? formatDateToNow(currentStory.created_at) : ''}
                       </Typography>
                       {currentStory?.status && (
-                        <Box 
-                          sx={{ 
-                            display: 'flex', 
+                        <Box
+                          sx={{
+                            display: 'flex',
                             alignItems: 'center',
                             gap: 0.5,
                             '&:before': {
@@ -401,7 +463,7 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
             </Box>
 
             {/* Story Content */}
-            <Box 
+            <Box
               sx={{
                 flex: 1,
                 display: 'flex',
@@ -483,8 +545,8 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
               </IconButton>
 
               {/* Vùng click để điều hướng */}
-              <Box 
-                sx={{ 
+              <Box
+                sx={{
                   position: 'absolute',
                   top: 0,
                   left: 0,
@@ -497,8 +559,8 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
                   handlePrevious();
                 }}
               />
-              <Box 
-                sx={{ 
+              <Box
+                sx={{
                   position: 'absolute',
                   top: 0,
                   right: 0,
@@ -530,11 +592,11 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
             >
               {/* Số lượng người xem */}
               {isMyStory && (
-                <Box 
-                  sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 1, 
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
                     color: 'white',
                     cursor: 'pointer',
                     '&:hover': {
@@ -590,7 +652,7 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
             onClose={() => setAnchorEl(null)}
           >
             {privacyOptions.map((option) => (
-              <MenuItem 
+              <MenuItem
                 key={option.value}
                 onClick={() => handlePrivacyChange(option.value)}
                 selected={currentStory?.privacy === option.value}
@@ -598,6 +660,12 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
                 {option.label}
               </MenuItem>
             ))}
+            <MenuItem
+              onClick={handleDelete}
+              style={{ color: 'red', fontWeight: 'bold' }} // Tuỳ chọn để làm nổi bật nút xóa
+            >
+              Xóa
+            </MenuItem>
           </Menu>
 
           {/* Danh sách người xem */}
@@ -618,16 +686,16 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
                 margin: '0 auto',
               }}
             >
-              <Box sx={{ 
-                p: 1.5, 
-                borderBottom: '1px solid rgba(0, 0, 0, 0.1)', 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center' 
+              <Box sx={{
+                p: 1.5,
+                borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
               }}>
                 <Typography variant="subtitle1">Người xem ({viewers.count})</Typography>
-                <IconButton 
-                  size="small" 
+                <IconButton
+                  size="small"
                   onClick={() => {
                     setShowViewers(false);
                     setIsPaused(false);
@@ -636,43 +704,43 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
                   <Close fontSize="small" />
                 </IconButton>
               </Box>
-              
+
               <Box sx={{ maxHeight: 'calc(40vh - 48px)', overflow: 'auto' }}>
                 {isLoadingViewers ? (
-                  <Box sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'center', 
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
                     alignItems: 'center',
-                    height: 200 
+                    height: 200
                   }}>
                     <CircularProgress size={30} />
                   </Box>
                 ) : viewers.data.length > 0 ? (
                   <List dense>
                     {viewers.data.map((viewer) => (
-                      <ListItem 
-                        key={viewer.id} 
-                        sx={{ 
+                      <ListItem
+                        key={viewer.id}
+                        sx={{
                           py: 0.5,
                           bgcolor: viewer.seen === 0 ? 'rgba(24, 118, 242, 0.05)' : 'transparent', // Nền xanh nhạt cho người xem mới
                         }}
                       >
                         <ListItemAvatar>
-                          <Avatar 
-                            src={viewer.user?.avatar  || "/user_default.png"} 
-                            sx={{ width: 32, height: 32 }} 
+                          <Avatar
+                            src={viewer.user?.avatar || "/user_default.png"}
+                            sx={{ width: 32, height: 32 }}
                           />
                         </ListItemAvatar>
-                        <ListItemText 
+                        <ListItemText
                           primary={
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                               <Typography sx={{ fontSize: '14px' }}>
                                 {viewer.user.name}
                               </Typography>
                               {viewer.seen === 0 && (
-                                <Typography 
-                                  component="span" 
-                                  sx={{ 
+                                <Typography
+                                  component="span"
+                                  sx={{
                                     fontSize: '12px',
                                     color: '#1876f2',
                                     fontWeight: 600,
@@ -688,7 +756,7 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
                             </Box>
                           }
                           secondary={viewer.emoji && (
-                            <Box component="span" sx={{fontSize: '14px'}}>
+                            <Box component="span" sx={{ fontSize: '14px' }}>
                               {viewer.emoji}
                             </Box>
                           )}
@@ -697,7 +765,7 @@ const StoryViewer = ({ open, onClose, stories, setStories, initialStoryIndex }) 
                     ))}
                   </List>
                 ) : (
-                  <Box sx={{p: 2, textAlign: 'center'}}>
+                  <Box sx={{ p: 2, textAlign: 'center' }}>
                     <Typography variant="body2">Chưa có người xem</Typography>
                   </Box>
                 )}

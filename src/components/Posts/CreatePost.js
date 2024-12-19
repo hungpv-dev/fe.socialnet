@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Avatar,
     TextField,
@@ -30,6 +30,7 @@ import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import axiosInstance from '@/axios';
 import { toast } from 'react-toastify';
+
 
 const CreatePost = ( { setPosts, onClose } ) => {
     const [content, setContent] = useState('');
@@ -128,8 +129,8 @@ const CreatePost = ( { setPosts, onClose } ) => {
     };
 
     return (
-        <Paper elevation={3} sx={{ borderRadius: 3, p: 2 }}>
-            <Stack spacing={2}>
+        <Paper elevation={3} sx={{ borderRadius: 3, p: 2, width: '100%', maxWidth: 600, margin: '0 auto' }}>
+            <Stack spacing={2} sx={{ padding: { xs: 1, sm: 2 } }}>
                 <Stack direction="row" spacing={2} alignItems="center">
                     <Avatar
                         src={currentUser?.avatar}
@@ -188,7 +189,8 @@ const CreatePost = ( { setPosts, onClose } ) => {
                     sx={{
                         '& .MuiOutlinedInput-root': {
                             borderRadius: 2,
-                            backgroundColor: '#f5f5f5'
+                            backgroundColor: '#f5f5f5',
+                            fontSize: { xs: '0.875rem', sm: '1rem' }
                         }
                     }}
                 />
@@ -249,7 +251,7 @@ const CreatePost = ( { setPosts, onClose } ) => {
                 <Divider />
 
                 <Stack
-                    direction="row"
+                    direction={{ xs: "column", sm: "row" }}
                     justifyContent="space-between"
                     alignItems="center"
                     spacing={2}
@@ -257,12 +259,13 @@ const CreatePost = ( { setPosts, onClose } ) => {
                     <Stack direction="row" spacing={1}>
                         <Button
                             component="label"
-                            startIcon={<ImageIcon color="success" />}
+                            startIcon={<ImageIcon color="success" fontSize="small" />}
                             disabled={loading}
                             sx={{
                                 textTransform: 'none',
                                 borderRadius: 2,
-                                px: 2
+                                px: 1,
+                                fontSize: '0.875rem'
                             }}
                         >
                             Ảnh
@@ -277,11 +280,12 @@ const CreatePost = ( { setPosts, onClose } ) => {
 
                         <Button
                             component="label"
-                            startIcon={<VideocamIcon color="error" />}
+                            startIcon={<VideocamIcon color="error" fontSize="small" />}
                             sx={{
                                 textTransform: 'none',
                                 borderRadius: 2,
-                                px: 2
+                                px: 1,
+                                fontSize: '0.875rem'
                             }}
                         >
                             Video
@@ -294,12 +298,13 @@ const CreatePost = ( { setPosts, onClose } ) => {
                         </Button>
 
                         <Button
-                            startIcon={<EmojiEmotionsIcon color="warning" />}
+                            startIcon={<EmojiEmotionsIcon color="warning" fontSize="small" />}
                             onClick={handleEmojiOpen}
                             sx={{
                                 textTransform: 'none',
                                 borderRadius: 2,
-                                px: 2
+                                px: 1,
+                                fontSize: '0.875rem'
                             }}
                         >
                             Cảm xúc
@@ -338,7 +343,8 @@ const CreatePost = ( { setPosts, onClose } ) => {
                             bgcolor: '#1877f2',
                             '&:hover': {
                                 bgcolor: '#1666d5'
-                            }
+                            },
+                            width: { xs: '100%', sm: 'auto' }
                         }}
                     >
                         {loading ? 'Đang đăng...' : 'Đăng'}
