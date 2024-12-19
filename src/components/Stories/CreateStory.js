@@ -90,9 +90,8 @@ const CreateStory = ({ open,stories,  setStories, onClose }) => {
     };
 
     const handleSubmit = async () => {
-        
         // Kiểm tra kích thước file
-        if (data.size > 30 * 1024 * 1024) { // 10MB
+        if (data.size > 10 * 1024 * 1024) { // 10MB
             toast.error('File không được vượt quá 10MB');
             return;
         }

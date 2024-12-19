@@ -95,6 +95,36 @@ const Canhan = () => {
     setSearchParams({ tab: tabName });
   };
 
+  const handleBlockUser = async (id) => {
+    try {
+      if (!id) {
+        toast.error("ID không hợp lệ!");
+        return;
+      }
+      if (user.block) {
+        const response = await axiosInstance.delete(`/blocks/${id}`);
+        if (response.status === 200) {
+          toast.success("Đã bỏ chặn người dùng này!");
+          await reUser(); 
+        } else {
+          toast.error("Lỗi xảy ra, vui lòng thử lại sau");
+        }
+      } else {
+        const payload = { id_account: id };
+        const response = await axiosInstance.post('/blocks', payload);
+        if (response.status === 200) {
+          toast.success("Đã chặn người dùng này!");
+          await reUser();
+        } else {
+          toast.error("Lỗi xảy ra, vui lòng thử lại sau");
+        }
+      }
+    } catch (error) {
+      toast.error(`Lỗi xảy ra, vui lòng thử lại sau`);
+    }
+    setActivityMenuAnchorEl();
+  }
+
   useEffect(() => {
     if (user) {
       setEditForm({
@@ -673,19 +703,21 @@ const Canhan = () => {
                   variant="h4" 
                   fontWeight="bold"
                   sx={{ 
-                    fontSize: { xs: '1.5rem', sm: '2rem' },
+                    fontSize: { xs: '1rem', sm: '1.5rem' },
                     wordBreak: 'break-word',
                     overflowWrap: 'break-word',
                     lineHeight: 1.2
                   }}
                 >
-                  {user?.name || 'User'}
+                  {user?.name || 'User'} {user.block && (
+                    <span dangerouslySetInnerHTML={{ __html: '<span class="text-danger">(Đã chặn)</span>' }} />
+                  )}
                 </Typography>
                 <Typography 
                   variant="body1" 
                   color="textSecondary" 
                   sx={{ 
-                    mt: 1,
+                    mt: 0,
                     wordBreak: 'break-word',
                     overflowWrap: 'break-word'
                   }}
@@ -981,7 +1013,6 @@ const Canhan = () => {
               </Button>
             </DialogActions>
           </Dialog>
-
           {/* Navigation */}
           <Paper sx={{ 
             mb: 4,
@@ -991,7 +1022,7 @@ const Canhan = () => {
               display: 'flex', 
               p: 2, 
               overflowX: 'auto',
-              justifyContent: { xs: 'space-between', sm: 'flex-start' },
+              justifyContent: 'space-between',
               gap: { xs: 0, sm: 2 }
             }}>
               <Box sx={{ display: 'flex', flexGrow: 1, gap: 2 }}>
@@ -1026,6 +1057,7 @@ const Canhan = () => {
             </Box>
           </Paper>
           {/* Menu cho nhật ký hoạt động */}
+      
           <Menu
             anchorEl={activityMenuAnchorEl}
             open={Boolean(activityMenuAnchorEl)}
@@ -1039,9 +1071,20 @@ const Canhan = () => {
               horizontal: 'right',
             }}
           >
-            <MenuItem onClick={() => navigate('/activity/log')}>
-              Nhật ký hoạt động
-            </MenuItem>
+            {currentUser.id === user?.id ? (
+              <>
+                <MenuItem onClick={() => navigate('/activity/log')}>
+                  Nhật ký hoạt động
+                </MenuItem>
+                <MenuItem onClick={() => navigate('/blocks')}>
+                  Người dùng đã chặn
+                </MenuItem>
+              </>
+            ) : (
+              <MenuItem onClick={() => handleBlockUser(user?.id)}>
+                {user.block ? "Bỏ chặn" : "Chặn"}
+              </MenuItem>
+            )}
           </Menu>
 
           {/* Main Content */}

@@ -48,15 +48,11 @@ const Introduction = ( {userData} ) => {
 
         <Box sx={{ mb: 4 }}>
           <Typography variant="subtitle1" fontWeight="bold" gutterBottom>Thông tin liên hệ</Typography>
-          {userData?.phone ? (
+          {userData?.phone && (
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <Phone sx={{ mr: 1 }} />
               <Typography>{userData.phone}</Typography>
             </Box>
-          ) : (
-            <Button variant="outlined" startIcon={<Edit />} sx={{ mt: 1 }}>
-              Thêm số điện thoại
-            </Button>
           )}
         </Box>
 

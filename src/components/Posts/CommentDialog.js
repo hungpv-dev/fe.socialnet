@@ -133,6 +133,13 @@ const CommentDialog = ({ open, onClose, post, setPosts, redirectDetail=false }) 
             setComments(prevComments =>
                 prevComments.filter(comment => comment.id !== commentId)
             );
+            setPosts((prevPosts) =>
+                prevPosts.map((item) =>
+                    item.id === post.id
+                        ? { ...item, comment_count: item.comment_count - 1 }
+                        : item
+                )
+            );
             setDeleteCommentChil(commentId)
             toast.success('Xóa bình luận thành công');
         } catch (error) {
@@ -211,6 +218,13 @@ const CommentDialog = ({ open, onClose, post, setPosts, redirectDetail=false }) 
                 setSelectedImage(null);
                 setPreviewImage(null);
                 setReplyTo(null);
+                setPosts((prevPosts) =>
+                    prevPosts.map((item) =>
+                        item.id === post.id
+                            ? { ...item, comment_count: item.comment_count + 1 }
+                            : item
+                    )
+                );
             }
         } catch (error) {
             console.error('Lỗi khi thêm bình luận:', error);

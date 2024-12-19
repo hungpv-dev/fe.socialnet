@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Card,
     CardHeader,
@@ -92,6 +92,10 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    useEffect(() => {
+        setSelectedEmoji(post.user_emotion?.emoji || null)
+    },[post])
 
     const handleEditOpen = () => {
         setEditContent(post.content);
@@ -218,6 +222,11 @@ const Post = ({ setPosts, post, hideCommentButton, onShareSuccess, redirectDetai
                     setLiked(true);
                     setSelectedEmoji(emoji);
                 }
+                setPosts((prevPosts) => 
+                    prevPosts.map((item) =>
+                        item.id === response.data.post.id ? response.data.post : item
+                    )
+                );
                 setEmojiCount(response.data.post.emoji_count);
             }
             setEmojiAnchorEl(null);
