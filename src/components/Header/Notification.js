@@ -163,7 +163,6 @@ const Notification = ({ onClose,seenAll, unseenCount, setUnseenCount }) => {
                 </IconButton>
                 <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
                     <MenuItem onClick={handleMarkAllAsRead}>Đánh dấu tất cả là đã đọc</MenuItem>
-                    <MenuItem onClick={handleOpenNotification}>Xem tất cả thông báo</MenuItem>
                 </Menu>
             </Typography>
 
