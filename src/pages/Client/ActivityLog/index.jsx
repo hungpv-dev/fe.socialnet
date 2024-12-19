@@ -136,6 +136,8 @@ const ActivityLog = () => {
                   >
                     {log.properties.client}
                   </Link>
+                  {log.log_name === "emotion" && (log.subject_title === "App\\Models\\Comment" ? "bình luận." : "bài viết.")}
+
                 </p>
                 <p
                   style={{
